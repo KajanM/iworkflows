@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.controller;
 
+import com.kajan.iworkflows.service.OauthTokenService;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
@@ -10,6 +11,7 @@ import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -25,6 +26,9 @@ import java.security.Principal;
 
 @Controller
 public class MainController {
+
+    @Autowired
+    private OauthTokenService oauthTokenService;
 
     private Logger logger = LoggerFactory.getLogger(MainController.class);
 
@@ -87,7 +91,7 @@ public class MainController {
     }
 
     @RequestMapping("/login/oauth2/code/nextcloud")
-    public String getNextcloudAccessToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Model model) {
+    public String getNextcloudAccessToken(HttpServletRequest httpServletRequest, Principal principal, Model model) {
 
         // Parse the authorisation response from the callback URI
         AuthorizationResponse authorizationResponse = null;
@@ -164,6 +168,10 @@ public class MainController {
 
         model.addAttribute("accessToken", accessToken);
         model.addAttribute("refreshToken", refreshToken);
+
+        oauthTokenService.setAuthorizationCode(principal, code);
+        oauthTokenService.setAccessToken(principal, accessToken);
+        oauthTokenService.setRefreshToken(principal, refreshToken);
         return "authorization-success";
     }
 
