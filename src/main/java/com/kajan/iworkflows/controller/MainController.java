@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,21 +31,21 @@ public class MainController {
     private String clientId = "h7P5r5KAqOorccQaHezH4j7Lui5koq982AIRDz4ynRRzwl00j70ygIl5QdapjPMV";
 
     @GetMapping("/user")
-    public String user(Principal principal, Model model) {
+    public String getUserPage(Principal principal, Model model) {
         logger.debug("hit /user endpoint");
         model.addAttribute("name", principal.getName());
         return "user";
     }
 
     @GetMapping("/authorize")
-    public String authorize() {
+    public String getAuthorizationPage() {
         return "authorize";
     }
 
     @RequestMapping("/redirect/nextcloud")
-    public ModelAndView redirectToNextCloud() {
+    public ModelAndView redirectToNextCloudForAuthorization() {
 
-        logger.debug("hit /login/oauth2/code/nextcloud endpoint");
+        logger.debug("hit /redirect/nextcloud endpoint");
 
         // The authorisation endpoint of the server
         URI authzEndpoint = null;
@@ -86,27 +87,27 @@ public class MainController {
     }
 
     @RequestMapping("/login/oauth2/code/nextcloud")
-    public String nextcloudToken(HttpServletRequest request, Model model) {
+    public String getNextcloudAccessToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Model model) {
 
         // Parse the authorisation response from the callback URI
-        AuthorizationResponse response = null;
+        AuthorizationResponse authorizationResponse = null;
         try {
-            response = AuthorizationResponse.parse(new URI("http://localhost:8080/login/oauth2/code/nextcloud?" + request.getQueryString()));
+            authorizationResponse = AuthorizationResponse.parse(new URI("http://localhost:8080/login/oauth2/code/nextcloud?" + httpServletRequest.getQueryString()));
         } catch (ParseException e) {
             logger.error("Unable to parse authorization code response from server", e);
         } catch (URISyntaxException e) {
             logger.error("URI syntax of the authorization code response is not valid", e);
         }
 
-        if (response != null && !response.indicatesSuccess()) {
+        if (authorizationResponse != null && !authorizationResponse.indicatesSuccess()) {
             // TODO: The request was denied or some error may have occurred
         }
 
-        AuthorizationSuccessResponse successResponse = (AuthorizationSuccessResponse) response;
+        AuthorizationSuccessResponse successResponse = (AuthorizationSuccessResponse) authorizationResponse;
 
         // The returned state parameter must match the one send with the request
         //if (! state.equals(successResponse.getState()) {
-            // Unexpected or tampered response, stop!!!
+        // Unexpected or tampered response, stop!!!
         //}
 
         // Retrieve the authorisation code, to be used later to exchange the code for
@@ -126,6 +127,7 @@ public class MainController {
 
         // The credentials to authenticate the client at the token endpoint
         ClientID clientID = new ClientID(clientId);
+        // TODO: externalize secret and get from property
         Secret clientSecret = new Secret("e6ZwqtkuxuKmh0Cl5mTH6s3YC8OltendKnO3e3Hej3gLdf7PntGOz1S3QEXRykaO");
         ClientAuthentication clientAuth = new ClientSecretBasic(clientID, clientSecret);
 
