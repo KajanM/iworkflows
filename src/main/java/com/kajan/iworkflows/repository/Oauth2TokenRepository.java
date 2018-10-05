@@ -12,4 +12,6 @@ public interface Oauth2TokenRepository {
     void setAccessToken(Principal principal, AccessToken accessToken);
 
     void setRefreshToken(Principal principal, RefreshToken refreshToken);
+
+    AccessToken getAccessToken(Principal principal);
 }

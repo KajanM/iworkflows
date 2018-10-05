@@ -11,7 +11,7 @@ import java.security.Principal;
 @Controller
 public class MainController {
 
-    private Logger logger = LoggerFactory.getLogger(MainController.class);
+    private final Logger logger = LoggerFactory.getLogger(MainController.class);
 
     @GetMapping("/user")
     public String getUserPage(Principal principal, Model model) {
