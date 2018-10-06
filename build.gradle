@@ -37,6 +37,9 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-thymeleaf')
     implementation('org.springframework.boot:spring-boot-starter-web')
     compile 'com.nimbusds:oauth2-oidc-sdk:6.0'
+    compile('org.springframework.security:spring-security-oauth2-client')
+    compile('org.springframework.security:spring-security-oauth2-core')
+    compile('org.springframework.security:spring-security-config')
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     runtimeOnly('com.h2database:h2')
     compileOnly('org.projectlombok:lombok')
