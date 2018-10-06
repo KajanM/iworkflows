@@ -1,3 +1,23 @@
 logging:
   level:
     com.kajan: DEBUG
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          nextcloud:
+            client-id: h7P5r5KAqOorccQaHezH4j7Lui5koq982AIRDz4ynRRzwl00j70ygIl5QdapjPMV
+            client-secret: e6ZwqtkuxuKmh0Cl5mTH6s3YC8OltendKnO3e3Hej3gLdf7PntGOz1S3QEXRykaO
+            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+            client-name: NextCloud
+            scope: read, write
+          google:
+            client-id:
+            client-secret:
+        provider:
+          nextcloud:
+            authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
+            token-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/api/v1/token

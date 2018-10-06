@@ -1,6 +1,7 @@
 package com.kajan.iworkflows.controller;
 
 import com.kajan.iworkflows.service.OauthControllerService;
+import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class OauthController {
 
         logger.debug("hit /redirect/nextcloud end-point");
 
-        URI requestURI = oauthControllerService.getAuthorizationCodeRequestUri();
+        URI requestURI = oauthControllerService.getAuthorizationCodeRequestUri(OauthRegistrationId.NEXTCLOUD);
         return new ModelAndView("redirect:" + requestURI.toASCIIString());
     }
 
@@ -41,7 +42,7 @@ public class OauthController {
 
         logger.debug("hit /login/oauth2/code/nextcloud end-point");
 
-        oauthControllerService.exchangeAuthorizationCodeForAccessToken(httpServletRequest, principal);
+        oauthControllerService.exchangeAuthorizationCodeForAccessToken(OauthRegistrationId.NEXTCLOUD, httpServletRequest, principal);
         model.addAttribute("accessToken", oauthControllerService.getAccessToken(principal));
         model.addAttribute("refreshToken", oauthControllerService.getRefreshToken(principal));
         return "authorization-success";
