@@ -1,10 +1,9 @@
 package com.kajan.iworkflows.service.impl;
 
+import com.kajan.iworkflows.model.Oauth2Token;
 import com.kajan.iworkflows.repository.Oauth2TokenRepository;
 import com.kajan.iworkflows.service.OauthTokenService;
-import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import com.nimbusds.oauth2.sdk.token.AccessToken;
-import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,27 +19,12 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     }
 
     @Override
-    public void setAuthorizationCode(Principal principal, AuthorizationCode authorizationCode) {
-        oauth2TokenRepository.setAuthorizationCode(principal, authorizationCode);
+    public void setOauth2Tokens(Principal principal, Oauth2Token oauth2Token) {
+        oauth2TokenRepository.setOauth2Token(principal, oauth2Token);
     }
 
     @Override
-    public void setAccessToken(Principal principal, AccessToken accessToken) {
-        oauth2TokenRepository.setAccessToken(principal, accessToken);
-    }
-
-    @Override
-    public void setRefreshToken(Principal principal, RefreshToken refreshToken) {
-        oauth2TokenRepository.setRefreshToken(principal, refreshToken);
-    }
-
-    @Override
-    public AccessToken getAccessToken(Principal principal) {
-        return oauth2TokenRepository.getAccessToken(principal);
-    }
-
-    @Override
-    public RefreshToken getRefreshToken(Principal principal) {
-        return oauth2TokenRepository.getRefreshToken(principal);
+    public Oauth2Token getOauth2Tokens(Principal principal, OauthRegistrationId oauthRegistrationId) {
+        return oauth2TokenRepository.getOauth2Token(principal, oauthRegistrationId);
     }
 }

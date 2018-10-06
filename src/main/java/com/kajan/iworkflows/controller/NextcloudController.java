@@ -14,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
 
+import static com.kajan.iworkflows.util.Constants.OauthRegistrationId.NEXTCLOUD;
+
 @Controller
 public class NextcloudController {
 
@@ -31,7 +33,7 @@ public class NextcloudController {
         // TODO: get user id from LDAP
         String userInfoUri = "http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/kajan";
 
-        HttpEntity<String> httpEntity = new HttpEntity<>("headers", nextcloudService.getNextcloudHeaders(principal));
+        HttpEntity<String> httpEntity = new HttpEntity<>("headers", nextcloudService.getNextcloudHeaders(principal, NEXTCLOUD));
         ResponseEntity<String> responseEntity = restTemplate.exchange(userInfoUri, HttpMethod.GET, httpEntity, String.class);
         return responseEntity.toString();
     }

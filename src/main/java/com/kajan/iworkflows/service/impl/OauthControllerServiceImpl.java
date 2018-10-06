@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.service.impl;
 
+import com.kajan.iworkflows.model.Oauth2Token;
 import com.kajan.iworkflows.service.OauthControllerService;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
@@ -156,20 +157,18 @@ public class OauthControllerServiceImpl implements OauthControllerService {
         AccessToken accessToken = successTokenResponse.getTokens().getAccessToken();
         RefreshToken refreshToken = successTokenResponse.getTokens().getRefreshToken();
 
+        Oauth2Token oauth2Token = new Oauth2Token();
+        oauth2Token.setAuthorizationCode(code);
+        oauth2Token.setAccessToken(accessToken);
+        oauth2Token.setRefreshToken(refreshToken);
+        oauth2Token.setClientRegistrationId(registrationId);
 
-        oauthTokenService.setAuthorizationCode(principal, code);
-        oauthTokenService.setAccessToken(principal, accessToken);
-        oauthTokenService.setRefreshToken(principal, refreshToken);
+        oauthTokenService.setOauth2Tokens(principal, oauth2Token);
     }
 
     @Override
-    public AccessToken getAccessToken(Principal principal) {
-        return oauthTokenService.getAccessToken(principal);
-    }
-
-    @Override
-    public RefreshToken getRefreshToken(Principal principal) {
-        return oauthTokenService.getRefreshToken(principal);
+    public Oauth2Token getOauth2Tokens(Principal principal, OauthRegistrationId oauthRegistrationId) {
+        return oauthTokenService.getOauth2Tokens(principal, oauthRegistrationId);
     }
 
     private String buildRedirectUri(OauthRegistrationId oauthRegistrationId) {

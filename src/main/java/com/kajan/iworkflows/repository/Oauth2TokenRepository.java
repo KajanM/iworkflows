@@ -1,19 +1,12 @@
 package com.kajan.iworkflows.repository;
 
-import com.nimbusds.oauth2.sdk.AuthorizationCode;
-import com.nimbusds.oauth2.sdk.token.AccessToken;
-import com.nimbusds.oauth2.sdk.token.RefreshToken;
+import com.kajan.iworkflows.model.Oauth2Token;
+import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
 
 import java.security.Principal;
 
 public interface Oauth2TokenRepository {
-    void setAuthorizationCode(Principal principal, AuthorizationCode authorizationCode);
+    void setOauth2Token(Principal principal, Oauth2Token oauth2Token);
 
-    void setAccessToken(Principal principal, AccessToken accessToken);
-
-    void setRefreshToken(Principal principal, RefreshToken refreshToken);
-
-    AccessToken getAccessToken(Principal principal);
-
-    RefreshToken getRefreshToken(Principal principal);
+    Oauth2Token getOauth2Token(Principal principal, OauthRegistrationId oauthRegistrationId);
 }

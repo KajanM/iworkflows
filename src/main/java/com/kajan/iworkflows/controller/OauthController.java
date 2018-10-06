@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.controller;
 
+import com.kajan.iworkflows.model.Oauth2Token;
 import com.kajan.iworkflows.service.OauthControllerService;
 import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
 import org.slf4j.Logger;
@@ -67,8 +68,9 @@ public class OauthController {
 
         OauthRegistrationId oauthRegistrationId = OauthRegistrationId.valueOf(registrationId.toUpperCase());
         oauthControllerService.exchangeAuthorizationCodeForAccessToken(oauthRegistrationId, httpServletRequest, principal);
-        model.addAttribute("accessToken", oauthControllerService.getAccessToken(principal));
-        model.addAttribute("refreshToken", oauthControllerService.getRefreshToken(principal));
+        Oauth2Token oauth2Token = oauthControllerService.getOauth2Tokens(principal, oauthRegistrationId);
+        model.addAttribute("accessToken", oauth2Token.getAccessToken());
+        model.addAttribute("refreshToken", oauth2Token.getRefreshToken());
         return "authorization-success";
     }
 }

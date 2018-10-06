@@ -1,8 +1,7 @@
 package com.kajan.iworkflows.service;
 
+import com.kajan.iworkflows.model.Oauth2Token;
 import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
-import com.nimbusds.oauth2.sdk.token.AccessToken;
-import com.nimbusds.oauth2.sdk.token.RefreshToken;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
@@ -13,7 +12,5 @@ public interface OauthControllerService {
 
     void exchangeAuthorizationCodeForAccessToken(OauthRegistrationId registrationId, HttpServletRequest httpServletRequest, Principal principal);
 
-    AccessToken getAccessToken(Principal principal);
-
-    RefreshToken getRefreshToken(Principal principal);
+    Oauth2Token getOauth2Tokens(Principal principal, OauthRegistrationId oauthRegistrationId);
 }

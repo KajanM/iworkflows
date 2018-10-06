@@ -1,7 +1,9 @@
 package com.kajan.iworkflows.service.impl;
 
+import com.kajan.iworkflows.model.Oauth2Token;
+import com.kajan.iworkflows.service.NextcloudService;
 import com.kajan.iworkflows.service.OauthTokenService;
-import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 
 @Service
-public class NextcloudServiceImpl implements com.kajan.iworkflows.service.NextcloudService {
+public class NextcloudServiceImpl implements NextcloudService {
 
     private final Logger logger = LoggerFactory.getLogger(NextcloudServiceImpl.class);
 
@@ -20,14 +22,14 @@ public class NextcloudServiceImpl implements com.kajan.iworkflows.service.Nextcl
     private OauthTokenService oauthTokenService;
 
     @Override
-    public HttpHeaders getNextcloudHeaders(Principal principal) {
-        AccessToken accessToken = oauthTokenService.getAccessToken(principal);
-        logger.debug("AccessToken: " + accessToken);
+    public HttpHeaders getNextcloudHeaders(Principal principal, OauthRegistrationId oauthRegistrationId) {
+        Oauth2Token oauth2Token = oauthTokenService.getOauth2Tokens(principal, oauthRegistrationId);
+        logger.debug("Oauth2Token: " + oauth2Token);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("OCS-APIRequest", "true");
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken.getValue());
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + oauth2Token.getAccessToken().getValue());
         return headers;
     }
 }
