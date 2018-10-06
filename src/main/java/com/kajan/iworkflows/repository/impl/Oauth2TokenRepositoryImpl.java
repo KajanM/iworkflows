@@ -45,4 +45,9 @@ public class Oauth2TokenRepositoryImpl implements Oauth2TokenRepository {
     public AccessToken getAccessToken(Principal principal) {
         return tokensMap.get(principal).getAccessToken();
     }
+
+    @Override
+    public RefreshToken getRefreshToken(Principal principal) {
+        return tokensMap.get(principal).getRefreshToken();
+    }
 }

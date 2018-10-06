@@ -38,4 +38,9 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     public AccessToken getAccessToken(Principal principal) {
         return oauth2TokenRepository.getAccessToken(principal);
     }
+
+    @Override
+    public RefreshToken getRefreshToken(Principal principal) {
+        return oauth2TokenRepository.getRefreshToken(principal);
+    }
 }
