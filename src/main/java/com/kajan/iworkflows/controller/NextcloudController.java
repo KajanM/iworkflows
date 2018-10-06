@@ -1,11 +1,12 @@
 package com.kajan.iworkflows.controller;
 
-import com.kajan.iworkflows.service.OauthTokenService;
-import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.kajan.iworkflows.service.NextcloudService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -22,7 +23,7 @@ public class NextcloudController {
     private RestTemplate restTemplate;
 
     @Autowired
-    private OauthTokenService oauthTokenService;
+    private NextcloudService nextcloudService;
 
     @GetMapping("/nextcloud-user")
     @ResponseBody
@@ -30,19 +31,9 @@ public class NextcloudController {
         // TODO: get user id from LDAP
         String userInfoUri = "http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/kajan";
 
-        HttpEntity<String> httpEntity = new HttpEntity<>("headers", getNextcloudHeaders(principal));
+        HttpEntity<String> httpEntity = new HttpEntity<>("headers", nextcloudService.getNextcloudHeaders(principal));
         ResponseEntity<String> responseEntity = restTemplate.exchange(userInfoUri, HttpMethod.GET, httpEntity, String.class);
         return responseEntity.toString();
     }
 
-    private HttpHeaders getNextcloudHeaders(Principal principal) {
-        AccessToken accessToken = oauthTokenService.getAccessToken(principal);
-        logger.debug("AccessToken: " + accessToken);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("OCS-APIRequest", "true");
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken.getValue());
-        return headers;
-    }
 }
