@@ -25,7 +25,7 @@ repositories {
 
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if(details.requested.group == 'org.springframework') {
+        if(details.requested.group == 'org.springframework.security') {
             details.useVersion("5.1.0.RELEASE")
         }
     }
@@ -42,6 +42,13 @@ dependencies {
     compile('org.springframework.security:spring-security-config')
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     compile('com.h2database:h2')
+
+    //ldap
+    compile("org.springframework.ldap:spring-ldap-core")
+    compile("org.springframework.security:spring-security-ldap")
+    compile("org.springframework:spring-tx")
+    compile("com.unboundid:unboundid-ldapsdk")
+    
     compileOnly('org.projectlombok:lombok')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')
