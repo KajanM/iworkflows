@@ -1,11 +1,12 @@
 logging:
   level:
     com.kajan: DEBUG
-#    org.springframework.security: DEBUG
+    org.springframework.security: DEBUG
 
 spring:
   profiles:
-    active: h2
+    active: h2, ldap
+
 
   security:
     oauth2:
@@ -47,3 +48,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+---
+spring:
+  profiles: ldap
+
+  ldap:
+    embedded:
+      base-dn: dc=springframework,dc=org
+      ldif: classpath:test-server.ldif
+      port: 8389
+      url: ldap://localhost:8389/
