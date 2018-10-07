@@ -41,7 +41,7 @@ dependencies {
     compile('org.springframework.security:spring-security-oauth2-core')
     compile('org.springframework.security:spring-security-config')
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
-    runtimeOnly('com.h2database:h2')
+    compile('com.h2database:h2')
     compileOnly('org.projectlombok:lombok')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')
