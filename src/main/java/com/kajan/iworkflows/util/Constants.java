@@ -5,7 +5,8 @@ public class Constants {
 
         NEXTCLOUD("nextcloud"),
         MOODLE("moodle"),
-        LEARN_ORG("learn_org");
+        LEARN_ORG("learn_org"),
+        GOOGLE("google");
 
         private String registrationId;
 

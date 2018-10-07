@@ -15,8 +15,8 @@ spring:
             client-name: NextCloud
             scope: read, write
           google:
-            client-id: the-id
-            client-secret: the-secret
+            client-id: 1006906289665-gnqn7aq78n707c2glp580jf5lk26lbs1.apps.googleusercontent.com
+            client-secret: FDfO-FBzTlFUT3k7r7WYubYk
         provider:
           nextcloud:
             authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
