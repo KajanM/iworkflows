@@ -1,10 +1,10 @@
 package com.kajan.iworkflows.service;
 
-import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
+import com.kajan.iworkflows.util.Constants;
 import org.springframework.http.HttpHeaders;
 
 import java.security.Principal;
 
 public interface NextcloudService {
-    HttpHeaders getNextcloudHeaders(Principal principal, OauthRegistrationId oauthRegistrationId);
+    HttpHeaders getNextcloudHeaders(Principal principal, Constants.OauthProvider oauthProvider);
 }

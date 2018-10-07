@@ -1,9 +1,10 @@
 package com.kajan.iworkflows.service.impl;
 
-import com.kajan.iworkflows.model.Oauth2Token;
+import com.kajan.iworkflows.dto.Oauth2TokenDTO;
 import com.kajan.iworkflows.service.OauthControllerService;
 import com.kajan.iworkflows.service.OauthTokenService;
-import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
+import com.kajan.iworkflows.util.Constants;
+import com.kajan.iworkflows.util.Constants.OauthProvider;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
@@ -39,8 +40,8 @@ public class OauthControllerServiceImpl implements OauthControllerService {
     private ClientRegistrationRepository clientRegistrationRepository;
 
     @Override
-    public URI getAuthorizationCodeRequestUri(OauthRegistrationId oauthRegistrationId) {
-        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(oauthRegistrationId.getRegistrationId());
+    public URI getAuthorizationCodeRequestUri(Constants.OauthProvider oauthProvider) {
+        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(oauthProvider.getProvider());
         // The authorisation endpoint of the server
         URI authzEndpoint = null;
         try {
@@ -59,7 +60,7 @@ public class OauthControllerServiceImpl implements OauthControllerService {
         // The client callback URI, typically pre-registered with the server
         URI callback = null;
         try {
-            callback = new URI(buildRedirectUri(oauthRegistrationId));
+            callback = new URI(buildRedirectUri(oauthProvider));
         } catch (URISyntaxException e) {
             logger.error("invalid redirect URI", e);
         }
@@ -82,8 +83,8 @@ public class OauthControllerServiceImpl implements OauthControllerService {
     }
 
     @Override
-    public void exchangeAuthorizationCodeForAccessToken(OauthRegistrationId registrationId, HttpServletRequest httpServletRequest, Principal principal) {
-        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId.getRegistrationId());
+    public void exchangeAuthorizationCodeForAccessToken(Constants.OauthProvider registrationId, HttpServletRequest httpServletRequest, Principal principal) {
+        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId.getProvider());
 
         // Parse the authorisation response from the callback URI
         AuthorizationResponse authorizationResponse = null;
@@ -157,24 +158,24 @@ public class OauthControllerServiceImpl implements OauthControllerService {
         AccessToken accessToken = successTokenResponse.getTokens().getAccessToken();
         RefreshToken refreshToken = successTokenResponse.getTokens().getRefreshToken();
 
-        Oauth2Token oauth2Token = new Oauth2Token();
-        oauth2Token.setAuthorizationCode(code);
-        oauth2Token.setAccessToken(accessToken);
-        oauth2Token.setRefreshToken(refreshToken);
-        oauth2Token.setClientRegistrationId(registrationId);
+        Oauth2TokenDTO oauth2TokenDTO = new Oauth2TokenDTO();
+        oauth2TokenDTO.setAuthorizationCode(code);
+        oauth2TokenDTO.setAccessToken(accessToken);
+        oauth2TokenDTO.setRefreshToken(refreshToken);
+        oauth2TokenDTO.setOauthProvider(registrationId);
 
-        oauthTokenService.setOauth2Tokens(principal, oauth2Token);
+        oauthTokenService.setOauth2Tokens(principal, oauth2TokenDTO);
     }
 
     @Override
-    public Oauth2Token getOauth2Tokens(Principal principal, OauthRegistrationId oauthRegistrationId) {
-        return oauthTokenService.getOauth2Tokens(principal, oauthRegistrationId);
+    public Oauth2TokenDTO getOauth2Tokens(Principal principal, Constants.OauthProvider oauthProvider) {
+        return oauthTokenService.getOauth2Tokens(principal, oauthProvider);
     }
 
-    private String buildRedirectUri(OauthRegistrationId oauthRegistrationId) {
-        String redirectUri = clientRegistrationRepository.findByRegistrationId(oauthRegistrationId.getRegistrationId()).getRedirectUriTemplate()
+    private String buildRedirectUri(OauthProvider oauthProvider) {
+        String redirectUri = clientRegistrationRepository.findByRegistrationId(oauthProvider.getProvider()).getRedirectUriTemplate()
                 .replace("{baseUrl}", baseUri)
-                .replace("{registrationId}", oauthRegistrationId.getRegistrationId());
+                .replace("{registrationId}", oauthProvider.getProvider());
         logger.debug("Redirect URI: " + redirectUri);
         return redirectUri;
     }

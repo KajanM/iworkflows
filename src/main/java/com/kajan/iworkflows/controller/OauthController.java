@@ -1,8 +1,9 @@
 package com.kajan.iworkflows.controller;
 
-import com.kajan.iworkflows.model.Oauth2Token;
+import com.kajan.iworkflows.dto.Oauth2TokenDTO;
 import com.kajan.iworkflows.service.OauthControllerService;
-import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
+import com.kajan.iworkflows.util.Constants;
+import com.kajan.iworkflows.util.Constants.OauthProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +56,9 @@ public class OauthController {
 
         logger.debug("hit /authorize/oauth2/" + registrationId + " end-point");
 
-        OauthRegistrationId oauthRegistrationId = OauthRegistrationId.valueOf(registrationId.toUpperCase());
+        OauthProvider oauthProvider = OauthProvider.valueOf(registrationId.toUpperCase());
 
-        URI requestURI = oauthControllerService.getAuthorizationCodeRequestUri(oauthRegistrationId);
+        URI requestURI = oauthControllerService.getAuthorizationCodeRequestUri(oauthProvider);
         return new ModelAndView("redirect:" + requestURI.toASCIIString());
     }
 
@@ -66,11 +67,13 @@ public class OauthController {
 
         logger.debug("hit /login/oauth2/code/" + registrationId + " end-point");
 
-        OauthRegistrationId oauthRegistrationId = OauthRegistrationId.valueOf(registrationId.toUpperCase());
-        oauthControllerService.exchangeAuthorizationCodeForAccessToken(oauthRegistrationId, httpServletRequest, principal);
-        Oauth2Token oauth2Token = oauthControllerService.getOauth2Tokens(principal, oauthRegistrationId);
-        model.addAttribute("accessToken", oauth2Token.getAccessToken());
-        model.addAttribute("refreshToken", oauth2Token.getRefreshToken());
+        OauthProvider oauthProvider = Constants.OauthProvider.valueOf(registrationId.toUpperCase());
+        oauthControllerService.exchangeAuthorizationCodeForAccessToken(oauthProvider, httpServletRequest, principal);
+        Oauth2TokenDTO oauth2TokenDTO = oauthControllerService.getOauth2Tokens(principal, oauthProvider);
+        model.addAttribute("authorizationProvider", oauth2TokenDTO.getOauthProvider().getProvider());
+        model.addAttribute("authorizationCode", oauth2TokenDTO.getAuthorizationCode());
+        model.addAttribute("accessToken", oauth2TokenDTO.getAccessToken());
+        model.addAttribute("refreshToken", oauth2TokenDTO.getRefreshToken());
         return "authorization-success";
     }
 }

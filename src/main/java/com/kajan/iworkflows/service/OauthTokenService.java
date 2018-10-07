@@ -1,12 +1,12 @@
 package com.kajan.iworkflows.service;
 
-import com.kajan.iworkflows.model.Oauth2Token;
-import com.kajan.iworkflows.util.Constants.OauthRegistrationId;
+import com.kajan.iworkflows.dto.Oauth2TokenDTO;
+import com.kajan.iworkflows.util.Constants.OauthProvider;
 
 import java.security.Principal;
 
 public interface OauthTokenService {
-    void setOauth2Tokens(Principal principal, Oauth2Token oauth2Token);
+    void setOauth2Tokens(Principal principal, Oauth2TokenDTO oauth2TokenDTO);
 
-    Oauth2Token getOauth2Tokens(Principal principal, OauthRegistrationId oauthRegistrationId);
+    Oauth2TokenDTO getOauth2Tokens(Principal principal, OauthProvider oauthProvider);
 }

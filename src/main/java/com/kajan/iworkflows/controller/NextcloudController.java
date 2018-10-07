@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
 
-import static com.kajan.iworkflows.util.Constants.OauthRegistrationId.NEXTCLOUD;
+import static com.kajan.iworkflows.util.Constants.OauthProvider.NEXTCLOUD;
 
 @Controller
 public class NextcloudController {
