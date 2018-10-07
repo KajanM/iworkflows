@@ -1,8 +1,12 @@
 logging:
   level:
     com.kajan: DEBUG
+#    org.springframework.security: DEBUG
 
 spring:
+  profiles:
+    active: h2
+
   security:
     oauth2:
       client:
@@ -15,9 +19,28 @@ spring:
             client-name: NextCloud
             scope: read, write
           google:
-            client-id: the-id
-            client-secret: the-secret
+            client-id: 1006906289665-gnqn7aq78n707c2glp580jf5lk26lbs1.apps.googleusercontent.com
+            client-secret: FDfO-FBzTlFUT3k7r7WYubYk
         provider:
           nextcloud:
             authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
             token-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/api/v1/token
+
+---
+spring:
+  profiles: h2
+
+  h2:
+    console:
+      enabled: true
+      path: /h2
+  datasource:
+    #       url: jdbc:h2:mem:iworkflows
+    url: jdbc:h2:file:~/db/iworkflows
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update

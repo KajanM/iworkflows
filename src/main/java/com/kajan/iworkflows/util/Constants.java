@@ -1,20 +1,21 @@
 package com.kajan.iworkflows.util;
 
 public class Constants {
-    public enum OauthRegistrationId {
+    public enum OauthProvider {
 
         NEXTCLOUD("nextcloud"),
         MOODLE("moodle"),
-        LEARN_ORG("learn_org");
+        LEARN_ORG("learn_org"),
+        GOOGLE("google");
 
-        private String registrationId;
+        private String provider;
 
-        OauthRegistrationId(String registrationId) {
-            this.registrationId = registrationId;
+        OauthProvider(String provider) {
+            this.provider = provider;
         }
 
-        public String getRegistrationId() {
-            return registrationId;
+        public String getProvider() {
+            return provider;
         }
     }
 }

@@ -6,8 +6,17 @@
 </head>
 <body>
 
-<h1 th:text="${accessToken}">access token</h1>
-<h1 th:text="${refreshToken}">refresh token</h1>
+<h1>Authorization Provider</h1>
+<p th:text="${authorizationProvider}">provider</p>
+
+<h1>Authorization Code</h1>
+<p th:text="${authorizationCode}">code</p>
+
+<h1>Access Token</h1>
+<p th:text="${accessToken}">access token</p>
+
+<h1>Refresh Token</h1>
+<p th:text="${refreshToken}">refresh token</p>
 
 <a href="/nextcloud-user">get user information from Nextcloud</a>
 
