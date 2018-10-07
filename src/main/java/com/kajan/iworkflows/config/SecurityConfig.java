@@ -20,11 +20,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "/js/**",
                             "/css/**",
                             "/img/**",
-                            "/webjars/**").permitAll()
+                            "/webjars/**", "/h2/**").permitAll()
                     .antMatchers("/user/**").hasRole("USER")
                     .anyRequest().authenticated()
                 .and()
-                .formLogin().permitAll();
+                .formLogin().permitAll()
+                .and()
+                .csrf().disable()
+                .headers()
+                .frameOptions().disable();
     }
     // @formatter:on
 
