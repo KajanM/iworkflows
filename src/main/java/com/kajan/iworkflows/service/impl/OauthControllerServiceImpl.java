@@ -173,9 +173,9 @@ public class OauthControllerServiceImpl implements OauthControllerService {
     }
 
     private String buildRedirectUri(OauthProvider oauthProvider) {
-        String redirectUri = clientRegistrationRepository.findByRegistrationId(oauthProvider.getProvider()).getRedirectUriTemplate()
-                .replace("{baseUrl}", baseUri)
-                .replace("{registrationId}", oauthProvider.getProvider());
+        String redirectUri = clientRegistrationRepository.findByRegistrationId(oauthProvider.getProvider()).getRedirectUriTemplate();
+                //.replace("{baseUrl}", baseUri)
+                //.replace("{registrationId}", oauthProvider.getProvider());
         logger.debug("Redirect URI: " + redirectUri);
         return redirectUri;
     }

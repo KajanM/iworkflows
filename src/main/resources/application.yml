@@ -15,13 +15,14 @@ spring:
           nextcloud:
             client-id: h7P5r5KAqOorccQaHezH4j7Lui5koq982AIRDz4ynRRzwl00j70ygIl5QdapjPMV
             client-secret: e6ZwqtkuxuKmh0Cl5mTH6s3YC8OltendKnO3e3Hej3gLdf7PntGOz1S3QEXRykaO
-            redirect-uri-template: "{baseUrl}/login/oauth2/code/{registrationId}"
+            redirect-uri-template: "http://localhost:8080/login/oauth2/code/nextcloud"
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
           google:
             client-id: 1006906289665-gnqn7aq78n707c2glp580jf5lk26lbs1.apps.googleusercontent.com
             client-secret: FDfO-FBzTlFUT3k7r7WYubYk
+            redirect-uri-template: "http://localhost:8080/login/oauth2/code/google"
         provider:
           nextcloud:
             authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
