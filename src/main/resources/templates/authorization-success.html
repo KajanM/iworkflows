@@ -6,6 +6,17 @@
 </head>
 <body>
 
+<div>
+    Logged in user: <b th:inline="text" class="user"> [[${#httpServletRequest.remoteUser}]] </b>
+    <div>
+        <br>
+        <form th:action="@{/logout}" method="POST">
+            <input type="submit" value="Logout"/>
+        </form>
+        <br>
+    </div>
+</div>
+
 <h1>Authorization Provider</h1>
 <p th:text="${authorizationProvider}">provider</p>
 
