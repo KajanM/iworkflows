@@ -1,13 +1,11 @@
 package com.kajan.iworkflows.config;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @EnableWebSecurity
@@ -22,7 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "/js/**",
                             "/css/**",
                             "/img/**",
-                            "/webjars/**", "/h2/**").permitAll()
+                            "/webjars/**", "/h2/**", "/dist/**", "/vendor/**", "/favicon.ico").permitAll()
                     .antMatchers("/user/**").hasRole("USER")
                     .anyRequest().authenticated()
                 .and()
