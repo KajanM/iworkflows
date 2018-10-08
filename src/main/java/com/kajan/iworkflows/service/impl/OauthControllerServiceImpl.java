@@ -31,8 +31,6 @@ public class OauthControllerServiceImpl implements OauthControllerService {
 
     private final Logger logger = LoggerFactory.getLogger(OauthControllerServiceImpl.class);
 
-    private final String baseUri = "http://localhost:8080";
-
     @Autowired
     private OauthTokenService oauthTokenService;
 
