@@ -5,7 +5,7 @@ logging:
 
 spring:
   profiles:
-    active: h2, ldap
+    active: h2
 
 
   security:
