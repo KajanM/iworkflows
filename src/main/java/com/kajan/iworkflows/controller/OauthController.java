@@ -47,6 +47,7 @@ public class OauthController {
 
         clientRegistrations.forEach(registration -> oauth2AuthenticationUrls.put(registration.getClientName(), authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
         model.addAttribute("urls", oauth2AuthenticationUrls);
+        model.addAttribute("revoke", false);
 
         return "authorize";
     }
