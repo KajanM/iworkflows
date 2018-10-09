@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.security.Principal;
+import java.util.Iterator;
 
 @Repository
 @Profile("h2")
@@ -54,5 +55,21 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
             return oauth2TokenDTO;
         }
         return null;
+    }
+
+    @Override
+    public Boolean revokeOauth2Token(Principal principal, OauthProvider oauthProvider) {
+        oauth2TokenH2Repository.deleteByPrincipalAndOauthProvider(principal.getName(), oauthProvider.getProvider());
+        return true;
+    }
+
+    @Override
+    public Boolean alreadyAuthorized(Principal principal, OauthProvider provider) {
+        Iterator<Oauth2TokenStore> iterator = oauth2TokenH2Repository.findByPrincipalAndOauthProvider(principal.getName(), provider.getProvider()).iterator();
+
+        if (iterator.hasNext()) {
+            return true;
+        }
+        return false;
     }
 }

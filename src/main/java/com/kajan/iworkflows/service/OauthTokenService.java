@@ -9,4 +9,8 @@ public interface OauthTokenService {
     void setOauth2Tokens(Principal principal, Oauth2TokenDTO oauth2TokenDTO);
 
     Oauth2TokenDTO getOauth2Tokens(Principal principal, OauthProvider oauthProvider);
+
+    Boolean revokeOauth2Token(Principal principal, OauthProvider oauthProvider);
+
+    Boolean alreadyAuthorized(Principal principal, OauthProvider provider);
 }

@@ -14,4 +14,8 @@ public interface OauthControllerService {
     void exchangeAuthorizationCodeForAccessToken(OauthProvider registrationId, HttpServletRequest httpServletRequest, Principal principal);
 
     Oauth2TokenDTO getOauth2Tokens(Principal principal, Constants.OauthProvider oauthProvider);
+
+    Boolean alreadyAuthorized(Principal principal, OauthProvider provider);
+
+    void revokeOauth2Token(Principal principal, OauthProvider provider);
 }

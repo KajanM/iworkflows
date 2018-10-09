@@ -42,4 +42,19 @@ public class Oauth2TokenRepositoryImplMemory implements Oauth2TokenRepository {
         throw new IllegalArgumentException("No Oauth2 token found for principal: " + principal + " and oauth registartion id: " + oauthProvider);
     }
 
+    @Override
+    public Boolean revokeOauth2Token(Principal principal, OauthProvider oauthProvider) {
+        tokensMap.get(principal).removeIf(oauth2TokenDTO -> oauth2TokenDTO.getOauthProvider().equals(oauthProvider));
+        return true;
+    }
+
+    @Override
+    public Boolean alreadyAuthorized(Principal principal, OauthProvider provider) {
+        for (Oauth2TokenDTO dto : tokensMap.get(principal)) {
+            if (dto.getOauthProvider().equals(provider)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

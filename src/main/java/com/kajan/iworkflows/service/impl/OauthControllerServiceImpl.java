@@ -172,9 +172,19 @@ public class OauthControllerServiceImpl implements OauthControllerService {
 
     private String buildRedirectUri(OauthProvider oauthProvider) {
         String redirectUri = clientRegistrationRepository.findByRegistrationId(oauthProvider.getProvider()).getRedirectUriTemplate();
-                //.replace("{baseUrl}", baseUri)
-                //.replace("{registrationId}", oauthProvider.getProvider());
+        //.replace("{baseUrl}", baseUri)
+        //.replace("{registrationId}", oauthProvider.getProvider());
         logger.debug("Redirect URI: " + redirectUri);
         return redirectUri;
+    }
+
+    @Override
+    public Boolean alreadyAuthorized(Principal principal, OauthProvider provider) {
+        return oauthTokenService.alreadyAuthorized(principal, provider);
+    }
+
+    @Override
+    public void revokeOauth2Token(Principal principal, OauthProvider provider) {
+        oauthTokenService.revokeOauth2Token(principal, provider);
     }
 }

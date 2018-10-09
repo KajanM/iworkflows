@@ -4,6 +4,7 @@ import com.kajan.iworkflows.dto.Oauth2TokenDTO;
 import com.kajan.iworkflows.service.OauthControllerService;
 import com.kajan.iworkflows.util.Constants;
 import com.kajan.iworkflows.util.Constants.OauthProvider;
+import com.kajan.iworkflows.view.OauthClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
 public class OauthController {
@@ -32,13 +34,14 @@ public class OauthController {
     private OauthControllerService oauthControllerService;
 
     private final String authorizationRequestBaseUri = "authorize/oauth2";
-    Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
+    private final String authorizationRevokeBaseUri = "/oauth2/revoke";
+    Set<OauthClient> oauthClients = new HashSet<>();
 
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
 
     @GetMapping("/authorize")
-    public String getAuthorizationPage(Model model) {
+    public String getAuthorizationPage(Principal principal, Model model) {
         Iterable<ClientRegistration> clientRegistrations = null;
         ResolvableType type = ResolvableType.forInstance(clientRegistrationRepository)
                 .as(Iterable.class);
@@ -46,9 +49,21 @@ public class OauthController {
             clientRegistrations = (Iterable<ClientRegistration>) clientRegistrationRepository;
         }
 
-        clientRegistrations.forEach(registration -> oauth2AuthenticationUrls.put(registration.getClientName(), authorizationRequestBaseUri + "/" + registration.getRegistrationId()));
-        model.addAttribute("urls", oauth2AuthenticationUrls);
-        model.addAttribute("revoke", false);
+        OauthClient client;
+
+        for (ClientRegistration registration : clientRegistrations) {
+            client = new OauthClient();
+            client.setName(registration.getClientName());
+            client.setRedirectUri(authorizationRequestBaseUri + "/" + registration.getRegistrationId());
+            client.setRevokeUri(authorizationRevokeBaseUri + "/" + registration.getRegistrationId());
+            client.setAuthorized(!oauthControllerService.alreadyAuthorized(principal, OauthProvider.valueOf(registration.getClientName().toUpperCase())));
+            if (oauthClients.contains(client)) {
+                oauthClients.remove(client);
+            }
+            oauthClients.add(client);
+        }
+
+        model.addAttribute("clients", oauthClients);
 
         return "authorize";
     }
@@ -77,5 +92,12 @@ public class OauthController {
         model.addAttribute("accessToken", oauth2TokenDTO.getAccessToken());
         model.addAttribute("refreshToken", oauth2TokenDTO.getRefreshToken());
         return "authorization-success";
+    }
+
+    @GetMapping("/oauth2/revoke/{registrationId}")
+    @ResponseBody
+    public String revokeAuthorizationToken(@PathVariable String registrationId, Principal principal) {
+        oauthControllerService.revokeOauth2Token(principal, OauthProvider.valueOf(registrationId.toUpperCase()));
+        return "Ok I'll revoke";
     }
 }

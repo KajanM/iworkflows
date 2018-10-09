@@ -46,17 +46,17 @@
                 <div class="panel-body">
                     <table>
                         <tbody>
-                        <tr class="odd gradeX" th:each="url : ${urls}">
-                            <td class="center" th:text="${url.key}">Provider</td>
+                        <tr class="odd gradeX" th:each="client : ${clients}">
+                            <td class="center" th:text="${client.name}">Provider</td>
                             <td>
-                                <form action="#" th:action="${url.value}">
+                                <form action="#" th:action="${client.redirectUri}">
                                     <input type="submit" class="btn btn-success btn-sm" value="Authorize"/>
                                 </form>
                             </td>
                             <td>
-                                <form action="#" th:action="${url.value}">
+                                <form action="#" th:action="${client.revokeUri}">
                                     <input type="submit" class="btn btn-danger btn-sm" value="Revoke"
-                                           th:classappend="${revoke} ? disabled"/>
+                                           th:classappend="${client.authorized} ? disabled : ''"/>
                                 </form>
                             </td>
                         </tr>
