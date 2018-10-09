@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.security.Principal;
-import java.util.Iterator;
 
 @Repository
 @Profile("h2")
@@ -42,25 +41,17 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
 
     @Override
     public Oauth2TokenDTO getOauth2Token(Principal principal, OauthProvider oauthProvider) {
-        Iterable<Oauth2TokenStore> allTokens = oauth2TokenH2Repository.findAll();
+        Iterable<Oauth2TokenStore> allTokens = oauth2TokenH2Repository.findByPrincipalAndOauthProvider(principal.getName(), oauthProvider.getProvider());
 
-        Iterator<Oauth2TokenStore> iterator = allTokens.iterator();
-        Oauth2TokenStore store;
-        while (iterator.hasNext()) {
-            store = iterator.next();
-            if (store.getPrincipal().equals(principal.getName()) && store.getOauthProvider().equals(oauthProvider.getProvider())) {
-
-                logger.debug("got oauth2 token store from db " + store);
-
-                Oauth2TokenDTO oauth2TokenDTO = new Oauth2TokenDTO();
-                oauth2TokenDTO.setOauthProvider(oauthProvider);
-                oauth2TokenDTO.setAuthorizationCode(new AuthorizationCode(store.getAuthorizationCode()));
-                oauth2TokenDTO.setAccessToken(new BearerAccessToken(store.getAccessToken()));
-                if (store.getRefreshToken() != null) {
-                    oauth2TokenDTO.setRefreshToken(new RefreshToken(store.getRefreshToken()));
-                }
-                return oauth2TokenDTO;
+        for (Oauth2TokenStore store : allTokens) {
+            Oauth2TokenDTO oauth2TokenDTO = new Oauth2TokenDTO();
+            oauth2TokenDTO.setOauthProvider(oauthProvider);
+            oauth2TokenDTO.setAuthorizationCode(new AuthorizationCode(store.getAuthorizationCode()));
+            oauth2TokenDTO.setAccessToken(new BearerAccessToken(store.getAccessToken()));
+            if (store.getRefreshToken() != null) {
+                oauth2TokenDTO.setRefreshToken(new RefreshToken(store.getRefreshToken()));
             }
+            return oauth2TokenDTO;
         }
         return null;
     }
