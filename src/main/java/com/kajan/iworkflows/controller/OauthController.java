@@ -33,6 +33,7 @@ public class OauthController {
 
     private final String authorizationRequestBaseUri = "authorize/oauth2";
     Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
+
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
 
