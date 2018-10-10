@@ -83,7 +83,7 @@
 <script>
     /*<![CDATA[*/
 
-    var flag = [[${#httpServletRequest.getParameter('revoked')}]];
+    var flag = [[${#httpServletRequest.getParameter('notify')}]];
     window.onload = function () {
         if (flag) {
             var notice = "[[${#httpServletRequest.getParameter('message')}]]";

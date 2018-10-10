@@ -80,7 +80,7 @@ public class OauthController {
     }
 
     @RequestMapping("/login/oauth2/code/{registrationId}")
-    public String getNextcloudAccessToken(@PathVariable String registrationId, HttpServletRequest httpServletRequest, Principal principal, Model model) {
+    public String getNextcloudAccessToken(@PathVariable String registrationId, HttpServletRequest httpServletRequest, Principal principal, Model model, RedirectAttributes redirectAttributes) {
 
         logger.debug("hit /login/oauth2/code/" + registrationId + " end-point");
 
@@ -91,17 +91,21 @@ public class OauthController {
         model.addAttribute("authorizationCode", oauth2TokenDTO.getAuthorizationCode());
         model.addAttribute("accessToken", oauth2TokenDTO.getAccessToken());
         model.addAttribute("refreshToken", oauth2TokenDTO.getRefreshToken());
-        return "authorization-success";
+
+        redirectAttributes.addAttribute("notify", true);
+        redirectAttributes.addAttribute("message", "Successfully connected with " + registrationId);
+        redirectAttributes.addAttribute("style", "success");
+        return "redirect:/authorize";
     }
 
     @GetMapping("/oauth2/revoke/{registrationId}")
     public String revokeAuthorizationToken(@PathVariable String registrationId, Principal principal, RedirectAttributes redirectAttributes) {
-        Boolean success = oauthControllerService.revokeOauth2Token(principal, OauthProvider.valueOf(registrationId.toUpperCase()));
-        redirectAttributes.addAttribute("revoked", success);
+        Boolean isSuccess = oauthControllerService.revokeOauth2Token(principal, OauthProvider.valueOf(registrationId.toUpperCase()));
+        redirectAttributes.addAttribute("notify", isSuccess);
         redirectAttributes.addAttribute("message", "Successfully disconnected from " + registrationId);
         redirectAttributes.addAttribute("style", "success");
 
-        if (success) {
+        if (isSuccess) {
             return "redirect:/authorize";
         }
         redirectAttributes.addAttribute("message", "Unable to disconnect " + registrationId + " ,please try again");
