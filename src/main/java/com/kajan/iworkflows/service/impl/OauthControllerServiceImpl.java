@@ -184,7 +184,7 @@ public class OauthControllerServiceImpl implements OauthControllerService {
     }
 
     @Override
-    public void revokeOauth2Token(Principal principal, OauthProvider provider) {
-        oauthTokenService.revokeOauth2Token(principal, provider);
+    public Boolean revokeOauth2Token(Principal principal, OauthProvider provider) {
+        return oauthTokenService.revokeOauth2Token(principal, provider);
     }
 }

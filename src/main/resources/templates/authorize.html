@@ -43,11 +43,13 @@
         <div class="container-fluid">
             <div class="col-lg-12">
                 <h1 class="page-header">Connect with external services</h1>
+            </div>
                 <div class="panel-body">
                     <table>
-                        <tbody>
+
+                        <tbody class="body">
                         <tr class="odd gradeX" th:each="client : ${clients}">
-                            <td class="center" th:text="${client.name}">Provider</td>
+                            <td class="center" th:text="${client.name}" th:id="${client.name}">Provider</td>
                             <td>
                                 <form action="#" th:action="${client.redirectUri}">
                                     <input type="submit" class="btn btn-success btn-sm" value="Authorize"/>
@@ -74,6 +76,22 @@
 </div>
 <!--Post Scripts-->
 <th:block th:replace="/fragments/scripts :: footer-scripts"/>
+
+<!-- Notify JavaScript -->
+<script src="../vendor/notify/notify.js"></script>
+
+<script>
+    /*<![CDATA[*/
+
+    var flag = [[${#httpServletRequest.getParameter('revoked')}]];
+    window.onload = function () {
+        if (flag) {
+            var notice = "[[${#httpServletRequest.getParameter('message')}]]";
+            $.notify(notice, "[[${#httpServletRequest.getParameter('style')}]]");
+        }
+    };
+    /*]]>*/
+</script>
 
 </body>
 

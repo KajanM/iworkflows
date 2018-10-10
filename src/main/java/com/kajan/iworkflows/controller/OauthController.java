@@ -16,8 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
@@ -95,9 +95,18 @@ public class OauthController {
     }
 
     @GetMapping("/oauth2/revoke/{registrationId}")
-    @ResponseBody
-    public String revokeAuthorizationToken(@PathVariable String registrationId, Principal principal) {
-        oauthControllerService.revokeOauth2Token(principal, OauthProvider.valueOf(registrationId.toUpperCase()));
-        return "Ok I'll revoke";
+    public String revokeAuthorizationToken(@PathVariable String registrationId, Principal principal, RedirectAttributes redirectAttributes) {
+        Boolean success = oauthControllerService.revokeOauth2Token(principal, OauthProvider.valueOf(registrationId.toUpperCase()));
+        redirectAttributes.addAttribute("revoked", success);
+        redirectAttributes.addAttribute("message", "Successfully disconnected from " + registrationId);
+        redirectAttributes.addAttribute("style", "success");
+
+        if (success) {
+            return "redirect:/authorize";
+        }
+        redirectAttributes.addAttribute("message", "Unable to disconnect " + registrationId + " ,please try again");
+        redirectAttributes.addAttribute("style", "error");
+
+        return "redirect:/authorize";
     }
 }

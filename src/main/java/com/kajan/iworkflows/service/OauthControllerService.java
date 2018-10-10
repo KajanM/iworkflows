@@ -17,5 +17,5 @@ public interface OauthControllerService {
 
     Boolean alreadyAuthorized(Principal principal, OauthProvider provider);
 
-    void revokeOauth2Token(Principal principal, OauthProvider provider);
+    Boolean revokeOauth2Token(Principal principal, OauthProvider provider);
 }
