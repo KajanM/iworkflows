@@ -77,21 +77,8 @@
 <!--Post Scripts-->
 <th:block th:replace="/fragments/scripts :: footer-scripts"/>
 
-<!-- Notify JavaScript -->
-<script src="../vendor/notify/notify.js"></script>
-
-<script>
-    /*<![CDATA[*/
-
-    var flag = [[${#httpServletRequest.getParameter('notify')}]];
-    window.onload = function () {
-        if (flag) {
-            var notice = "[[${#httpServletRequest.getParameter('message')}]]";
-            $.notify(notice, "[[${#httpServletRequest.getParameter('style')}]]");
-        }
-    };
-    /*]]>*/
-</script>
+<!--Push notifications-->
+<th:block th:replace="/fragments/notify :: notify-scripts"></th:block>
 
 </body>
 
