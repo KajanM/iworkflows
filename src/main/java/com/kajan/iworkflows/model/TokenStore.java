@@ -7,23 +7,23 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Oauth2TokenStore {
+public class TokenStore {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String principal;
-    private String oauthProvider;
+    private String tokenProvider;
     private String authorizationCode;
     private String accessToken;
     private String refreshToken;
 
-    protected Oauth2TokenStore() {
+    protected TokenStore() {
     }
 
-    public Oauth2TokenStore(String principal, String oauthProvider) {
+    public TokenStore(String principal, String tokenProvider) {
         this.principal = principal;
-        this.oauthProvider = oauthProvider;
+        this.tokenProvider = tokenProvider;
     }
 
     public Long getId() {
@@ -38,12 +38,12 @@ public class Oauth2TokenStore {
         this.principal = principal;
     }
 
-    public String getOauthProvider() {
-        return oauthProvider;
+    public String getTokenProvider() {
+        return tokenProvider;
     }
 
-    public void setOauthProvider(String oauthProvider) {
-        this.oauthProvider = oauthProvider;
+    public void setTokenProvider(String tokenProvider) {
+        this.tokenProvider = tokenProvider;
     }
 
     public String getAuthorizationCode() {
@@ -74,7 +74,7 @@ public class Oauth2TokenStore {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Oauth2TokenStore that = (Oauth2TokenStore) o;
+        TokenStore that = (TokenStore) o;
         return Objects.equals(id, that.id);
     }
 
@@ -85,10 +85,10 @@ public class Oauth2TokenStore {
 
     @Override
     public String toString() {
-        return "Oauth2TokenStore{" +
+        return "TokenStore{" +
                 "id=" + id +
                 ", principal=" + principal +
-                ", oauthProvider=" + oauthProvider +
+                ", tokenProvider=" + tokenProvider +
                 ", authorizationCode=" + authorizationCode +
                 ", accessToken=" + accessToken +
                 ", refreshToken=" + refreshToken +

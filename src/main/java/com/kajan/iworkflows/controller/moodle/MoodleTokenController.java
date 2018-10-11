@@ -2,7 +2,7 @@ package com.kajan.iworkflows.controller.moodle;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kajan.iworkflows.dto.Oauth2TokenDTO;
+import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.nimbusds.oauth2.sdk.token.TypelessAccessToken;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.security.Principal;
 
-import static com.kajan.iworkflows.util.Constants.OauthProvider.MOODLE;
+import static com.kajan.iworkflows.util.Constants.TokenProvider.MOODLE;
 
 @Controller
 public class MoodleTokenController {
@@ -57,10 +57,10 @@ public class MoodleTokenController {
         }
 
         if (root.hasNonNull("token")) {
-            Oauth2TokenDTO oauth2TokenDTO = new Oauth2TokenDTO();
-            oauth2TokenDTO.setAccessToken(new TypelessAccessToken(root.get("token").textValue()));
-            oauth2TokenDTO.setOauthProvider(MOODLE);
-            oauthTokenService.setOauth2Tokens(principal, oauth2TokenDTO);
+            TokenDTO tokenDTO = new TokenDTO();
+            tokenDTO.setAccessToken(new TypelessAccessToken(root.get("token").textValue()));
+            tokenDTO.setTokenProvider(MOODLE);
+            oauthTokenService.setOauth2Tokens(principal, tokenDTO);
             redirectAttributes.addAttribute("notify", true);
             redirectAttributes.addAttribute("message", "Successfully connected with moodle");
             redirectAttributes.addAttribute("style", "success");

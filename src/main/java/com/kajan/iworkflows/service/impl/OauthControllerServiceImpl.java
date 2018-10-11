@@ -1,10 +1,10 @@
 package com.kajan.iworkflows.service.impl;
 
-import com.kajan.iworkflows.dto.Oauth2TokenDTO;
+import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.service.OauthControllerService;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.util.Constants;
-import com.kajan.iworkflows.util.Constants.OauthProvider;
+import com.kajan.iworkflows.util.Constants.TokenProvider;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
@@ -38,8 +38,8 @@ public class OauthControllerServiceImpl implements OauthControllerService {
     private ClientRegistrationRepository clientRegistrationRepository;
 
     @Override
-    public URI getAuthorizationCodeRequestUri(Constants.OauthProvider oauthProvider) {
-        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(oauthProvider.getProvider());
+    public URI getAuthorizationCodeRequestUri(TokenProvider tokenProvider) {
+        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(tokenProvider.getProvider());
         // The authorisation endpoint of the server
         URI authzEndpoint = null;
         try {
@@ -58,7 +58,7 @@ public class OauthControllerServiceImpl implements OauthControllerService {
         // The client callback URI, typically pre-registered with the server
         URI callback = null;
         try {
-            callback = new URI(buildRedirectUri(oauthProvider));
+            callback = new URI(buildRedirectUri(tokenProvider));
         } catch (URISyntaxException e) {
             logger.error("invalid redirect URI", e);
         }
@@ -81,7 +81,7 @@ public class OauthControllerServiceImpl implements OauthControllerService {
     }
 
     @Override
-    public void exchangeAuthorizationCodeForAccessToken(Constants.OauthProvider registrationId, HttpServletRequest httpServletRequest, Principal principal) {
+    public void exchangeAuthorizationCodeForAccessToken(Constants.TokenProvider registrationId, HttpServletRequest httpServletRequest, Principal principal) {
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId.getProvider());
 
         // Parse the authorisation response from the callback URI
@@ -156,35 +156,35 @@ public class OauthControllerServiceImpl implements OauthControllerService {
         AccessToken accessToken = successTokenResponse.getTokens().getAccessToken();
         RefreshToken refreshToken = successTokenResponse.getTokens().getRefreshToken();
 
-        Oauth2TokenDTO oauth2TokenDTO = new Oauth2TokenDTO();
-        oauth2TokenDTO.setAuthorizationCode(code);
-        oauth2TokenDTO.setAccessToken(accessToken);
-        oauth2TokenDTO.setRefreshToken(refreshToken);
-        oauth2TokenDTO.setOauthProvider(registrationId);
+        TokenDTO tokenDTO = new TokenDTO();
+        tokenDTO.setAuthorizationCode(code);
+        tokenDTO.setAccessToken(accessToken);
+        tokenDTO.setRefreshToken(refreshToken);
+        tokenDTO.setTokenProvider(registrationId);
 
-        oauthTokenService.setOauth2Tokens(principal, oauth2TokenDTO);
+        oauthTokenService.setOauth2Tokens(principal, tokenDTO);
     }
 
     @Override
-    public Oauth2TokenDTO getOauth2Tokens(Principal principal, Constants.OauthProvider oauthProvider) {
-        return oauthTokenService.getOauth2Tokens(principal, oauthProvider);
+    public TokenDTO getOauth2Tokens(Principal principal, TokenProvider tokenProvider) {
+        return oauthTokenService.getOauth2Tokens(principal, tokenProvider);
     }
 
-    private String buildRedirectUri(OauthProvider oauthProvider) {
-        String redirectUri = clientRegistrationRepository.findByRegistrationId(oauthProvider.getProvider()).getRedirectUriTemplate();
+    private String buildRedirectUri(Constants.TokenProvider tokenProvider) {
+        String redirectUri = clientRegistrationRepository.findByRegistrationId(tokenProvider.getProvider()).getRedirectUriTemplate();
         //.replace("{baseUrl}", baseUri)
-        //.replace("{registrationId}", oauthProvider.getProvider());
+        //.replace("{registrationId}", tokenProvider.getProvider());
         logger.debug("Redirect URI: " + redirectUri);
         return redirectUri;
     }
 
     @Override
-    public Boolean alreadyAuthorized(Principal principal, OauthProvider provider) {
+    public Boolean alreadyAuthorized(Principal principal, TokenProvider provider) {
         return oauthTokenService.alreadyAuthorized(principal, provider);
     }
 
     @Override
-    public Boolean revokeOauth2Token(Principal principal, OauthProvider provider) {
+    public Boolean revokeOauth2Token(Principal principal, Constants.TokenProvider provider) {
         return oauthTokenService.revokeOauth2Token(principal, provider);
     }
 }

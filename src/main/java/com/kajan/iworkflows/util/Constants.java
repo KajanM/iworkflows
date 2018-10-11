@@ -1,7 +1,7 @@
 package com.kajan.iworkflows.util;
 
 public class Constants {
-    public enum OauthProvider {
+    public enum TokenProvider {
 
         NEXTCLOUD("nextcloud"),
         MOODLE("moodle"),
@@ -10,7 +10,7 @@ public class Constants {
 
         private String provider;
 
-        OauthProvider(String provider) {
+        TokenProvider(String provider) {
             this.provider = provider;
         }
 

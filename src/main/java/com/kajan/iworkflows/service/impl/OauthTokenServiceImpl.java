@@ -1,9 +1,9 @@
 package com.kajan.iworkflows.service.impl;
 
-import com.kajan.iworkflows.dto.Oauth2TokenDTO;
+import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.repository.Oauth2TokenRepository;
 import com.kajan.iworkflows.service.OauthTokenService;
-import com.kajan.iworkflows.util.Constants.OauthProvider;
+import com.kajan.iworkflows.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,22 +19,22 @@ public class OauthTokenServiceImpl implements OauthTokenService {
     }
 
     @Override
-    public void setOauth2Tokens(Principal principal, Oauth2TokenDTO oauth2TokenDTO) {
-        oauth2TokenRepository.setOauth2Token(principal, oauth2TokenDTO);
+    public void setOauth2Tokens(Principal principal, TokenDTO tokenDTO) {
+        oauth2TokenRepository.setOauth2Token(principal, tokenDTO);
     }
 
     @Override
-    public Oauth2TokenDTO getOauth2Tokens(Principal principal, OauthProvider oauthProvider) {
-        return oauth2TokenRepository.getOauth2Token(principal, oauthProvider);
+    public TokenDTO getOauth2Tokens(Principal principal, Constants.TokenProvider tokenProvider) {
+        return oauth2TokenRepository.getOauth2Token(principal, tokenProvider);
     }
 
     @Override
-    public Boolean revokeOauth2Token(Principal principal, OauthProvider oauthProvider) {
-        return oauth2TokenRepository.revokeOauth2Token(principal, oauthProvider);
+    public Boolean revokeOauth2Token(Principal principal, Constants.TokenProvider tokenProvider) {
+        return oauth2TokenRepository.revokeOauth2Token(principal, tokenProvider);
     }
 
     @Override
-    public Boolean alreadyAuthorized(Principal principal, OauthProvider provider) {
+    public Boolean alreadyAuthorized(Principal principal, Constants.TokenProvider provider) {
         return oauth2TokenRepository.alreadyAuthorized(principal, provider);
     }
 }

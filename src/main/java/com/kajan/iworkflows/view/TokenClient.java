@@ -3,13 +3,13 @@ package com.kajan.iworkflows.view;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class OauthClient implements Serializable {
+public class TokenClient implements Serializable {
     private String name;
     private String redirectUri;
     private String revokeUri;
     private Boolean authorized;
 
-    public OauthClient() {
+    public TokenClient() {
     }
 
     public String getName() {
@@ -48,7 +48,7 @@ public class OauthClient implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        OauthClient client = (OauthClient) o;
+        TokenClient client = (TokenClient) o;
         return Objects.equals(name, client.name);
     }
 

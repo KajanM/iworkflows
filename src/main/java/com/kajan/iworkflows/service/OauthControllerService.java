@@ -1,21 +1,21 @@
 package com.kajan.iworkflows.service;
 
-import com.kajan.iworkflows.dto.Oauth2TokenDTO;
+import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.util.Constants;
-import com.kajan.iworkflows.util.Constants.OauthProvider;
+import com.kajan.iworkflows.util.Constants.TokenProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
 
 public interface OauthControllerService {
-    URI getAuthorizationCodeRequestUri(OauthProvider oauthProvider);
+    URI getAuthorizationCodeRequestUri(Constants.TokenProvider tokenProvider);
 
-    void exchangeAuthorizationCodeForAccessToken(OauthProvider registrationId, HttpServletRequest httpServletRequest, Principal principal);
+    void exchangeAuthorizationCodeForAccessToken(Constants.TokenProvider registrationId, HttpServletRequest httpServletRequest, Principal principal);
 
-    Oauth2TokenDTO getOauth2Tokens(Principal principal, Constants.OauthProvider oauthProvider);
+    TokenDTO getOauth2Tokens(Principal principal, TokenProvider tokenProvider);
 
-    Boolean alreadyAuthorized(Principal principal, OauthProvider provider);
+    Boolean alreadyAuthorized(Principal principal, Constants.TokenProvider provider);
 
-    Boolean revokeOauth2Token(Principal principal, OauthProvider provider);
+    Boolean revokeOauth2Token(Principal principal, TokenProvider provider);
 }

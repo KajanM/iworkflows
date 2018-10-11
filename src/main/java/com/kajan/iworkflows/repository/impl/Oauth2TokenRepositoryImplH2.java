@@ -1,10 +1,11 @@
 package com.kajan.iworkflows.repository.impl;
 
-import com.kajan.iworkflows.dto.Oauth2TokenDTO;
-import com.kajan.iworkflows.model.Oauth2TokenStore;
+import com.kajan.iworkflows.dto.TokenDTO;
+import com.kajan.iworkflows.model.TokenStore;
 import com.kajan.iworkflows.repository.Oauth2TokenH2Repository;
 import com.kajan.iworkflows.repository.Oauth2TokenRepository;
-import com.kajan.iworkflows.util.Constants.OauthProvider;
+import com.kajan.iworkflows.util.Constants;
+import com.kajan.iworkflows.util.Constants.TokenProvider;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
@@ -27,47 +28,47 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
     private Oauth2TokenH2Repository oauth2TokenH2Repository;
 
     @Override
-    public void setOauth2Token(Principal principal, Oauth2TokenDTO oauth2TokenDTO) {
-        Oauth2TokenStore oauth2TokenStore = new Oauth2TokenStore(principal.getName(), oauth2TokenDTO.getOauthProvider().getProvider());
-        if (oauth2TokenDTO.getAuthorizationCode() != null) {
-            oauth2TokenStore.setAuthorizationCode(oauth2TokenDTO.getAuthorizationCode().getValue());
+    public void setOauth2Token(Principal principal, TokenDTO tokenDTO) {
+        TokenStore tokenStore = new TokenStore(principal.getName(), tokenDTO.getTokenProvider().getProvider());
+        if (tokenDTO.getAuthorizationCode() != null) {
+            tokenStore.setAuthorizationCode(tokenDTO.getAuthorizationCode().getValue());
         }
-        oauth2TokenStore.setAccessToken(oauth2TokenDTO.getAccessToken().getValue());
-        if (oauth2TokenDTO.getRefreshToken() != null) {
-            oauth2TokenStore.setRefreshToken(oauth2TokenDTO.getRefreshToken().getValue());
+        tokenStore.setAccessToken(tokenDTO.getAccessToken().getValue());
+        if (tokenDTO.getRefreshToken() != null) {
+            tokenStore.setRefreshToken(tokenDTO.getRefreshToken().getValue());
         }
 
-        logger.debug("storing oauth2 tokens in db " + oauth2TokenStore);
+        logger.debug("storing oauth2 tokens in db " + tokenStore);
 
-        oauth2TokenH2Repository.save(oauth2TokenStore);
+        oauth2TokenH2Repository.save(tokenStore);
     }
 
     @Override
-    public Oauth2TokenDTO getOauth2Token(Principal principal, OauthProvider oauthProvider) {
-        Iterable<Oauth2TokenStore> allTokens = oauth2TokenH2Repository.findByPrincipalAndOauthProvider(principal.getName(), oauthProvider.getProvider());
+    public TokenDTO getOauth2Token(Principal principal, TokenProvider tokenProvider) {
+        Iterable<TokenStore> allTokens = oauth2TokenH2Repository.findByPrincipalAndOauthProvider(principal.getName(), tokenProvider.getProvider());
 
-        for (Oauth2TokenStore store : allTokens) {
-            Oauth2TokenDTO oauth2TokenDTO = new Oauth2TokenDTO();
-            oauth2TokenDTO.setOauthProvider(oauthProvider);
-            oauth2TokenDTO.setAuthorizationCode(new AuthorizationCode(store.getAuthorizationCode()));
-            oauth2TokenDTO.setAccessToken(new BearerAccessToken(store.getAccessToken()));
+        for (TokenStore store : allTokens) {
+            TokenDTO tokenDTO = new TokenDTO();
+            tokenDTO.setTokenProvider(tokenProvider);
+            tokenDTO.setAuthorizationCode(new AuthorizationCode(store.getAuthorizationCode()));
+            tokenDTO.setAccessToken(new BearerAccessToken(store.getAccessToken()));
             if (store.getRefreshToken() != null) {
-                oauth2TokenDTO.setRefreshToken(new RefreshToken(store.getRefreshToken()));
+                tokenDTO.setRefreshToken(new RefreshToken(store.getRefreshToken()));
             }
-            return oauth2TokenDTO;
+            return tokenDTO;
         }
         return null;
     }
 
     @Override
-    public Boolean revokeOauth2Token(Principal principal, OauthProvider oauthProvider) {
-        oauth2TokenH2Repository.deleteByPrincipalAndOauthProvider(principal.getName(), oauthProvider.getProvider());
+    public Boolean revokeOauth2Token(Principal principal, Constants.TokenProvider tokenProvider) {
+        oauth2TokenH2Repository.deleteByPrincipalAndOauthProvider(principal.getName(), tokenProvider.getProvider());
         return true;
     }
 
     @Override
-    public Boolean alreadyAuthorized(Principal principal, OauthProvider provider) {
-        Iterator<Oauth2TokenStore> iterator = oauth2TokenH2Repository.findByPrincipalAndOauthProvider(principal.getName(), provider.getProvider()).iterator();
+    public Boolean alreadyAuthorized(Principal principal, Constants.TokenProvider provider) {
+        Iterator<TokenStore> iterator = oauth2TokenH2Repository.findByPrincipalAndOauthProvider(principal.getName(), provider.getProvider()).iterator();
 
         if (iterator.hasNext()) {
             return true;

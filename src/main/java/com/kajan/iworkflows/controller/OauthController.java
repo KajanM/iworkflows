@@ -1,9 +1,8 @@
 package com.kajan.iworkflows.controller;
 
 import com.kajan.iworkflows.service.OauthControllerService;
-import com.kajan.iworkflows.util.Constants;
-import com.kajan.iworkflows.util.Constants.OauthProvider;
-import com.kajan.iworkflows.view.OauthClient;
+import com.kajan.iworkflows.util.Constants.TokenProvider;
+import com.kajan.iworkflows.view.TokenClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ public class OauthController {
 
     private final String authorizationRequestBaseUri = "authorize/oauth2";
     private final String authorizationRevokeBaseUri = "/oauth2/revoke";
-    Set<OauthClient> oauthClients = new HashSet<>();
+    Set<TokenClient> tokenClients = new HashSet<>();
 
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
@@ -48,32 +47,32 @@ public class OauthController {
             clientRegistrations = (Iterable<ClientRegistration>) clientRegistrationRepository;
         }
 
-        OauthClient client;
+        TokenClient client;
 
         for (ClientRegistration registration : clientRegistrations) {
-            client = new OauthClient();
+            client = new TokenClient();
             client.setName(registration.getClientName());
             client.setRedirectUri(authorizationRequestBaseUri + "/" + registration.getRegistrationId());
             client.setRevokeUri(authorizationRevokeBaseUri + "/" + registration.getRegistrationId());
-            client.setAuthorized(!oauthControllerService.alreadyAuthorized(principal, OauthProvider.valueOf(registration.getClientName().toUpperCase())));
-            if (oauthClients.contains(client)) {
-                oauthClients.remove(client);
+            client.setAuthorized(!oauthControllerService.alreadyAuthorized(principal, TokenProvider.valueOf(registration.getClientName().toUpperCase())));
+            if (tokenClients.contains(client)) {
+                tokenClients.remove(client);
             }
-            oauthClients.add(client);
+            tokenClients.add(client);
         }
 
-        client = new OauthClient();
+        client = new TokenClient();
         client.setName("Moodle");
         client.setRedirectUri("/moodle/token");
         client.setRevokeUri(authorizationRevokeBaseUri + "/" + "moodle");
-        client.setAuthorized(!oauthControllerService.alreadyAuthorized(principal, OauthProvider.valueOf("MOODLE")));
+        client.setAuthorized(!oauthControllerService.alreadyAuthorized(principal, TokenProvider.valueOf("MOODLE")));
 
-        if (oauthClients.contains(client)) {
-            oauthClients.remove(client);
+        if (tokenClients.contains(client)) {
+            tokenClients.remove(client);
         }
-        oauthClients.add(client);
+        tokenClients.add(client);
 
-        model.addAttribute("clients", oauthClients);
+        model.addAttribute("clients", tokenClients);
 
         return "authorize";
     }
@@ -83,9 +82,9 @@ public class OauthController {
 
         logger.debug("hit /authorize/oauth2/" + registrationId + " end-point");
 
-        OauthProvider oauthProvider = OauthProvider.valueOf(registrationId.toUpperCase());
+        TokenProvider tokenProvider = TokenProvider.valueOf(registrationId.toUpperCase());
 
-        URI requestURI = oauthControllerService.getAuthorizationCodeRequestUri(oauthProvider);
+        URI requestURI = oauthControllerService.getAuthorizationCodeRequestUri(tokenProvider);
         return new ModelAndView("redirect:" + requestURI.toASCIIString());
     }
 
@@ -94,8 +93,8 @@ public class OauthController {
 
         logger.debug("hit /login/oauth2/code/" + registrationId + " end-point");
 
-        OauthProvider oauthProvider = Constants.OauthProvider.valueOf(registrationId.toUpperCase());
-        oauthControllerService.exchangeAuthorizationCodeForAccessToken(oauthProvider, httpServletRequest, principal);
+        TokenProvider tokenProvider = TokenProvider.valueOf(registrationId.toUpperCase());
+        oauthControllerService.exchangeAuthorizationCodeForAccessToken(tokenProvider, httpServletRequest, principal);
 
         redirectAttributes.addAttribute("notify", true);
         redirectAttributes.addAttribute("message", "Successfully connected with " + registrationId);
@@ -105,7 +104,7 @@ public class OauthController {
 
     @GetMapping("/oauth2/revoke/{registrationId}")
     public String revokeAuthorizationToken(@PathVariable String registrationId, Principal principal, RedirectAttributes redirectAttributes) {
-        Boolean isSuccess = oauthControllerService.revokeOauth2Token(principal, OauthProvider.valueOf(registrationId.toUpperCase()));
+        Boolean isSuccess = oauthControllerService.revokeOauth2Token(principal, TokenProvider.valueOf(registrationId.toUpperCase()));
         redirectAttributes.addAttribute("notify", isSuccess);
         redirectAttributes.addAttribute("message", "Successfully disconnected from " + registrationId);
         redirectAttributes.addAttribute("style", "success");
