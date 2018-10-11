@@ -1,6 +1,5 @@
 package com.kajan.iworkflows.controller;
 
-import com.kajan.iworkflows.dto.Oauth2TokenDTO;
 import com.kajan.iworkflows.service.OauthControllerService;
 import com.kajan.iworkflows.util.Constants;
 import com.kajan.iworkflows.util.Constants.OauthProvider;
@@ -63,6 +62,17 @@ public class OauthController {
             oauthClients.add(client);
         }
 
+        client = new OauthClient();
+        client.setName("Moodle");
+        client.setRedirectUri("/moodle/token");
+        client.setRevokeUri(authorizationRevokeBaseUri + "/" + "moodle");
+        client.setAuthorized(!oauthControllerService.alreadyAuthorized(principal, OauthProvider.valueOf("MOODLE")));
+
+        if (oauthClients.contains(client)) {
+            oauthClients.remove(client);
+        }
+        oauthClients.add(client);
+
         model.addAttribute("clients", oauthClients);
 
         return "authorize";
@@ -86,11 +96,6 @@ public class OauthController {
 
         OauthProvider oauthProvider = Constants.OauthProvider.valueOf(registrationId.toUpperCase());
         oauthControllerService.exchangeAuthorizationCodeForAccessToken(oauthProvider, httpServletRequest, principal);
-        Oauth2TokenDTO oauth2TokenDTO = oauthControllerService.getOauth2Tokens(principal, oauthProvider);
-        model.addAttribute("authorizationProvider", oauth2TokenDTO.getOauthProvider().getProvider());
-        model.addAttribute("authorizationCode", oauth2TokenDTO.getAuthorizationCode());
-        model.addAttribute("accessToken", oauth2TokenDTO.getAccessToken());
-        model.addAttribute("refreshToken", oauth2TokenDTO.getRefreshToken());
 
         redirectAttributes.addAttribute("notify", true);
         redirectAttributes.addAttribute("message", "Successfully connected with " + registrationId);

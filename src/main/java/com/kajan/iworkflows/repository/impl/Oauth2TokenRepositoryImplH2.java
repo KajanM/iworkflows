@@ -29,7 +29,9 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
     @Override
     public void setOauth2Token(Principal principal, Oauth2TokenDTO oauth2TokenDTO) {
         Oauth2TokenStore oauth2TokenStore = new Oauth2TokenStore(principal.getName(), oauth2TokenDTO.getOauthProvider().getProvider());
-        oauth2TokenStore.setAuthorizationCode(oauth2TokenDTO.getAuthorizationCode().getValue());
+        if (oauth2TokenDTO.getAuthorizationCode() != null) {
+            oauth2TokenStore.setAuthorizationCode(oauth2TokenDTO.getAuthorizationCode().getValue());
+        }
         oauth2TokenStore.setAccessToken(oauth2TokenDTO.getAccessToken().getValue());
         if (oauth2TokenDTO.getRefreshToken() != null) {
             oauth2TokenStore.setRefreshToken(oauth2TokenDTO.getRefreshToken().getValue());
