@@ -45,7 +45,7 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
 
     @Override
     public TokenDTO getOauth2Token(Principal principal, TokenProvider tokenProvider) {
-        Iterable<TokenStore> allTokens = oauth2TokenH2Repository.findByPrincipalAndOauthProvider(principal.getName(), tokenProvider.getProvider());
+        Iterable<TokenStore> allTokens = oauth2TokenH2Repository.findByPrincipalAndTokenProvider(principal.getName(), tokenProvider.getProvider());
 
         for (TokenStore store : allTokens) {
             TokenDTO tokenDTO = new TokenDTO();
@@ -62,13 +62,13 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
 
     @Override
     public Boolean revokeOauth2Token(Principal principal, Constants.TokenProvider tokenProvider) {
-        oauth2TokenH2Repository.deleteByPrincipalAndOauthProvider(principal.getName(), tokenProvider.getProvider());
+        oauth2TokenH2Repository.deleteByPrincipalAndTokenProvider(principal.getName(), tokenProvider.getProvider());
         return true;
     }
 
     @Override
     public Boolean alreadyAuthorized(Principal principal, Constants.TokenProvider provider) {
-        Iterator<TokenStore> iterator = oauth2TokenH2Repository.findByPrincipalAndOauthProvider(principal.getName(), provider.getProvider()).iterator();
+        Iterator<TokenStore> iterator = oauth2TokenH2Repository.findByPrincipalAndTokenProvider(principal.getName(), provider.getProvider()).iterator();
 
         if (iterator.hasNext()) {
             return true;
