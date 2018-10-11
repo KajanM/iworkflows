@@ -8,8 +8,8 @@ import javax.transaction.Transactional;
 public interface Oauth2TokenH2Repository extends CrudRepository<TokenStore, Long> {
 
     @Transactional
-    void deleteByPrincipalAndOauthProvider(String principal, String oauthProvider);
+    void deleteByPrincipalAndTokenProvider(String principal, String tokenProvider);
 
-    Iterable<TokenStore> findByPrincipalAndOauthProvider(String principal, String oauthProvider);
+    Iterable<TokenStore> findByPrincipalAndTokenProvider(String principal, String tokenProvider);
 }
 
