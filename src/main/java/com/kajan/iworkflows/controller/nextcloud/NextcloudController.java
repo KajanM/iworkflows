@@ -1,4 +1,4 @@
-package com.kajan.iworkflows.controller;
+package com.kajan.iworkflows.controller.nextcloud;
 
 import com.kajan.iworkflows.service.NextcloudService;
 import org.slf4j.Logger;
