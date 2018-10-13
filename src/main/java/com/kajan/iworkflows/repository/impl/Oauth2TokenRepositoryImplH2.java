@@ -50,7 +50,9 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
         for (TokenStore store : allTokens) {
             TokenDTO tokenDTO = new TokenDTO();
             tokenDTO.setTokenProvider(tokenProvider);
-            tokenDTO.setAuthorizationCode(new AuthorizationCode(store.getAuthorizationCode()));
+            if (store.getAuthorizationCode() != null) {
+                tokenDTO.setAuthorizationCode(new AuthorizationCode(store.getAuthorizationCode()));
+            }
             tokenDTO.setAccessToken(new BearerAccessToken(store.getAccessToken()));
             if (store.getRefreshToken() != null) {
                 tokenDTO.setRefreshToken(new RefreshToken(store.getRefreshToken()));

@@ -42,7 +42,6 @@ public class MoodleTokenController {
     @PostMapping(value = "/moodle/token",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String getMoodleWebServiceToken(@RequestParam("username") String username, @RequestParam("password") String password, Principal principal, Model model, RedirectAttributes redirectAttributes) {
-        logger.debug("Username: " + username + " Password: " + password);
         ResponseEntity<String> response = restTemplate.getForEntity("http://iworkflows.projects.mrt.ac.lk/moodle/login/token.php?username=" + username + "&password=" + password + "&service=moodle_mobile_app", String.class);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = null;
