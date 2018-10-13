@@ -18,18 +18,21 @@ public class NextcloudServiceImpl implements NextcloudService {
 
     private final Logger logger = LoggerFactory.getLogger(NextcloudServiceImpl.class);
 
+    private final String HEADER_OCS_API_REQUEST = "OCS-APIRequest";
+    private final String HEADER_VALUE_BEARER = "Bearer ";
+    private final String HEADER_VALUE_TRUE = "true";
+
     @Autowired
     private OauthTokenService oauthTokenService;
 
     @Override
     public HttpHeaders getNextcloudHeaders(Principal principal, Constants.TokenProvider tokenProvider) {
-        TokenDTO tokenDTO = oauthTokenService.getOauth2Tokens(principal, tokenProvider);
-        logger.debug("TokenDTO: " + tokenDTO);
+        TokenDTO tokenDTO = oauthTokenService.getToken(principal, tokenProvider);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("OCS-APIRequest", "true");
+        headers.add(HEADER_OCS_API_REQUEST, HEADER_VALUE_TRUE);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + tokenDTO.getAccessToken().getValue());
+        headers.add(HttpHeaders.AUTHORIZATION, HEADER_VALUE_BEARER + tokenDTO.getAccessToken().getValue());
         return headers;
     }
 }

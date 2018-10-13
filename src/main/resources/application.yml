@@ -7,22 +7,21 @@ spring:
   profiles:
     active: h2
 
-
   security:
     oauth2:
       client:
         registration:
           nextcloud:
-            client-id: h7P5r5KAqOorccQaHezH4j7Lui5koq982AIRDz4ynRRzwl00j70ygIl5QdapjPMV
-            client-secret: e6ZwqtkuxuKmh0Cl5mTH6s3YC8OltendKnO3e3Hej3gLdf7PntGOz1S3QEXRykaO
-            redirect-uri-template: "http://localhost:8080/login/oauth2/code/nextcloud"
+            client-id: SgKNEAYfvm9sisULlt5gUzedpoxg3zeXGiwZB4bhb4KLaW1b2Xb6GFzC0JRzjkBo
+            client-secret: aJlkrObURv0pZGrkcPRhBfeQxHjHwxrIicZp9KffXv03C81PO18I0lAnxO2qUwzj
+            redirect-uri-template: http://localhost:8080/token/code/nextcloud
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
           google:
             client-id: 1006906289665-gnqn7aq78n707c2glp580jf5lk26lbs1.apps.googleusercontent.com
             client-secret: FDfO-FBzTlFUT3k7r7WYubYk
-            redirect-uri-template: "http://localhost:8080/login/oauth2/code/google"
+            redirect-uri-template: http://localhost:8080/token/code/google
         provider:
           nextcloud:
             authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
@@ -31,6 +30,31 @@ spring:
   thymeleaf:
     cache: false
 
+moodle:
+  name: Moodle
+  redirect-uri: /moodle/token
+  uri:
+    root: http://iworkflows.projects.mrt.ac.lk/moodle
+    webservice: http://iworkflows.projects.mrt.ac.lk/moodle/webservice/rest/server.php
+    token: http://iworkflows.projects.mrt.ac.lk/moodle/login/token.php?username={username}&password={password}&service={ws-short-name}
+  wsshortname: moodle_mobile_app
+  wsfunction:
+    get-courses-by-field: core_course_get_courses_by_field
+    get-assignments: mod_assign_get_assignments
+
+nextcloud:
+  uri:
+    root: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/kajan
+    userinfo: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/{userid}
+    file: http://localhost:8090/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
+
+msg:
+  connect:
+    success: Successfully connected with {provider}
+    fail: Unable to connect to {provider}, please try again
+  disconnect:
+    success: Successfully disconnected from {provider}
+    fail: Unable to disconnect from {provider}, please try again
 ---
 spring:
   profiles: h2

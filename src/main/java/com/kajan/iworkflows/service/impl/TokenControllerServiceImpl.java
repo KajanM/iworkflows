@@ -1,8 +1,8 @@
 package com.kajan.iworkflows.service.impl;
 
 import com.kajan.iworkflows.dto.TokenDTO;
-import com.kajan.iworkflows.service.OauthControllerService;
 import com.kajan.iworkflows.service.OauthTokenService;
+import com.kajan.iworkflows.service.TokenControllerService;
 import com.kajan.iworkflows.util.Constants;
 import com.kajan.iworkflows.util.Constants.TokenProvider;
 import com.nimbusds.oauth2.sdk.*;
@@ -27,9 +27,9 @@ import java.net.URISyntaxException;
 import java.security.Principal;
 
 @Service
-public class OauthControllerServiceImpl implements OauthControllerService {
+public class TokenControllerServiceImpl implements TokenControllerService {
 
-    private final Logger logger = LoggerFactory.getLogger(OauthControllerServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(TokenControllerServiceImpl.class);
 
     @Autowired
     private OauthTokenService oauthTokenService;
@@ -162,12 +162,12 @@ public class OauthControllerServiceImpl implements OauthControllerService {
         tokenDTO.setRefreshToken(refreshToken);
         tokenDTO.setTokenProvider(registrationId);
 
-        oauthTokenService.setOauth2Tokens(principal, tokenDTO);
+        oauthTokenService.setToken(principal, tokenDTO);
     }
 
     @Override
-    public TokenDTO getOauth2Tokens(Principal principal, TokenProvider tokenProvider) {
-        return oauthTokenService.getOauth2Tokens(principal, tokenProvider);
+    public TokenDTO getToken(Principal principal, TokenProvider tokenProvider) {
+        return oauthTokenService.getToken(principal, tokenProvider);
     }
 
     private String buildRedirectUri(Constants.TokenProvider tokenProvider) {
@@ -179,12 +179,12 @@ public class OauthControllerServiceImpl implements OauthControllerService {
     }
 
     @Override
-    public Boolean alreadyAuthorized(Principal principal, TokenProvider provider) {
-        return oauthTokenService.alreadyAuthorized(principal, provider);
+    public Boolean isAlreadyAuthorized(Principal principal, TokenProvider provider) {
+        return oauthTokenService.isAlreadyAuthorized(principal, provider);
     }
 
     @Override
-    public Boolean revokeOauth2Token(Principal principal, Constants.TokenProvider provider) {
-        return oauthTokenService.revokeOauth2Token(principal, provider);
+    public Boolean revokeToken(Principal principal, Constants.TokenProvider provider) {
+        return oauthTokenService.revokeToken(principal, provider);
     }
 }

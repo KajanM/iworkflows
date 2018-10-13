@@ -1,9 +1,10 @@
 package com.kajan.iworkflows.controller.moodle;
 
-import com.kajan.iworkflows.service.OauthTokenService;
+import com.kajan.iworkflows.service.MoodleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,8 +19,6 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.kajan.iworkflows.util.Constants.TokenProvider.MOODLE;
-
 @Controller
 @RequestMapping("/moodle")
 public class MoodleAssignmentController {
@@ -27,21 +26,23 @@ public class MoodleAssignmentController {
     private final Logger logger = LoggerFactory.getLogger(MoodleAssignmentController.class);
 
     @Autowired
-    private OauthTokenService oauthTokenService;
-
-    @Autowired
     private RestTemplate restTemplate;
 
-    private String domainName = "http://iworkflows.projects.mrt.ac.lk/moodle/webservice/rest/server.php";
+    @Autowired
+    private MoodleService moodleService;
+
+    @Value("${moodle.wsfunction.get-courses-by-field}")
+    private String FUNCTION_GET_COURSES_BY_FIELD;
+
+    @Value("${moodle.wsfunction.get-assignments}")
+    private String FUNCTION_GET_ASSIGNMENTS;
+
 
     @GetMapping("/courses")
     @ResponseBody
     public String getCourseDetails(Principal principal) {
 
-        String functionName = "core_course_get_courses_by_field";
-
-        String wstoken = oauthTokenService.getOauth2Tokens(principal, MOODLE).getAccessToken().getValue();
-        String url = domainName + "?wstoken=" + wstoken + "&wsfunction=" + functionName;
+        String url = moodleService.buildUrl(principal, FUNCTION_GET_COURSES_BY_FIELD);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -52,5 +53,21 @@ public class MoodleAssignmentController {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
         return responseEntity.toString();
 
+    }
+
+    @GetMapping("/assignments")
+    @ResponseBody
+    public String getAssignementDetails(Principal principal) {
+
+        String url = moodleService.buildUrl(principal, FUNCTION_GET_ASSIGNMENTS);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map req_payload = new HashMap();
+
+        HttpEntity<?> request = new HttpEntity<>(req_payload, headers);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
+        return responseEntity.toString();
     }
 }

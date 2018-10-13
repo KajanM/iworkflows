@@ -4,19 +4,23 @@ import com.kajan.iworkflows.service.NextcloudService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
 
+import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_USERID;
 import static com.kajan.iworkflows.util.Constants.TokenProvider.NEXTCLOUD;
 
 @Controller
+@RequestMapping("/nextcloud")
 public class NextcloudController {
 
     private final Logger logger = LoggerFactory.getLogger(NextcloudController.class);
@@ -27,14 +31,15 @@ public class NextcloudController {
     @Autowired
     private NextcloudService nextcloudService;
 
+    @Value("${nextcloud.uri.userinfo}")
+    private String USER_INFOR_URI;
+
     @GetMapping("/nextcloud-user")
     @ResponseBody
     public String getNextcloudUserInfo(Principal principal) {
-        // TODO: get user id from LDAP
-        String userInfoUri = "http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/kajan";
 
-        HttpEntity<String> httpEntity = new HttpEntity<>("headers", nextcloudService.getNextcloudHeaders(principal, NEXTCLOUD));
-        ResponseEntity<String> responseEntity = restTemplate.exchange(userInfoUri, HttpMethod.GET, httpEntity, String.class);
+        HttpEntity<String> httpEntity = new HttpEntity<>("", nextcloudService.getNextcloudHeaders(principal, NEXTCLOUD));
+        ResponseEntity<String> responseEntity = restTemplate.exchange(USER_INFOR_URI.replace(PLACEHOLDER_USERID, principal.getName()), HttpMethod.GET, httpEntity, String.class);
         return responseEntity.toString();
     }
 

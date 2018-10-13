@@ -2,8 +2,8 @@ package com.kajan.iworkflows.repository.impl;
 
 import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.model.TokenStore;
-import com.kajan.iworkflows.repository.Oauth2TokenH2Repository;
-import com.kajan.iworkflows.repository.Oauth2TokenRepository;
+import com.kajan.iworkflows.repository.TokenH2Repository;
+import com.kajan.iworkflows.repository.TokenRepository;
 import com.kajan.iworkflows.util.Constants;
 import com.kajan.iworkflows.util.Constants.TokenProvider;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
@@ -20,15 +20,15 @@ import java.util.Iterator;
 
 @Repository
 @Profile("h2")
-public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
+public class TokenRepositoryImplH2 implements TokenRepository {
 
-    private final Logger logger = LoggerFactory.getLogger(Oauth2TokenRepositoryImplH2.class);
+    private final Logger logger = LoggerFactory.getLogger(TokenRepositoryImplH2.class);
 
     @Autowired
-    private Oauth2TokenH2Repository oauth2TokenH2Repository;
+    private TokenH2Repository tokenH2Repository;
 
     @Override
-    public void setOauth2Token(Principal principal, TokenDTO tokenDTO) {
+    public void setToken(Principal principal, TokenDTO tokenDTO) {
         TokenStore tokenStore = new TokenStore(principal.getName(), tokenDTO.getTokenProvider().getProvider());
         if (tokenDTO.getAuthorizationCode() != null) {
             tokenStore.setAuthorizationCode(tokenDTO.getAuthorizationCode().getValue());
@@ -40,12 +40,12 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
 
         logger.debug("storing oauth2 tokens in db " + tokenStore);
 
-        oauth2TokenH2Repository.save(tokenStore);
+        tokenH2Repository.save(tokenStore);
     }
 
     @Override
-    public TokenDTO getOauth2Token(Principal principal, TokenProvider tokenProvider) {
-        Iterable<TokenStore> allTokens = oauth2TokenH2Repository.findByPrincipalAndTokenProvider(principal.getName(), tokenProvider.getProvider());
+    public TokenDTO getToken(Principal principal, TokenProvider tokenProvider) {
+        Iterable<TokenStore> allTokens = tokenH2Repository.findByPrincipalAndTokenProvider(principal.getName(), tokenProvider.getProvider());
 
         for (TokenStore store : allTokens) {
             TokenDTO tokenDTO = new TokenDTO();
@@ -63,14 +63,15 @@ public class Oauth2TokenRepositoryImplH2 implements Oauth2TokenRepository {
     }
 
     @Override
-    public Boolean revokeOauth2Token(Principal principal, Constants.TokenProvider tokenProvider) {
-        oauth2TokenH2Repository.deleteByPrincipalAndTokenProvider(principal.getName(), tokenProvider.getProvider());
+    public Boolean revokeToken(Principal principal, Constants.TokenProvider tokenProvider) {
+        tokenH2Repository.deleteByPrincipalAndTokenProvider(principal.getName(), tokenProvider.getProvider());
+        logger.debug("Successfully revoked token for Principal: " + principal + " Provider: " + tokenProvider);
         return true;
     }
 
     @Override
-    public Boolean alreadyAuthorized(Principal principal, Constants.TokenProvider provider) {
-        Iterator<TokenStore> iterator = oauth2TokenH2Repository.findByPrincipalAndTokenProvider(principal.getName(), provider.getProvider()).iterator();
+    public Boolean isAlreadyAuthorized(Principal principal, Constants.TokenProvider provider) {
+        Iterator<TokenStore> iterator = tokenH2Repository.findByPrincipalAndTokenProvider(principal.getName(), provider.getProvider()).iterator();
 
         if (iterator.hasNext()) {
             return true;

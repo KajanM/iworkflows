@@ -5,7 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 
-public interface Oauth2TokenH2Repository extends CrudRepository<TokenStore, Long> {
+public interface TokenH2Repository extends CrudRepository<TokenStore, Long> {
 
     @Transactional
     void deleteByPrincipalAndTokenProvider(String principal, String tokenProvider);

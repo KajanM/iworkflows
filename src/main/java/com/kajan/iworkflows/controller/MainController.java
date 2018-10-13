@@ -19,16 +19,4 @@ public class MainController {
         return "index";
     }
 
-    //@GetMapping("/login")
-    //public String login() {
-    //    return "login";
-    //}
-
-    @GetMapping("user")
-    public String getUserPage(Principal principal, Model model) {
-        logger.debug("hit /user end-point");
-        model.addAttribute("name", principal.getName());
-        return "user";
-    }
-
 }
