@@ -35,7 +35,7 @@ moodle:
   redirect-uri: /moodle/token
   uri:
     root: http://iworkflows.projects.mrt.ac.lk/moodle
-    webservice: http://iworkflows.projects.mrt.ac.lk/moodle/webservice/rest/server.php
+    webservice: http://iworkflows.projects.mrt.ac.lk/moodle/webservice/rest/server.php?wstoken={wstoken}&wsfunction={wsfunction}&moodlewsrestformat=json
     token: http://iworkflows.projects.mrt.ac.lk/moodle/login/token.php?username={username}&password={password}&service={ws-short-name}
   wsshortname: moodle_mobile_app
   wsfunction:

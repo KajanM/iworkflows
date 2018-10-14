@@ -4,7 +4,8 @@ public class Constants {
     public static final String PLACEHOLDER_USERID = "{userid}";
     public static final String PLACEHOLDER_FILE_PATH = "{path-to-file}";
     public static final String PLACEHOLDER_PROVIDER = "{provider}";
-    public static final String PLACEHOLDER_MOODLE_WSSHORT_NAME = "{wsShortName}";
+    public static final String PLACEHOLDER_MOODLE_WSTOKEN = "{wstoken}";
+    public static final String PLACEHOLDER_MOODLE_WSFUNCTION = "{wsfunction}";
     public static final String PLACEHOLDER_USERNAME = "{username}";
     public static final String PLACEHOLDER_PASSWORD = "{password}";
 
