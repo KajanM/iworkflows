@@ -17,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import java.security.Principal;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_USERID;
-import static com.kajan.iworkflows.util.Constants.TokenProvider.NEXTCLOUD;
 
 @Controller
 @RequestMapping("/nextcloud")
@@ -38,7 +37,7 @@ public class NextcloudController {
     @ResponseBody
     public String getNextcloudUserInfo(Principal principal) {
 
-        HttpEntity<String> httpEntity = new HttpEntity<>("", nextcloudService.getNextcloudHeaders(principal, NEXTCLOUD));
+        HttpEntity<String> httpEntity = new HttpEntity<>("", nextcloudService.getNextcloudHeaders(principal));
         ResponseEntity<String> responseEntity = restTemplate.exchange(USER_INFOR_URI.replace(PLACEHOLDER_USERID, principal.getName()), HttpMethod.GET, httpEntity, String.class);
         return responseEntity.toString();
     }

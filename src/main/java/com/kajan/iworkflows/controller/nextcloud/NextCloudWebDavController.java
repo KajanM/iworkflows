@@ -18,7 +18,6 @@ import java.security.Principal;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_FILE_PATH;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_USERID;
-import static com.kajan.iworkflows.util.Constants.TokenProvider.NEXTCLOUD;
 
 @Controller
 @RequestMapping("/nextcloud")
@@ -42,7 +41,7 @@ public class NextCloudWebDavController {
     public String getWelcomeTxt(Principal principal) {
         String uri = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, principal.getName())
                 .replace(PLACEHOLDER_FILE_PATH, WELCOME_FILE_PATH);
-        HttpEntity<String> httpEntity = new HttpEntity<>("", nextcloudService.getNextcloudHeaders(principal, NEXTCLOUD));
+        HttpEntity<String> httpEntity = new HttpEntity<>("", nextcloudService.getNextcloudHeaders(principal));
         ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
         return responseEntity.toString();
     }

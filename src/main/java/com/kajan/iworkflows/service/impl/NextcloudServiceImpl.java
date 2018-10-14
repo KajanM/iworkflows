@@ -3,7 +3,6 @@ package com.kajan.iworkflows.service.impl;
 import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.service.NextcloudService;
 import com.kajan.iworkflows.service.OauthTokenService;
-import com.kajan.iworkflows.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+
+import static com.kajan.iworkflows.util.Constants.TokenProvider.NEXTCLOUD;
 
 @Service
 public class NextcloudServiceImpl implements NextcloudService {
@@ -26,8 +27,8 @@ public class NextcloudServiceImpl implements NextcloudService {
     private OauthTokenService oauthTokenService;
 
     @Override
-    public HttpHeaders getNextcloudHeaders(Principal principal, Constants.TokenProvider tokenProvider) {
-        TokenDTO tokenDTO = oauthTokenService.getToken(principal, tokenProvider);
+    public HttpHeaders getNextcloudHeaders(Principal principal) {
+        TokenDTO tokenDTO = oauthTokenService.getToken(principal, NEXTCLOUD);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HEADER_OCS_API_REQUEST, HEADER_VALUE_TRUE);
