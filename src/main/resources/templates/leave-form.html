@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Leave form</title>
+
+    <!--/*/ <th:block th:include="fragments/header.html :: header">
+        </th:block> /*/-->
+    <style>
+        .panel-heading {
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <!-- Navigation -->
+    <div th:replace="/fragments/navigation :: navbar"></div>
+
+    <!-- Page Content -->
+    <div id="page-wrapper">
+        <div class="container-fluid">
+            <!--<div class="col-lg-12">-->
+            <!--<h1 class="page-header">Leave Application Form</h1>-->
+            <!--</div>-->
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h1>University of Moratuwa</h1>
+                    <h3>Staff Leave Application Form</h3>
+                </div>
+                <div class="panel-body">
+                    <form role="form" id="leaveForm">
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="employeeID">Employee ID </label>
+                                    <input type="text" id="employeeID" class="form-control" placeholder="ID" required/>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="employeeName">Employee Name </label>
+                                    <input type="text" id="employeeName" class="form-control" placeholder="Name"
+                                           required/>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label for="faculty">Faculty</label>
+                                    <input type="text" id="faculty" class="form-control" placeholder="Faculty"
+                                           required/>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label for="department">Department</label>
+                                    <input type="text" id="department" class="form-control" placeholder="Department"/>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <label for="role">Role</label>
+                                    <input type="text" id="role" class="form-control" placeholder="Role" required/>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" class="form-control" placeholder="Email" required/>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label for="mobileNo">Mobile Number</label>
+                                    <input type="tel" id="mobileNo" class="form-control" placeholder="Mobile Number"
+                                           required/>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label for="telephoneNo">Telephone Number</label>
+                                    <input type="tel" id="telephoneNo" class="form-control"
+                                           placeholder="Telephone Number"/>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    <label for="reason">Reason for leave</label>
+                                    <select id="reason" class="form-control" required>
+                                        <option id="casual">Casual</option>
+                                        <option id="medical">Medical</option>
+                                        <option id="vacation">Vacation</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group">
+                                    <label for="startDate">Leave start date</label>
+                                    <input type="date" id="startDate" name="startDate" class="form-control" required/>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group">
+                                    <label for="endDate">Leave end Date</label>
+                                    <input type="date" id="endDate" name="endDate" class="form-control"
+                                           onclick="validateEndDate()" required/>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="form-group">
+                                    <label for="files">Relevant Documents</label>
+                                    <input type="file" id="files" multiple/>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label for="takenLeaves">Already Taken leave details</label>
+                                    <table id="takenLeaves" class="table table-hover">
+
+                                        <tr>
+                                            <th>Casual</th>
+                                            <th>Medical</th>
+                                            <th>Vacation</th>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="text" id="takenCasual" class="form-control"/></td>
+                                            <td><input type="text" id="takenMedical" class="form-control"/></td>
+                                            <td><input type="text" id="takenVacation" class="form-control"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                        <button type="reset" class="btn btn-danger">Reset</button>
+                        <th:block th:replace="/fragments/scripts :: form-scripts"/>
+                    </form>
+                </div>
+            </div>
+
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- /#page-wrapper -->
+
+</div>
+<!-- /#wrapper -->
+</div>
+<!--Post Scripts-->
+<th:block th:replace="/fragments/scripts :: footer-scripts"/>
+
+<!--Push notifications-->
+<th:block th:replace="/fragments/notify :: notify-scripts"></th:block>
+
+</body>
+
+</html>
