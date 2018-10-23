@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.controller.nextcloud;
 
+import com.kajan.iworkflows.exception.UnauthorizedException;
 import com.kajan.iworkflows.service.NextcloudService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
@@ -38,11 +41,17 @@ public class NextCloudWebDavController {
 
     @GetMapping("/files")
     @ResponseBody
-    public String getWelcomeTxt(Principal principal) {
+    public ResponseEntity<String> getWelcomeTxt(Principal principal) {
         String uri = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, principal.getName())
                 .replace(PLACEHOLDER_FILE_PATH, WELCOME_FILE_PATH);
         HttpEntity<String> httpEntity = new HttpEntity<>("", nextcloudService.getNextcloudHeaders(principal));
-        ResponseEntity<String> responseEntity = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
-        return responseEntity.toString();
+        ResponseEntity<String> responseEntity = null;
+        try {
+            responseEntity = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
+        } catch (RestClientException e) {
+            throw new UnauthorizedException();
+        }
+
+        return responseEntity;
     }
 }
