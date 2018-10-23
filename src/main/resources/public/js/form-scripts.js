@@ -24,7 +24,7 @@ function findDate(daysFrom, startingDate) {
 // start date min is currentDate
 document.getElementById("startDate").setAttribute("min", findDate(0, 0));
 
-function validateEndDate() {
+function restrictEndDate() {
     var startingDate = document.getElementById("startDate").value;
     console.log(startingDate);
     document.getElementById("endDate").setAttribute("min", findDate(0, startingDate));
