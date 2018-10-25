@@ -21,7 +21,7 @@
 <div id="wrapper">
 
     <!-- Navigation -->
-    <div th:replace="/fragments/navigation :: navbar"></div>
+    <div th:replace="fragments/navigation :: navbar"></div>
 
     <!-- Page Content -->
     <div id="page-wrapper">
@@ -41,10 +41,10 @@
 <!-- /#wrapper -->
 </div>
 <!--Post Scripts-->
-<th:block th:replace="/fragments/scripts :: footer-scripts"/>
+<th:block th:replace="fragments/scripts :: footer-scripts"/>
 
 <!--Push notifications-->
-<th:block th:replace="/fragments/notify :: notify-scripts"></th:block>
+<th:block th:replace="fragments/notify :: notify-scripts"></th:block>
 
 </body>
 

@@ -20,7 +20,7 @@
 
 <div id="wrapper">
 
-    <div th:replace="/fragments/navigation :: navbar"></div>
+    <div th:replace="fragments/navigation :: navbar"></div>
 
     <div id="page-wrapper">
         <h1 th:text="${name}">name</h1>
@@ -607,7 +607,7 @@
 </div>
 <!-- /#wrapper -->
 
-<th:block th:replace="/fragments/scripts :: footer-scripts"/>
+<th:block th:replace="fragments/scripts :: footer-scripts"/>
 
 <!-- Morris Charts JavaScript -->
 <script src="../vendor/raphael/raphael.min.js"></script>

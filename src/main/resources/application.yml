@@ -5,7 +5,7 @@ logging:
 
 spring:
   profiles:
-    active: h2
+    active: h2, server
 
   security:
     oauth2:
@@ -44,7 +44,7 @@ moodle:
 
 nextcloud:
   uri:
-    root: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/kajan
+    root: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/{userid}
     userinfo: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/{userid}
     file: http://localhost:8090/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
 
@@ -84,3 +84,31 @@ spring:
       ldif: classpath:test-server.ldif
       port: 8389
       url: ldap://localhost:8389/
+
+---
+spring:
+  profiles: server
+
+  security:
+    oauth2:
+      client:
+        registration:
+          nextcloud:
+            client-id: Bcwh8FjxJdrPfMH92VWDDOP74RaZjCCjqy32nhI5HG7pJC1UByL7l0ZL0eAFRDfr
+            client-secret: bt5b7s5J9HiKJne7hBKhhZvjnyXp3iWpJj1kkPuBje4S9ydtlle7g2ZI8bruu1Dg
+            redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:8080/token/code/nextcloud
+            authorization-grant-type: authorization_code
+            client-name: NextCloud
+            scope: read, write
+
+        provider:
+          nextcloud:
+            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
+            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+
+nextcloud:
+  uri:
+    root: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
+    userinfo: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
+    file: http://iworkflows.projects.mrt.ac.lk/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
+

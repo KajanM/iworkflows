@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,13 +41,15 @@ public class NextCloudWebDavController {
     @GetMapping("/files")
     @ResponseBody
     public ResponseEntity<String> getWelcomeTxt(Principal principal) {
-        String uri = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, principal.getName())
+        String uri = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, principal.getName().toLowerCase())
                 .replace(PLACEHOLDER_FILE_PATH, WELCOME_FILE_PATH);
         HttpEntity<String> httpEntity = new HttpEntity<>("", nextcloudService.getNextcloudHeaders(principal));
+        logger.info("Making request to {} to download the file with headers {}", uri, httpEntity);
         ResponseEntity<String> responseEntity = null;
         try {
             responseEntity = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
         } catch (RestClientException e) {
+            logger.error("Error occured while trying to download a file from NextCloud", e);
             throw new UnauthorizedException();
         }
 
