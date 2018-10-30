@@ -36,6 +36,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-rest")
     implementation('org.springframework.boot:spring-boot-starter-security')
     implementation('org.springframework.boot:spring-boot-starter-web')
+    compile("org.springframework.boot:spring-boot-starter-actuator")
     compile 'com.nimbusds:oauth2-oidc-sdk:6.0'
     compile('org.springframework.security:spring-security-oauth2-client')
     compile('org.springframework.security:spring-security-oauth2-core')
