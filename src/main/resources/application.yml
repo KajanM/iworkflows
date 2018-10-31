@@ -1,7 +1,7 @@
 logging:
   level:
     com.kajan: DEBUG
-#    org.springframework.security: DEBUG
+    org.springframework.security: DEBUG
 
 spring:
   profiles:
@@ -26,9 +26,6 @@ spring:
           nextcloud:
             authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
             token-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/api/v1/token
-
-  thymeleaf:
-    cache: false
 
 moodle:
   name: Moodle
