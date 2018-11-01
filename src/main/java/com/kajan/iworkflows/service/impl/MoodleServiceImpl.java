@@ -1,29 +1,71 @@
 package com.kajan.iworkflows.service.impl;
 
+import com.kajan.iworkflows.service.MoodleService;
 import com.kajan.iworkflows.service.OauthTokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_MOODLE_WSFUNCTION;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_MOODLE_WSTOKEN;
 import static com.kajan.iworkflows.util.Constants.TokenProvider.MOODLE;
 
 @Service
-public class MoodleServiceImpl implements com.kajan.iworkflows.service.MoodleService {
+@Slf4j
+public class MoodleServiceImpl implements MoodleService {
 
-    @Value("${moodle.uri.webservice}")
-    private String webserviceUri;
+    private final OauthTokenService oauthTokenService;
+    private final RestTemplate restTemplate;
+
+    private final String webserviceUri;
 
     @Autowired
-    private OauthTokenService oauthTokenService;
+    public MoodleServiceImpl(@Value("${moodle.uri.webservice}") String webserviceUri,
+                             OauthTokenService oauthTokenService,
+                             RestTemplate restTemplate) {
+        this.webserviceUri = webserviceUri;
+        this.oauthTokenService = oauthTokenService;
+        this.restTemplate = restTemplate;
+    }
+
+    private String buildUrl(Principal principal, String wsfunction) {
+        String wstoken = oauthTokenService.getToken(principal, MOODLE).getAccessToken().getValue();
+        String uri = webserviceUri.replace(PLACEHOLDER_MOODLE_WSTOKEN, wstoken)
+                .replace(PLACEHOLDER_MOODLE_WSFUNCTION, wsfunction);
+        log.debug("BuiltURL: {}", uri);
+        return uri;
+    }
 
     @Override
-    public String buildUrl(Principal principal, String wsfunction) {
-        String wstoken = oauthTokenService.getToken(principal, MOODLE).getAccessToken().getValue();
-        return webserviceUri.replace(PLACEHOLDER_MOODLE_WSTOKEN, wstoken)
-                .replace(PLACEHOLDER_MOODLE_WSFUNCTION, wsfunction);
+    public <T> ResponseEntity<T> executeWsFunction(String wsFunctionName, HttpMethod httpMethod, Class<T> responseClass, Principal principal) {
+        String url = this.buildUrl(principal, wsFunctionName);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map req_payload = new HashMap();
+
+        HttpEntity<?> request = new HttpEntity<>(req_payload, headers);
+        ResponseEntity<T> responseEntity;
+
+        switch (httpMethod) {
+            case POST:
+                responseEntity = restTemplate.postForEntity(url, request, responseClass);
+                break;
+            case GET:
+                responseEntity = restTemplate.getForEntity(url, responseClass);
+                break;
+            default:
+                throw new UnsupportedOperationException("sending request using " + httpMethod + " is not supported yet");
+        }
+        log.debug("Response: {}", responseEntity);
+        return responseEntity;
     }
 }
