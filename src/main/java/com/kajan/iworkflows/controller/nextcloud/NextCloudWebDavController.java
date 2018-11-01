@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,7 +22,7 @@ import java.security.Principal;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_FILE_PATH;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_USERID;
 
-@Controller
+@RestController
 @RequestMapping("/nextcloud")
 public class NextCloudWebDavController {
 
@@ -39,7 +40,6 @@ public class NextCloudWebDavController {
     private String FILE_ROOT_URI_TEMPLATE;
 
     @GetMapping("/files")
-    @ResponseBody
     public ResponseEntity<String> getWelcomeTxt(Principal principal) {
         String uri = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, principal.getName().toLowerCase())
                 .replace(PLACEHOLDER_FILE_PATH, WELCOME_FILE_PATH);
