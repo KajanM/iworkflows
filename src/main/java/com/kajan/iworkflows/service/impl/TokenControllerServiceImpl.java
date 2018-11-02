@@ -81,13 +81,13 @@ public class TokenControllerServiceImpl implements TokenControllerService {
     }
 
     @Override
-    public void exchangeAuthorizationCodeForAccessToken(Constants.TokenProvider registrationId, HttpServletRequest httpServletRequest, Principal principal) {
+    public void exchangeAuthorizationCodeForAccessToken(Constants.TokenProvider registrationId, String queryParams, Principal principal) {
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId.getProvider());
 
         // Parse the authorisation response from the callback URI
         AuthorizationResponse authorizationResponse = null;
         try {
-            authorizationResponse = AuthorizationResponse.parse(new URI(buildRedirectUri(registrationId) + "?" + httpServletRequest.getQueryString()));
+            authorizationResponse = AuthorizationResponse.parse(new URI(buildRedirectUri(registrationId) + queryParams));
         } catch (ParseException e) {
             logger.error("Unable to parse authorization code response from server", e);
         } catch (URISyntaxException e) {

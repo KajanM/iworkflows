@@ -11,7 +11,7 @@ import java.security.Principal;
 public interface TokenControllerService {
     URI getAuthorizationCodeRequestUri(Constants.TokenProvider tokenProvider);
 
-    void exchangeAuthorizationCodeForAccessToken(Constants.TokenProvider registrationId, HttpServletRequest httpServletRequest, Principal principal);
+    void exchangeAuthorizationCodeForAccessToken(Constants.TokenProvider registrationId, String queryParams, Principal principal);
 
     TokenDTO getToken(Principal principal, TokenProvider tokenProvider);
 

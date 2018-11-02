@@ -4,31 +4,27 @@ import com.kajan.iworkflows.exception.NoSuchClientRegistrationException;
 import com.kajan.iworkflows.service.TokenControllerService;
 import com.kajan.iworkflows.util.Constants.*;
 import com.kajan.iworkflows.view.TokenClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ResolvableType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static com.kajan.iworkflows.util.Constants.*;
 
 @RestController
-@RequestMapping("/token")
+@RequestMapping("api/v1/token")
+@Slf4j
 public class TokenController {
-
-    private static final Logger logger = LoggerFactory.getLogger(TokenController.class);
 
     private final String authorizationRequestUriTemplate = "authorize/{provider}";
     private final String authorizationRevokeUriTemplate = "/token/revoke/{provider}";
@@ -62,8 +58,8 @@ public class TokenController {
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 
-    @GetMapping("/authorize")
-    public Collection<TokenClient> getAuthorizationPage(Principal principal) {
+    @GetMapping("/providers")
+    public Collection<TokenClient> getTokenProviders(Principal principal) {
         Iterable<ClientRegistration> clientRegistrations = null;
         ResolvableType type = ResolvableType.forInstance(clientRegistrationRepository)
                 .as(Iterable.class);
@@ -82,7 +78,7 @@ public class TokenController {
             client.setName(registration.getClientName());
             client.setRedirectUri(authorizationRedirectUri);
             client.setRevokeUri(authorizationRevokeUri);
-            client.setAuthorized(!tokenControllerService.isAlreadyAuthorized(principal, TokenProvider.valueOf(registration.getClientName().toUpperCase())));
+            client.setAuthorized(tokenControllerService.isAlreadyAuthorized(principal, TokenProvider.valueOf(registration.getClientName().toUpperCase())));
             if (tokenClients.contains(client)) {
                 tokenClients.remove(client);
             }
@@ -104,9 +100,9 @@ public class TokenController {
     }
 
     @RequestMapping("/authorize/{registrationId}")
-    public String redirectToNextCloudForAuthorization(@PathVariable String registrationId) {
+    public Map<String, String> getRedirectUriToGetAuthorizationCode(@PathVariable String registrationId) {
 
-        logger.debug("hit /authorize/oauth2/" + registrationId + " end-point");
+        log.debug("hit /authorize/oauth2/" + registrationId + " end-point");
 
         TokenProvider tokenProvider;
         try {
@@ -116,19 +112,21 @@ public class TokenController {
         }
 
         URI requestURI = tokenControllerService.getAuthorizationCodeRequestUri(tokenProvider);
-        return requestURI.toASCIIString();
+        Map<String, String> data = new HashMap<>();
+        data.put("redirect_uri", requestURI.toASCIIString());
+        return data;
     }
 
-    @RequestMapping("/code/{registrationId}")
-    public String getNextcloudAccessToken(@PathVariable String registrationId, HttpServletRequest httpServletRequest, Principal principal, Model model, RedirectAttributes redirectAttributes) {
+    @PostMapping("/code")
+    public ResponseEntity<?> getAccessToken(@RequestBody Map<String, Object> payload, Principal principal) {
+        log.debug("Payload received: {}", payload);
+        String providerId = ((String) payload.get("provider"));
+        String queryParams = ((String) payload.get("query"));
 
-        TokenProvider tokenProvider = TokenProvider.valueOf(registrationId.toUpperCase());
-        tokenControllerService.exchangeAuthorizationCodeForAccessToken(tokenProvider, httpServletRequest, principal);
+        TokenProvider tokenProvider = TokenProvider.valueOf(providerId.toUpperCase());
+        tokenControllerService.exchangeAuthorizationCodeForAccessToken(tokenProvider, queryParams, principal);
 
-        redirectAttributes.addAttribute(DO_NOTIFY_KEY, true);
-        redirectAttributes.addAttribute(MESSAGE_KEY, CONNECT_SUCCESS_TEMPLATE.replace(PLACEHOLDER_PROVIDER, registrationId));
-        redirectAttributes.addAttribute(STYLE_KEY, STYLE_SUCCESS);
-        return "redirect:/token/authorize";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/revoke/{registrationId}")
