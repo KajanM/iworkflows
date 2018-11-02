@@ -1,7 +1,10 @@
 package com.kajan.iworkflows.service;
 
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+
 import java.security.Principal;
 
 public interface MoodleService {
-    String buildUrl(Principal principal, String wsfunction);
+    <T> ResponseEntity<T> executeWsFunction(String wsFunctionName, HttpMethod httpMethod, Class<T> responseClass, Principal principal);
 }
