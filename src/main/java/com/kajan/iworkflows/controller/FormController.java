@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/forms")
+@RequestMapping("/api/v1/forms")
 public class FormController {
 
     private final DummyUserStoreServiceImpl storeService;

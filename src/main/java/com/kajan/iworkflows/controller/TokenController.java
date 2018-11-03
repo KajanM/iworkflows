@@ -34,8 +34,6 @@ public class TokenController {
 
     private final String MOODLE_NAME;
     private final String MOODLE_REDIRECT_URI;
-    private final String CONNECT_SUCCESS_TEMPLATE;
-    private final String CONNECT_FAIL_TEMPLATE;
     private final String DISCONNECT_SUCCESS_TEMPLATE;
     private final String DISCONNECT_FAIL_TEMPLATE;
 
@@ -44,15 +42,11 @@ public class TokenController {
     @Autowired
     public TokenController(TokenControllerService tokenControllerService, @Value("${moodle.name}") String moodle_name,
                            @Value("${moodle.redirect-uri}") String moodle_redirect_uri,
-                           @Value("${msg.connect.success}") String connect_success_template,
-                           @Value("${msg.connect.fail}") String connect_fail_template,
                            @Value("${msg.disconnect.success}") String disconnect_success_template,
                            @Value("${msg.disconnect.fail}") String disconnect_fail_template, ClientRegistrationRepository clientRegistrationRepository) {
         this.tokenControllerService = tokenControllerService;
         MOODLE_NAME = moodle_name;
         MOODLE_REDIRECT_URI = moodle_redirect_uri;
-        CONNECT_SUCCESS_TEMPLATE = connect_success_template;
-        CONNECT_FAIL_TEMPLATE = connect_fail_template;
         DISCONNECT_SUCCESS_TEMPLATE = disconnect_success_template;
         DISCONNECT_FAIL_TEMPLATE = disconnect_fail_template;
         this.clientRegistrationRepository = clientRegistrationRepository;
@@ -129,19 +123,13 @@ public class TokenController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/revoke/{registrationId}")
-    public String revokeAuthorizationToken(@PathVariable String registrationId, Principal principal, RedirectAttributes redirectAttributes) {
+    @DeleteMapping("/revoke/{registrationId}")
+    public ResponseEntity<?> revokeAuthorizationToken(@PathVariable String registrationId, Principal principal, RedirectAttributes redirectAttributes) {
         Boolean isSuccess = tokenControllerService.revokeToken(principal, TokenProvider.valueOf(registrationId.toUpperCase()));
-        redirectAttributes.addAttribute(DO_NOTIFY_KEY, true);
-        redirectAttributes.addAttribute(MESSAGE_KEY, DISCONNECT_SUCCESS_TEMPLATE.replace(PLACEHOLDER_PROVIDER, registrationId));
-        redirectAttributes.addAttribute(STYLE_KEY, STYLE_SUCCESS);
 
         if (isSuccess) {
-            return "redirect:/token/authorize";
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        redirectAttributes.addAttribute(MESSAGE_KEY, DISCONNECT_FAIL_TEMPLATE.replace(PLACEHOLDER_PROVIDER, registrationId));
-        redirectAttributes.addAttribute(STYLE_KEY, STYLE_ERROR);
-
-        return "redirect:/token/authorize";
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

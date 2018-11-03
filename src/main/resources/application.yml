@@ -5,16 +5,16 @@ logging:
 
 spring:
   profiles:
-    active: h2, angular
+    active: h2
 
   security:
     oauth2:
       client:
         registration:
           nextcloud:
-            client-id: SgKNEAYfvm9sisULlt5gUzedpoxg3zeXGiwZB4bhb4KLaW1b2Xb6GFzC0JRzjkBo
-            client-secret: aJlkrObURv0pZGrkcPRhBfeQxHjHwxrIicZp9KffXv03C81PO18I0lAnxO2qUwzj
-            redirect-uri-template: http://localhost:8080/token/code/nextcloud
+            client-id: 7OiShZdlpyzvZYgUZ3gPt8aveCyWGh46715CBqeqfGmlAHGf4skyglgZ9zx6TF3p
+            client-secret: 07SxAA19BWzRBr65GGjsqcsXrzBeAA9n7ArfwkLAkddKaZCxhrAK9ERmdn93Uyil
+            redirect-uri-template: http://localhost:4200/connect/nextcloud
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
@@ -24,8 +24,8 @@ spring:
             redirect-uri-template: http://localhost:8080/token/code/google
         provider:
           nextcloud:
-            authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
-            token-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/api/v1/token
+            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
+            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
 
 moodle:
   name: Moodle
