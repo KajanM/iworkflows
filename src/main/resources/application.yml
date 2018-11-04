@@ -3,6 +3,15 @@ logging:
     com.kajan: DEBUG
     org.springframework.security: DEBUG
 
+camunda.bpm:
+  admin-user:
+    id: admin
+    password: admin
+    firstName: Admin
+  filter:
+    create: All tasks
+
+
 spring:
   profiles:
     active: h2
@@ -52,6 +61,7 @@ msg:
   disconnect:
     success: Successfully disconnected from {provider}
     fail: Unable to disconnect from {provider}, please try again
+
 ---
 spring:
   profiles: h2
