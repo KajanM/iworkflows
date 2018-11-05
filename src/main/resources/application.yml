@@ -2,6 +2,8 @@ logging:
   level:
     com.kajan: DEBUG
     org.springframework.security: DEBUG
+    org.springframework.ldap: DEBUG
+    org.camunda.bpm.springboot: DEBUG
 
 camunda.bpm:
   admin-user:
@@ -84,13 +86,20 @@ spring:
 ---
 spring:
   profiles: ldap
+#
+#  ldap:
+#    base:
 
-  ldap:
-    embedded:
-      base-dn: dc=springframework,dc=org
-      ldif: classpath:test-server.ldif
-      port: 8389
-      url: ldap://localhost:8389/
+#  ldap:
+##    embedded:
+##      base-dn: dc=springframework,dc=org
+###      ldif: classpath:test-server.ldif
+##      port: 389
+##      url: ldap://iworkflows.projects.mrt.ac.lk:389
+#    base
+#    username: admin
+#    password: 1234
+#    urls: ldap://iworkflows.projects.mrt.ac.lk:389
 
 ---
 spring:

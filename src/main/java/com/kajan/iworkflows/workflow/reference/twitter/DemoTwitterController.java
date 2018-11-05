@@ -1,9 +1,8 @@
 package com.kajan.iworkflows.workflow.reference.twitter;
 
+import com.kajan.iworkflows.model.CamundaTask;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.variable.Variables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,19 +10,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @RestController
 @RequestMapping("demo/twitter")
 @Slf4j
 public class DemoTwitterController {
 
-    @Autowired
     private ProcessEngine camunda;
 
     @PostMapping
     @RequestMapping("/start")
-    public void startTwitterProcess() {
+    public void startTwitterProcess(Principal principal) {
         log.debug("starting....................");
         camunda.getRuntimeService().startProcessInstanceByKey(
                 TwitterProcessConstants.PROCESS_ID,
@@ -33,24 +34,31 @@ public class DemoTwitterController {
         );
     }
 
+    /**
+     * Sample code to retrieve tasks without using camunda-api
+     * Can use this method if need more control
+     *
+     * @param principal
+     * @return
+     */
     @GetMapping
     @RequestMapping("/tasks")
-    public List<Task> getTasks() {
-        return camunda.getTaskService().createTaskQuery()
-                .list();
+    public List<CamundaTask> getTasks(Principal principal) {
+        List<CamundaTask> tasks = new ArrayList<>();
+        camunda.getTaskService()
+                .createTaskQuery().list().stream()
+                .forEach(task -> {
+                    CamundaTask camundaTask = new CamundaTask();
+                    camundaTask.setId(task.getId());
+                    // TODO: set other parameters if necessary
+                    tasks.add(camundaTask);
+                });
+        return tasks;
     }
 
-    /**
-     * we need a method returning the {@link ProcessInstance} to allow for easier tests,
-     * that's why I separated the REST method (without return) from the actual implementaion (with return value)
-     */
-//    public ProcessInstance placeOrder(String orderId, int amount) {
-//        return camunda.getRuntimeService().startProcessInstanceByKey(//
-//                ProcessConstants.PROCESS_KEY_order, //
-//                Variables //
-//                        .putValue(ProcessConstants.VAR_NAME_orderId, orderId) //
-//                        .putValue(ProcessConstants.VAR_NAME_amount, amount));
-//    }
-
+    @Autowired
+    public void setCamunda(ProcessEngine camunda) {
+        this.camunda = camunda;
+    }
 
 }

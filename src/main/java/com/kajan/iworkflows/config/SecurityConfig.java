@@ -20,10 +20,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login", "/register").permitAll()
-                .anyRequest().authenticated();
-//                .and().csrf()
-//                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        // TODO: turn CSRF protection on
+                .anyRequest().authenticated()
+                .and().csrf().disable();
+        //.and().csrf()
+        //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        // TODO: Kajan, turn CSRF protection on
     }
 
     @Override
@@ -48,18 +49,48 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    // TODO: Ramya, configure LDAP authntication
     //@Override
-    //@Profile("ldap")
     //public void configure(AuthenticationManagerBuilder auth) throws Exception {
     //    auth
     //            .ldapAuthentication()
-    //            .userDnPatterns("uid={0},ou=people")
+    //            .userDnPatterns("cn={0}")
+    //            .contextSource()
+    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
+    //            .managerDn("cn=kajan,ou=users,dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
+    //            .managerPassword("1234")
+    //            .and()
+    //            .passwordCompare();
+    //            .passwordAttribute("userPassword");
+    //    auth.
+    //            ldapAuthentication()
+    //            .contextSource()
+    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
+    //            .managerDn("cn=kajan,ou=users,dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
+    //            .managerPassword("kajan")
+    //            .and()
+    //            .passwordEncoder(new LdapShaPasswordEncoder())
+    //            .userDnPatterns("cn={0},ou=users");
+    //    auth
+    //            .ldapAuthentication()
+    //            .userDnPatterns("cn={0},ou=users")
     //            .groupSearchBase("ou=groups")
     //            .contextSource()
-    //            .url("ldap://localhost:8389/dc=springframework,dc=org")
+    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
+    //            .and()
+    //            .passwordCompare()
+    //            .passwordAttribute("userPassword");
+    //
+    //    auth
+    //            .ldapAuthentication()
+    //            .userDnPatterns("cn={0},ou=users")
+    //            .groupSearchBase("ou=users")
+    //            .contextSource()
+    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
     //            .and()
     //            .passwordCompare()
     //            .passwordEncoder(new LdapShaPasswordEncoder())
     //            .passwordAttribute("userPassword");
     //}
+
 }
