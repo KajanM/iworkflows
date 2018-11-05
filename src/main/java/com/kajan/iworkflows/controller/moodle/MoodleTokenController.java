@@ -9,16 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -26,7 +21,7 @@ import java.security.Principal;
 import static com.kajan.iworkflows.util.Constants.*;
 import static com.kajan.iworkflows.util.Constants.TokenProvider.MOODLE;
 
-@Controller
+@RestController
 @RequestMapping("moodle/token")
 public class MoodleTokenController {
 
@@ -44,11 +39,14 @@ public class MoodleTokenController {
     @Value("${moodle.name}")
     private String MOODLE_NAME;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final OauthTokenService oauthTokenService;
 
     @Autowired
-    private OauthTokenService oauthTokenService;
+    public MoodleTokenController(RestTemplate restTemplate, OauthTokenService oauthTokenService) {
+        this.restTemplate = restTemplate;
+        this.oauthTokenService = oauthTokenService;
+    }
 
     @GetMapping
     public String getLoginPageForMoodle() {
@@ -56,7 +54,7 @@ public class MoodleTokenController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public String getMoodleWebServiceToken(@RequestParam(USERNAME_KEY) String username, @RequestParam(PASSWORD_KEY) String password, Principal principal, Model model, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<?> getMoodleWebServiceToken(@RequestParam(USERNAME_KEY) String username, @RequestParam(PASSWORD_KEY) String password, Principal principal) {
         ResponseEntity<String> response = restTemplate.getForEntity(TOKEN_URI_TEMPLATE, String.class, username, password, WS_SHORT_NAME);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = null;
@@ -64,10 +62,10 @@ public class MoodleTokenController {
             root = mapper.readTree(response.getBody());
         } catch (IOException e) {
             logger.error("Unable to parse the response from moodle", e);
-            model.addAttribute(ERROR_KEY, root.get(ERROR_KEY));
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (root.hasNonNull(ERROR_KEY)) {
-            model.addAttribute(ERROR_KEY, root.get(ERROR_KEY));
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
         if (root.hasNonNull(TOKEN_KEY)) {
@@ -75,12 +73,9 @@ public class MoodleTokenController {
             tokenDTO.setAccessToken(new TypelessAccessToken(root.get(TOKEN_KEY).textValue()));
             tokenDTO.setTokenProvider(MOODLE);
             oauthTokenService.setToken(principal, tokenDTO);
-            redirectAttributes.addAttribute(DO_NOTIFY_KEY, true);
-            redirectAttributes.addAttribute(MESSAGE_KEY, CONNECT_SUCCESS_TEMPLATE.replace(PLACEHOLDER_PROVIDER, MOODLE_NAME));
-            redirectAttributes.addAttribute(STYLE_KEY, STYLE_SUCCESS);
-            return "redirect:/token/authorize";
+            return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        return "moodle-login";
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
