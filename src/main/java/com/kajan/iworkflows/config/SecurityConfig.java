@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -21,76 +22,41 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login", "/register").permitAll()
                 .anyRequest().authenticated()
-                .and().csrf().disable();
-        //.and().csrf()
-        //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                .and().csrf()
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
         // TODO: Kajan, turn CSRF protection on
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .passwordEncoder(passwordEncoder())
-                .withUser("kajan.14@cse.mrt.ac.lk")
-                .password(passwordEncoder().encode("kajan"))
-                .roles("USER")
-                .and()
-                .withUser("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .and()
-                .withUser("Kasthuri")
-                .password(passwordEncoder().encode("kachu123"))
-                .roles("USER");
-    }
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.inMemoryAuthentication()
+//                .passwordEncoder(passwordEncoder())
+//                .withUser("kajan.14@cse.mrt.ac.lk")
+//                .password(passwordEncoder().encode("kajan"))
+//                .roles("USER")
+//                .and()
+//                .withUser("admin")
+//                .password(passwordEncoder().encode("admin"))
+//                .roles("ADMIN")
+//                .and()
+//                .withUser("Kasthuri")
+//                .password(passwordEncoder().encode("kachu123"))
+//                .roles("USER");
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // TODO: Ramya, configure LDAP authntication
-    //@Override
-    //public void configure(AuthenticationManagerBuilder auth) throws Exception {
-    //    auth
-    //            .ldapAuthentication()
-    //            .userDnPatterns("cn={0}")
-    //            .contextSource()
-    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
-    //            .managerDn("cn=kajan,ou=users,dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
-    //            .managerPassword("1234")
-    //            .and()
-    //            .passwordCompare();
-    //            .passwordAttribute("userPassword");
-    //    auth.
-    //            ldapAuthentication()
-    //            .contextSource()
-    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
-    //            .managerDn("cn=kajan,ou=users,dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
-    //            .managerPassword("kajan")
-    //            .and()
-    //            .passwordEncoder(new LdapShaPasswordEncoder())
-    //            .userDnPatterns("cn={0},ou=users");
-    //    auth
-    //            .ldapAuthentication()
-    //            .userDnPatterns("cn={0},ou=users")
-    //            .groupSearchBase("ou=groups")
-    //            .contextSource()
-    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
-    //            .and()
-    //            .passwordCompare()
-    //            .passwordAttribute("userPassword");
-    //
-    //    auth
-    //            .ldapAuthentication()
-    //            .userDnPatterns("cn={0},ou=users")
-    //            .groupSearchBase("ou=users")
-    //            .contextSource()
-    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk")
-    //            .and()
-    //            .passwordCompare()
-    //            .passwordEncoder(new LdapShaPasswordEncoder())
-    //            .passwordAttribute("userPassword");
-    //}
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .ldapAuthentication()
+                .userDnPatterns("cn={0},ou=users")
+                .groupSearchFilter("member={0}")
+                .contextSource()
+                .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
+    }
 
 }
