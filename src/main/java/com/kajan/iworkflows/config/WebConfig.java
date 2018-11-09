@@ -1,8 +1,16 @@
 package com.kajan.iworkflows.config;
 
+
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+import sun.net.www.http.HttpClient;
+
+import javax.net.ssl.SSLContext;
 
 @Configuration
 public class WebConfig {
@@ -11,4 +19,17 @@ public class WebConfig {
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+
+
+//    RestTemplate restTemplate() throws Exception {
+//        SSLContext sslContext = new SSLContextBuilder()
+//                .loadTrustMaterial(trustStore.getURL(), trustStorePassword.toCharArray())
+//                .build();
+//        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext);
+//        HttpClient httpClient = HttpClients.custom()
+//                .setSSLSocketFactory(socketFactory)
+//                .build();
+//        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+//        return new RestTemplate(factory);
+//    }
 }

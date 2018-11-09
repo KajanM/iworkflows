@@ -16,7 +16,7 @@ public class Constants {
 
         NEXTCLOUD("nextcloud"),
         MOODLE("moodle"),
-        LEARN_ORG("learn_org"),
+        LEARNORG("learnorg"),
         GOOGLE("google");
 
         private String provider;
