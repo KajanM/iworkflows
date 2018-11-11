@@ -28,36 +28,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // TODO: Kajan, turn CSRF protection on
     }
 
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//                .passwordEncoder(passwordEncoder())
-//                .withUser("kajan.14@cse.mrt.ac.lk")
-//                .password(passwordEncoder().encode("kajan"))
-//                .roles("USER")
-//                .and()
-//                .withUser("admin")
-//                .password(passwordEncoder().encode("admin"))
-//                .roles("ADMIN")
-//                .and()
-//                .withUser("Kasthuri")
-//                .password(passwordEncoder().encode("kachu123"))
-//                .roles("USER");
-//    }
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .passwordEncoder(passwordEncoder())
+                .withUser("kajan")
+                .password(passwordEncoder().encode("kajan"))
+                .roles("USER")
+                .and()
+                .withUser("admin")
+                .password(passwordEncoder().encode("admin"))
+                .roles("ADMIN")
+                .and()
+                .withUser("kasthuri")
+                .password(passwordEncoder().encode("kasthuri"))
+                .roles("USER");
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .ldapAuthentication()
-                .userDnPatterns("cn={0},ou=users")
-                .groupSearchFilter("member={0}")
-                .contextSource()
-                .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
-    }
+    //@Override
+    //public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    //    auth
+    //            .ldapAuthentication()
+    //            .userDnPatterns("cn={0},ou=users")
+    //            .groupSearchFilter("member={0}")
+    //            .contextSource()
+    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
+    //}
 
 }
