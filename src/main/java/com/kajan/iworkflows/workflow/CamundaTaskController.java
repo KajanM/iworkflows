@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/camunda/")
 @Slf4j
-public class TaskController {
+public class CamundaTaskController {
 
     private final ProcessEngine camunda;
 

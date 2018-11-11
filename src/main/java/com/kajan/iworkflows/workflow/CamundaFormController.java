@@ -14,12 +14,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/forms/")
-public class FormController {
+public class CamundaFormController {
 
     private final DummyUserStoreServiceImpl storeService;
 
     @Autowired
-    public FormController(DummyUserStoreServiceImpl storeService) {
+    public CamundaFormController(DummyUserStoreServiceImpl storeService) {
         this.storeService = storeService;
     }
 
