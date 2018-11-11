@@ -23,8 +23,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login", "/register").permitAll()
                 .anyRequest().authenticated()
-                .and().csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                .and().csrf().disable();
+        //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
         // TODO: Kajan, turn CSRF protection on
     }
 
