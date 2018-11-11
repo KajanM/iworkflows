@@ -2,7 +2,7 @@ package com.kajan.iworkflows.controller;
 
 import com.kajan.iworkflows.exception.NoSuchClientRegistrationException;
 import com.kajan.iworkflows.service.TokenControllerService;
-import com.kajan.iworkflows.util.Constants.*;
+import com.kajan.iworkflows.util.Constants.TokenProvider;
 import com.kajan.iworkflows.view.TokenClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.*;
 
-import static com.kajan.iworkflows.util.Constants.*;
+import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_PROVIDER;
 
 @RestController
 @RequestMapping("api/v1/token")
@@ -34,21 +34,16 @@ public class TokenController {
 
     private final String MOODLE_NAME;
     private final String MOODLE_REDIRECT_URI;
-    private final String DISCONNECT_SUCCESS_TEMPLATE;
-    private final String DISCONNECT_FAIL_TEMPLATE;
 
-    Set<TokenClient> tokenClients = new HashSet<>();
+    private Set<TokenClient> tokenClients = new HashSet<>();
 
     @Autowired
     public TokenController(TokenControllerService tokenControllerService, @Value("${moodle.name}") String moodle_name,
                            @Value("${moodle.redirect-uri}") String moodle_redirect_uri,
-                           @Value("${msg.disconnect.success}") String disconnect_success_template,
-                           @Value("${msg.disconnect.fail}") String disconnect_fail_template, ClientRegistrationRepository clientRegistrationRepository) {
+                           ClientRegistrationRepository clientRegistrationRepository) {
         this.tokenControllerService = tokenControllerService;
         MOODLE_NAME = moodle_name;
         MOODLE_REDIRECT_URI = moodle_redirect_uri;
-        DISCONNECT_SUCCESS_TEMPLATE = disconnect_success_template;
-        DISCONNECT_FAIL_TEMPLATE = disconnect_fail_template;
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 

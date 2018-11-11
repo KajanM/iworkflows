@@ -27,9 +27,6 @@ public class MoodleTokenController {
 
     private final Logger logger = LoggerFactory.getLogger(MoodleTokenController.class);
 
-    @Value("${msg.connect.success}")
-    private String CONNECT_SUCCESS_TEMPLATE;
-
     @Value("${moodle.uri.token}")
     private String TOKEN_URI_TEMPLATE;
 
