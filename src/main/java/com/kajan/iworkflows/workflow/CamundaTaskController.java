@@ -18,11 +18,11 @@ import java.util.List;
 @Slf4j
 public class CamundaTaskController {
 
-    private final ProcessEngine camunda;
+    private final TaskService taskService;
 
     @Autowired
-    public TaskController(ProcessEngine camunda) {
-        this.camunda = camunda;
+    public CamundaTaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @GetMapping("all-tasks")
