@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.workflow;
 
+import com.kajan.iworkflows.workflow.dto.SubmittedRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.rest.dto.task.TaskDto;
@@ -70,15 +71,23 @@ public class CamundaTaskController {
      * @return the list of tasks that the requesting user submitted
      */
     @GetMapping("submitted-tasks")
-    public List<TaskDto> getSubmittedTasks(Principal principal) {
-        List<TaskDto> result = new ArrayList<>();
+    public List<SubmittedRequest> getSubmittedRequests(Principal principal) {
+        List<SubmittedRequest> submittedRequests = new ArrayList<>();
         taskService
                 .createTaskQuery().list().stream()
                 .filter(task -> task.getOwner() != null && task.getOwner().equalsIgnoreCase(principal.getName()))
                 .forEach(task -> {
-                    TaskDto taskDto = TaskDto.fromEntity(task);
-                    result.add(taskDto);
+
+                    SubmittedRequest request = new SubmittedRequest();
+                    request.setTaskId(task.getId());
+                    request.setProcessInstanceId(task.getProcessInstanceId());
+                    // TODO: kajan, determine the type of task
+                    request.setType("leave request");
+                    request.setSubmittedDate(task.getCreateTime());
+                    request.setDueDate(task.getDueDate());
+                    request.setAssignee(task.getAssignee());
+                    submittedRequests.add(request);
                 });
-        return result;
+        return submittedRequests;
     }
 }
