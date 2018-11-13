@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -19,6 +18,6 @@ public class SubmittedLeaveFormDetails implements Serializable {
     private String mobileNo;
     private String telephoneNo;
     private String leaveType;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
 }
