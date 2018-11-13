@@ -10,10 +10,7 @@ import org.camunda.bpm.engine.variable.Variables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -21,7 +18,7 @@ import java.util.List;
 import static com.kajan.iworkflows.util.WorkflowConstants.*;
 
 @RestController
-@RequestMapping("/api/v1/camunda/leave/")
+@RequestMapping("/api/v1/camunda/leave")
 @Slf4j
 public class CamundaLeaveProcessController {
 
@@ -48,6 +45,19 @@ public class CamundaLeaveProcessController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             log.error("Unable to start the process", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/complete/{taskId}/{approved}")
+    public ResponseEntity<?> completeTask(@PathVariable("taskId") String taskId, @PathVariable("approved") Boolean approved) {
+        try {
+            taskService.setVariable(taskId, APPROVED_KEY, approved);
+            taskService.complete(taskId);
+            log.debug("Task {} completed successfully", taskId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Unable to complete the task", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
