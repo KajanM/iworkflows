@@ -60,7 +60,7 @@ dependencies {
     //webdav client
 //    compile ("com.github.lookfirst:sardine:5.8")
 //    compile 'org.apache.jackrabbit:jackrabbit-jcr-client:2.17.6'
-    
+    annotationProcessor ('org.projectlombok:lombok')
     compileOnly('org.projectlombok:lombok')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')
