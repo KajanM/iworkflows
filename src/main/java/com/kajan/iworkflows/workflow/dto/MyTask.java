@@ -16,6 +16,7 @@ public class MyTask implements Serializable {
     private String owner;
     private String taskId;
     private String processInstanceId;
+    private String processDefinitionId;
     private String taskType;
     private Date submittedDate;
     private Date dueDate;
@@ -26,6 +27,7 @@ public class MyTask implements Serializable {
         myTask.setOwner(task.getOwner());
         myTask.setTaskId(task.getId());
         myTask.setProcessInstanceId(task.getProcessInstanceId());
+        myTask.setProcessDefinitionId(task.getProcessDefinitionId());
         myTask.setTaskType(task.getName());
         myTask.setSubmittedDate(task.getCreateTime());
         myTask.setDueDate(task.getDueDate());
