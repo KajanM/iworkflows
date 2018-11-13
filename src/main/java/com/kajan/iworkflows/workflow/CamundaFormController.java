@@ -1,4 +1,4 @@
-package com.kajan.iworkflows.controller;
+package com.kajan.iworkflows.workflow;
 
 import com.kajan.iworkflows.model.LeaveFormData;
 import com.kajan.iworkflows.model.mock.DummyUserStore;
@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/forms")
-public class FormController {
+@RequestMapping("/api/v1/forms/")
+public class CamundaFormController {
 
     private final DummyUserStoreServiceImpl storeService;
 
     @Autowired
-    public FormController(DummyUserStoreServiceImpl storeService) {
+    public CamundaFormController(DummyUserStoreServiceImpl storeService) {
         this.storeService = storeService;
     }
 

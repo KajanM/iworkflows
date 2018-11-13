@@ -7,9 +7,9 @@ logging:
 
 camunda.bpm:
   admin-user:
-    id: admin
-    password: admin
-    firstName: Admin
+    id: kajan
+    password: kajan
+    firstName: Kajan
   filter:
     create: All tasks
 
@@ -33,10 +33,20 @@ spring:
             client-id: 1006906289665-gnqn7aq78n707c2glp580jf5lk26lbs1.apps.googleusercontent.com
             client-secret: FDfO-FBzTlFUT3k7r7WYubYk
             redirect-uri-template: http://localhost:8080/token/code/google
+          learn_org:
+            client-id: iworkflows
+            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
+            redirect-uri-template: http://localhost:4200/connect/learn_org
+            authorization-grant-type: authorization_code
+            client-name: LearnOrg
+            scope: profile
         provider:
           nextcloud:
             authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
             token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+          learn_org:
+            authorization-uri: https://10.8.90.4/oauth/login.php
+            token-uri: https://10.8.90.4/oauth/token.php
 
 moodle:
   name: Moodle
@@ -56,14 +66,6 @@ nextcloud:
     userinfo: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/{userid}
     file: http://localhost:8090/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
 
-msg:
-  connect:
-    success: Successfully connected with {provider}
-    fail: Unable to connect to {provider}, please try again
-  disconnect:
-    success: Successfully disconnected from {provider}
-    fail: Unable to disconnect from {provider}, please try again
-
 ---
 spring:
   profiles: h2
@@ -82,24 +84,6 @@ spring:
 #  jpa:
 #    hibernate:
 #      ddl-auto: update
-
----
-spring:
-  profiles: ldap
-#
-#  ldap:
-#    base:
-
-#  ldap:
-##    embedded:
-##      base-dn: dc=springframework,dc=org
-###      ldif: classpath:test-server.ldif
-##      port: 389
-##      url: ldap://iworkflows.projects.mrt.ac.lk:389
-#    base
-#    username: admin
-#    password: 1234
-#    urls: ldap://iworkflows.projects.mrt.ac.lk:389
 
 ---
 spring:

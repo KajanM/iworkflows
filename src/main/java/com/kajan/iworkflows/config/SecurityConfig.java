@@ -3,15 +3,16 @@ package com.kajan.iworkflows.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
@@ -22,15 +23,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/login", "/register").permitAll()
                 .anyRequest().authenticated()
-                .and().csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                .and().csrf().disable();
+        //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        // TODO: Kajan, turn CSRF protection on
     }
 
 //    @Override
 //    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 //        auth.inMemoryAuthentication()
 //                .passwordEncoder(passwordEncoder())
-//                .withUser("kajan.14@cse.mrt.ac.lk")
+//                .withUser("kajan")
 //                .password(passwordEncoder().encode("kajan"))
 //                .roles("USER")
 //                .and()
@@ -38,8 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .password(passwordEncoder().encode("admin"))
 //                .roles("ADMIN")
 //                .and()
-//                .withUser("Kasthuri")
-//                .password(passwordEncoder().encode("kachu123"))
+//                .withUser("kasthuri")
+//                .password(passwordEncoder().encode("kasthuri"))
 //                .roles("USER");
 //    }
 

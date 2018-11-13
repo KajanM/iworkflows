@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0y1u39q" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
+  <bpmn:process id="leave_process" name="Leave Process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Leave request submitted">
+      <bpmn:outgoing>SequenceFlow_1b7zbxn</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1b7zbxn" sourceRef="StartEvent_1" targetRef="auto_assign" />
+    <bpmn:userTask id="review_leave" name="Review Leave Request" camunda:assignee="#{approver}">
+      <bpmn:incoming>SequenceFlow_1v38fhs</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ei2cg7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0ewj8hc" name="Approved or not?">
+      <bpmn:incoming>SequenceFlow_0ei2cg7</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1uidix0</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0sd1it4</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0ei2cg7" sourceRef="review_leave" targetRef="ExclusiveGateway_0ewj8hc" />
+    <bpmn:sequenceFlow id="SequenceFlow_1uidix0" name="approved" sourceRef="ExclusiveGateway_0ewj8hc" targetRef="leave_post_approval_service">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{approved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0sd1it4" name="rejected" sourceRef="ExclusiveGateway_0ewj8hc" targetRef="leave_post_reject_service">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not approved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="leave_post_approval_service" name="Post approval service" camunda:delegateExpression="#{leavePostApprovalService}">
+      <bpmn:incoming>SequenceFlow_1uidix0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1s1y6xe</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_0k8vitx">
+      <bpmn:incoming>SequenceFlow_1s1y6xe</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1s1y6xe" sourceRef="leave_post_approval_service" targetRef="EndEvent_0k8vitx" />
+    <bpmn:endEvent id="EndEvent_0s8sl70">
+      <bpmn:incoming>SequenceFlow_06kx9q8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_06kx9q8" sourceRef="leave_post_reject_service" targetRef="EndEvent_0s8sl70" />
+    <bpmn:serviceTask id="leave_post_reject_service" name="Post reject service" camunda:delegateExpression="#{leavePostRejectService}">
+      <bpmn:incoming>SequenceFlow_0sd1it4</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_06kx9q8</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1v38fhs" sourceRef="auto_assign" targetRef="review_leave" />
+    <bpmn:serviceTask id="auto_assign" name="Auto assign assignee" camunda:delegateExpression="#{autoAssignAssignee}">
+      <bpmn:incoming>SequenceFlow_1b7zbxn</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1v38fhs</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="leave_process">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="28" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="11" y="145" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1b7zbxn_di" bpmnElement="SequenceFlow_1b7zbxn">
+        <di:waypoint x="64" y="120" />
+        <di:waypoint x="127" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_1l8fmjo_di" bpmnElement="review_leave">
+        <dc:Bounds x="259" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0ewj8hc_di" bpmnElement="ExclusiveGateway_0ewj8hc" isMarkerVisible="true">
+        <dc:Bounds x="409" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="472" y="110" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ei2cg7_di" bpmnElement="SequenceFlow_0ei2cg7">
+        <di:waypoint x="359" y="120" />
+        <di:waypoint x="409" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1uidix0_di" bpmnElement="SequenceFlow_1uidix0">
+        <di:waypoint x="434" y="95" />
+        <di:waypoint x="434" y="38" />
+        <di:waypoint x="495" y="38" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="442" y="20" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0sd1it4_di" bpmnElement="SequenceFlow_0sd1it4">
+        <di:waypoint x="434" y="145" />
+        <di:waypoint x="434" y="211" />
+        <di:waypoint x="495" y="211" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="450" y="195" width="40" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1eqzqzd_di" bpmnElement="leave_post_approval_service">
+        <dc:Bounds x="495" y="-2" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0k8vitx_di" bpmnElement="EndEvent_0k8vitx">
+        <dc:Bounds x="631" y="20" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1s1y6xe_di" bpmnElement="SequenceFlow_1s1y6xe">
+        <di:waypoint x="595" y="38" />
+        <di:waypoint x="631" y="38" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0s8sl70_di" bpmnElement="EndEvent_0s8sl70">
+        <dc:Bounds x="631" y="193" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_06kx9q8_di" bpmnElement="SequenceFlow_06kx9q8">
+        <di:waypoint x="595" y="211" />
+        <di:waypoint x="631" y="211" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0yqmyvo_di" bpmnElement="leave_post_reject_service">
+        <dc:Bounds x="495" y="171" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1v38fhs_di" bpmnElement="SequenceFlow_1v38fhs">
+        <di:waypoint x="227" y="120" />
+        <di:waypoint x="259" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1y029m6_di" bpmnElement="auto_assign">
+        <dc:Bounds x="127" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
