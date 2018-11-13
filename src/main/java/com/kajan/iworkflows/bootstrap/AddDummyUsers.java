@@ -17,7 +17,7 @@ public class AddDummyUsers {
     @Bean
     CommandLineRunner initDatabase(DummyUserStoreRepository userStoreRepository) {
         return args -> {
-            log.debug("Preloading " + userStoreRepository.save(new DummyUserStore("Kasthuri", "140379F", "Engineering", "CSE", "Student",
+            log.debug("Preloading " + userStoreRepository.save(new DummyUserStore("kasthuri", "140379F", "Engineering", "CSE", "Student",
                     "kasthuri.14@cse.mrt.ac.lk", "077-9577217", 3, 4, 1)));
             log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("kajan", "140709U", "Engineering", "CSE", "Student",
                     "kajan.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
