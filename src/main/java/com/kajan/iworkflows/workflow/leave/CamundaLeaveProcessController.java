@@ -1,5 +1,6 @@
-package com.kajan.iworkflows.workflow;
+package com.kajan.iworkflows.workflow.leave;
 
+import com.kajan.iworkflows.workflow.dto.SubmittedLeaveFormDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
@@ -9,40 +10,39 @@ import org.camunda.bpm.engine.variable.Variables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
+import static com.kajan.iworkflows.util.WorkflowConstants.LEAVE_DETAILS_KEY;
 import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
 
 @RestController
 @RequestMapping("/api/v1/camunda/")
 @Slf4j
-public class CamundaProcessController {
+public class CamundaLeaveProcessController {
 
     private final RuntimeService runtimeService;
     private final TaskService taskService;
 
     @Autowired
-    public CamundaProcessController(RuntimeService runtimeService, TaskService taskService) {
+    public CamundaLeaveProcessController(RuntimeService runtimeService, TaskService taskService) {
         this.runtimeService = runtimeService;
         this.taskService = taskService;
     }
 
-    @PostMapping("start/{processKey}")
-    public ResponseEntity<?> startProcess(@PathVariable String processKey, @RequestBody Map<String, Object> payload, Principal principal) {
+    @PostMapping("start/leave_process")
+    public ResponseEntity<?> startProcess(@RequestBody SubmittedLeaveFormDetails leaveDetails, Principal principal) {
         try {
-            ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey(processKey,
+            ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey("leave_process",
                     Variables
-                            .putValue(OWNER_KEY, principal.getName()));
+                            .putValue(OWNER_KEY, principal.getName())
+                            .putValue(LEAVE_DETAILS_KEY, leaveDetails));
 
-            if (payload != null) {
-                payload.forEach((key, value) -> runtimeService.setVariable(leaveProcess.getId(), key, value));
-            }
-
-            // manually set the owner of the task
             List<Task> tasks = taskService.createTaskQuery().executionId(leaveProcess.getId()).list();
             tasks.forEach(task -> taskService.setOwner(task.getId(), principal.getName()));
 
