@@ -18,11 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 import java.util.List;
 
-import static com.kajan.iworkflows.util.WorkflowConstants.LEAVE_DETAILS_KEY;
-import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
+import static com.kajan.iworkflows.util.WorkflowConstants.*;
 
 @RestController
-@RequestMapping("/api/v1/camunda/")
+@RequestMapping("/api/v1/camunda/leave/")
 @Slf4j
 public class CamundaLeaveProcessController {
 
@@ -35,10 +34,10 @@ public class CamundaLeaveProcessController {
         this.taskService = taskService;
     }
 
-    @PostMapping("start/leave_process")
+    @PostMapping("/start")
     public ResponseEntity<?> startProcess(@RequestBody SubmittedLeaveFormDetails leaveDetails, Principal principal) {
         try {
-            ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey("leave_process",
+            ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey(LEAVE_PROCESS_DEFINITION_KEY,
                     Variables
                             .putValue(OWNER_KEY, principal.getName())
                             .putValue(LEAVE_DETAILS_KEY, leaveDetails));
