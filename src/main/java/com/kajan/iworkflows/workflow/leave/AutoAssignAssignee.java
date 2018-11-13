@@ -2,6 +2,7 @@ package com.kajan.iworkflows.workflow.leave;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kajan.iworkflows.model.Mapper;
 import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.model.Mapper;
 import com.kajan.iworkflows.model.TokenStore;
