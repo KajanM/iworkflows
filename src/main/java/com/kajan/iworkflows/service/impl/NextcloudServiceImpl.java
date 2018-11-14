@@ -23,17 +23,21 @@ public class NextcloudServiceImpl implements NextcloudService {
     private final String HEADER_VALUE_BEARER = "Bearer ";
     private final String HEADER_VALUE_TRUE = "true";
 
-    @Autowired
     private OauthTokenService oauthTokenService;
 
     @Override
     public HttpHeaders getNextcloudHeaders(Principal principal) {
-        TokenDTO tokenDTO = oauthTokenService.getToken(principal, NEXTCLOUD);
+        TokenDTO tokenDTO = oauthTokenService.getToken(principal.getName(), NEXTCLOUD);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HEADER_OCS_API_REQUEST, HEADER_VALUE_TRUE);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(HttpHeaders.AUTHORIZATION, HEADER_VALUE_BEARER + tokenDTO.getAccessToken().getValue());
         return headers;
+    }
+
+    @Autowired
+    public void setOauthTokenService(OauthTokenService oauthTokenService) {
+        this.oauthTokenService = oauthTokenService;
     }
 }

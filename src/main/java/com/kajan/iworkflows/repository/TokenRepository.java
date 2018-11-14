@@ -4,14 +4,12 @@ import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.util.Constants;
 import com.kajan.iworkflows.util.Constants.TokenProvider;
 
-import java.security.Principal;
-
 public interface TokenRepository {
-    void setToken(Principal principal, TokenDTO tokenDTO);
+    void setToken(String principal, TokenDTO tokenDTO);
 
-    TokenDTO getToken(Principal principal, TokenProvider tokenProvider);
+    TokenDTO getToken(String principal, TokenProvider tokenProvider);
 
-    Boolean revokeToken(Principal principal, TokenProvider tokenProvider);
+    Boolean revokeToken(String principal, TokenProvider tokenProvider);
 
-    Boolean isAlreadyAuthorized(Principal principal, Constants.TokenProvider provider);
+    Boolean isAlreadyAuthorized(String principal, Constants.TokenProvider provider);
 }

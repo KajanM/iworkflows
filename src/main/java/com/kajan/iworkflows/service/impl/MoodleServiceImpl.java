@@ -36,7 +36,7 @@ public class MoodleServiceImpl implements MoodleService {
     }
 
     private String buildUrl(Principal principal, String wsfunction) {
-        String wstoken = oauthTokenService.getToken(principal, MOODLE).getAccessToken().getValue();
+        String wstoken = oauthTokenService.getToken(principal.getName(), MOODLE).getAccessToken().getValue();
         String uri = webserviceUri.replace(PLACEHOLDER_MOODLE_WSTOKEN, wstoken)
                 .replace(PLACEHOLDER_MOODLE_WSFUNCTION, wsfunction);
         log.debug("BuiltURL: {}", uri);

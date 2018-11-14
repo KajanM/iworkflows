@@ -69,7 +69,7 @@ public class MoodleTokenController {
             TokenDTO tokenDTO = new TokenDTO();
             tokenDTO.setAccessToken(new TypelessAccessToken(root.get(TOKEN_KEY).textValue()));
             tokenDTO.setTokenProvider(MOODLE);
-            oauthTokenService.setToken(principal, tokenDTO);
+            oauthTokenService.setToken(principal.getName(), tokenDTO);
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
