@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +36,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
+import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_DEPARTMENT;
 import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 @Service("autoAssignAssignee")
 @Slf4j
@@ -43,12 +45,15 @@ public class AutoAssignAssignee implements JavaDelegate  {
     private final MapperServiceImpl mapService;
     private final RestTemplate restTemplate;
     private final OauthTokenService oauthTokenService;
+    private final String webserviceUri;
 
     @Autowired
-    public AutoAssignAssignee(MapperServiceImpl mapService, RestTemplate restTemplate, OauthTokenService oauthTokenService) {
+    public AutoAssignAssignee(MapperServiceImpl mapService, RestTemplate restTemplate, OauthTokenService oauthTokenService,
+                              @Value("${learnorg.uri.system}") String webserviceUri) {
         this.mapService = mapService;
         this.restTemplate = restTemplate;
         this.oauthTokenService = oauthTokenService;
+        this.webserviceUri = webserviceUri;
     }
 
     static {
@@ -95,40 +100,53 @@ public class AutoAssignAssignee implements JavaDelegate  {
         String owner = (String) execution.getVariable("owner");
         log.debug("Owner of the tasks is {}", owner);
 
-        // TODO: Ramiya, logic to find out the approver goes here
         Collection<? extends GrantedAuthority> groups = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         log.debug("task owner's groups : " + groups);
 
         List<Mapper> userStoreList = new ArrayList<>();
-        log.debug("role : " + mapService.findByIworkflowsRole("ROLE_CSE").toString());
-        mapService.findByIworkflowsRole("ROLE_CSE").forEach(userStoreList::add);
-        Mapper userStore = userStoreList.get(0);
+        Mapper userStore;
+        String role = null;
+        for (GrantedAuthority group : groups) {
+            if ( !(mapService.findByIworkflowsRole(group.toString())).iterator().hasNext()){
+                continue;
+            }
+            mapService.findByIworkflowsRole(group.toString()).forEach(userStoreList::add);
+            Iterable<Mapper> results = mapService.findByIworkflowsRole(group.toString());
+            userStore = userStoreList.get(0);
+            role = userStore.getLearnorgRole();
+            log.debug("learnorg department : "+ role);
 
-        String role = userStore.getLearnorgRole();
-        log.debug("learnorg department : "+ role);
+            String access_token_url = buildUrl(role);
+            String principal = SecurityContextHolder.getContext().getAuthentication().getName();
+            log.debug("principal : "+ principal + " " + oauthTokenService.getToken(principal, LEARNORG));
+            TokenDTO tokenDTO = oauthTokenService.getToken(principal, LEARNORG);
+            String accesstoken = tokenDTO.getAccessToken().getValue();
+            log.debug("Access Token : " + accesstoken);
 
-        String principal = SecurityContextHolder.getContext().getAuthentication().getName();
-        log.debug("principal : "+ principal + " " + oauthTokenService.getToken(principal, LEARNORG));
-        TokenDTO tokenDTO = oauthTokenService.getToken(principal, LEARNORG);
-        String accesstoken = tokenDTO.getAccessToken().getValue();
-        log.debug("Access Token : " + accesstoken);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-        map.add("access_token", accesstoken);
+            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+            map.add("access_token", accesstoken);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+            ResponseEntity<String> respons = this.restTemplate.postForEntity( access_token_url, request , String.class );
+            log.debug("Response ---------" + respons.getBody());
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-        String access_token_url = "https://10.8.90.4/oauth/iworkflows.php?department="+ role;
-        ResponseEntity<String> respons = this.restTemplate.postForEntity( access_token_url, request , String.class );
-        log.debug("Response ---------" + respons.getBody());
+            // Get the appprover From the recieved JSON response
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(respons.getBody());
+            String approver = node.path("Department-Head").asText();
+            log.debug("Auto assigning the task to {}", approver);
 
-        // Get the appprover From the recieved JSON response
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(respons.getBody());
-        String approver = node.path("Department-Head").asText();
-        log.debug("Auto assigning the task to {}", approver);
+            execution.setVariable(APPROVER_KEY, approver);
+            break;
+        }
 
-        execution.setVariable(APPROVER_KEY, approver);
+    }
+
+    private String buildUrl(String role) {
+        String uri = webserviceUri.replace(PLACEHOLDER_LEARNORG_DEPARTMENT, role);
+        log.debug("BuiltURL: {}", uri);
+        return uri;
     }
 }

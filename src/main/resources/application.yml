@@ -66,6 +66,9 @@ nextcloud:
     userinfo: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/{userid}
     file: http://localhost:8090/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
 
+learnorg:
+  uri:
+    system: https://10.8.90.4/oauth/iworkflows.php?department={role}
 ---
 spring:
   profiles: h2
