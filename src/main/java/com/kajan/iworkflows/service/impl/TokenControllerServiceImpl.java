@@ -20,7 +20,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,10 +30,8 @@ public class TokenControllerServiceImpl implements TokenControllerService {
 
     private final Logger logger = LoggerFactory.getLogger(TokenControllerServiceImpl.class);
 
-    @Autowired
     private OauthTokenService oauthTokenService;
 
-    @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
 
     @Override
@@ -52,7 +49,7 @@ public class TokenControllerServiceImpl implements TokenControllerService {
         ClientID clientID = new ClientID(clientRegistration.getClientId());
 
         // The requested scope values for the token
-        Scope scope = new Scope(clientRegistration.getScopes().toArray(new String[clientRegistration.getScopes().size()]));
+        Scope scope = new Scope(clientRegistration.getScopes().toArray(new String[0]));
 
 
         // The client callback URI, typically pre-registered with the server
@@ -162,12 +159,12 @@ public class TokenControllerServiceImpl implements TokenControllerService {
         tokenDTO.setRefreshToken(refreshToken);
         tokenDTO.setTokenProvider(registrationId);
 
-        oauthTokenService.setToken(principal, tokenDTO);
+        oauthTokenService.setToken(principal.getName(), tokenDTO);
     }
 
     @Override
     public TokenDTO getToken(Principal principal, TokenProvider tokenProvider) {
-        return oauthTokenService.getToken(principal, tokenProvider);
+        return oauthTokenService.getToken(principal.getName(), tokenProvider);
     }
 
     private String buildRedirectUri(Constants.TokenProvider tokenProvider) {
@@ -180,11 +177,21 @@ public class TokenControllerServiceImpl implements TokenControllerService {
 
     @Override
     public Boolean isAlreadyAuthorized(Principal principal, TokenProvider provider) {
-        return oauthTokenService.isAlreadyAuthorized(principal, provider);
+        return oauthTokenService.isAlreadyAuthorized(principal.getName(), provider);
     }
 
     @Override
     public Boolean revokeToken(Principal principal, Constants.TokenProvider provider) {
-        return oauthTokenService.revokeToken(principal, provider);
+        return oauthTokenService.revokeToken(principal.getName(), provider);
+    }
+
+    @Autowired
+    public void setOauthTokenService(OauthTokenService oauthTokenService) {
+        this.oauthTokenService = oauthTokenService;
+    }
+
+    @Autowired
+    public void setClientRegistrationRepository(ClientRegistrationRepository clientRegistrationRepository) {
+        this.clientRegistrationRepository = clientRegistrationRepository;
     }
 }

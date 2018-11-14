@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import java.security.Principal;
 import java.util.Iterator;
 
 @Repository
@@ -24,12 +23,11 @@ public class TokenRepositoryImplH2 implements TokenRepository {
 
     private final Logger logger = LoggerFactory.getLogger(TokenRepositoryImplH2.class);
 
-    @Autowired
     private TokenH2Repository tokenH2Repository;
 
     @Override
-    public void setToken(Principal principal, TokenDTO tokenDTO) {
-        TokenStore tokenStore = new TokenStore(principal.getName(), tokenDTO.getTokenProvider().getProvider());
+    public void setToken(String principal, TokenDTO tokenDTO) {
+        TokenStore tokenStore = new TokenStore(principal, tokenDTO.getTokenProvider().getProvider());
         if (tokenDTO.getAuthorizationCode() != null) {
             tokenStore.setAuthorizationCode(tokenDTO.getAuthorizationCode().getValue());
         }
@@ -44,10 +42,11 @@ public class TokenRepositoryImplH2 implements TokenRepository {
     }
 
     @Override
-    public TokenDTO getToken(Principal principal, TokenProvider tokenProvider) {
-        Iterable<TokenStore> allTokens = tokenH2Repository.findByPrincipalAndTokenProvider(principal.getName(), tokenProvider.getProvider());
+    public TokenDTO getToken(String principal, TokenProvider tokenProvider) {
+        Iterable<TokenStore> allTokens = tokenH2Repository.findByPrincipalAndTokenProvider(principal, tokenProvider.getProvider());
 
-        for (TokenStore store : allTokens) {
+        for (Iterator<TokenStore> iterator = allTokens.iterator(); iterator.hasNext(); ) {
+            TokenStore store = iterator.next();
             TokenDTO tokenDTO = new TokenDTO();
             tokenDTO.setTokenProvider(tokenProvider);
             if (store.getAuthorizationCode() != null) {
@@ -63,19 +62,21 @@ public class TokenRepositoryImplH2 implements TokenRepository {
     }
 
     @Override
-    public Boolean revokeToken(Principal principal, Constants.TokenProvider tokenProvider) {
-        tokenH2Repository.deleteByPrincipalAndTokenProvider(principal.getName(), tokenProvider.getProvider());
+    public Boolean revokeToken(String principal, Constants.TokenProvider tokenProvider) {
+        tokenH2Repository.deleteByPrincipalAndTokenProvider(principal, tokenProvider.getProvider());
         logger.debug("Successfully revoked token for Principal: " + principal + " Provider: " + tokenProvider);
         return true;
     }
 
     @Override
-    public Boolean isAlreadyAuthorized(Principal principal, Constants.TokenProvider provider) {
-        Iterator<TokenStore> iterator = tokenH2Repository.findByPrincipalAndTokenProvider(principal.getName(), provider.getProvider()).iterator();
+    public Boolean isAlreadyAuthorized(String principal, Constants.TokenProvider provider) {
+        Iterator<TokenStore> iterator = tokenH2Repository.findByPrincipalAndTokenProvider(principal, provider.getProvider()).iterator();
 
-        if (iterator.hasNext()) {
-            return true;
-        }
-        return false;
+        return iterator.hasNext();
+    }
+
+    @Autowired
+    public void setTokenH2Repository(TokenH2Repository tokenH2Repository) {
+        this.tokenH2Repository = tokenH2Repository;
     }
 }

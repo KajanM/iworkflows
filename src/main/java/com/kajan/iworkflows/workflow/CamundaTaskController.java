@@ -66,7 +66,6 @@ public class CamundaTaskController {
                     myTask.setRecommendation((String) runtimeService.getVariable(task.getProcessInstanceId(), "recommendation"));
                     myTasks.add(myTask);
                 });
-        //taskService.getva
         return myTasks;
     }
 
@@ -83,15 +82,7 @@ public class CamundaTaskController {
                 .createTaskQuery().list().stream()
                 .filter(task -> task.getOwner() != null && task.getOwner().equalsIgnoreCase(principal.getName()))
                 .forEach(task -> {
-
-                    SubmittedRequest request = new SubmittedRequest();
-                    request.setTaskId(task.getId());
-                    request.setProcessInstanceId(task.getProcessInstanceId());
-                    // TODO: kajan, determine the type of task
-                    request.setType("leave request");
-                    request.setSubmittedDate(task.getCreateTime());
-                    request.setDueDate(task.getDueDate());
-                    request.setAssignee(task.getAssignee());
+                    SubmittedRequest request = SubmittedRequest.fromTask(task);
                     submittedRequests.add(request);
                 });
         return submittedRequests;
