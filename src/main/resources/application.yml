@@ -90,6 +90,24 @@ spring:
 
 ---
 spring:
+  profiles: ldap
+#
+#  ldap:
+#    base:
+
+#  ldap:
+##    embedded:
+##      base-dn: dc=springframework,dc=org
+###      ldif: classpath:test-server.ldif
+##      port: 389
+##      url: ldap://iworkflows.projects.mrt.ac.lk:389
+#    base
+#    username: admin
+#    password: 1234
+#    urls: ldap://iworkflows.projects.mrt.ac.lk:389
+
+---
+spring:
   profiles: server
 
   security:
