@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kajan.iworkflows.model.Mapper;
 import com.kajan.iworkflows.dto.TokenDTO;
-import com.kajan.iworkflows.model.Mapper;
-import com.kajan.iworkflows.model.TokenStore;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.service.impl.MapperServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
@@ -37,9 +34,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_FILE_PATH;
-import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_USERID;
-
 import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
 import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 @Service("autoAssignAssignee")
@@ -47,17 +41,15 @@ import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 public class AutoAssignAssignee implements JavaDelegate  {
 
     private final MapperServiceImpl mapService;
+    private final RestTemplate restTemplate;
+    private final OauthTokenService oauthTokenService;
 
     @Autowired
-    public AutoAssignAssignee(MapperServiceImpl mapService) {
+    public AutoAssignAssignee(MapperServiceImpl mapService, RestTemplate restTemplate, OauthTokenService oauthTokenService) {
         this.mapService = mapService;
+        this.restTemplate = restTemplate;
+        this.oauthTokenService = oauthTokenService;
     }
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private OauthTokenService oauthTokenService;
 
     static {
         disableSslVerification();
@@ -115,7 +107,8 @@ public class AutoAssignAssignee implements JavaDelegate  {
         String role = userStore.getLearnorgRole();
         log.debug("learnorg department : "+ role);
 
-        Principal principal = (Principal)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String principal = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.debug("principal : "+ principal + " " + oauthTokenService.getToken(principal, LEARNORG));
         TokenDTO tokenDTO = oauthTokenService.getToken(principal, LEARNORG);
         String accesstoken = tokenDTO.getAccessToken().getValue();
         log.debug("Access Token : " + accesstoken);
@@ -126,9 +119,8 @@ public class AutoAssignAssignee implements JavaDelegate  {
         map.add("access_token", accesstoken);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-        RestTemplate restTemplate = new RestTemplate();
         String access_token_url = "https://10.8.90.4/oauth/iworkflows.php?department="+ role;
-        ResponseEntity<String> respons = restTemplate.postForEntity( access_token_url, request , String.class );
+        ResponseEntity<String> respons = this.restTemplate.postForEntity( access_token_url, request , String.class );
         log.debug("Response ---------" + respons.getBody());
 
         // Get the appprover From the recieved JSON response

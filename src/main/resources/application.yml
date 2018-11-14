@@ -39,7 +39,7 @@ spring:
             redirect-uri-template: http://localhost:4200/connect/learnorg
             authorization-grant-type: authorization_code
             client-name: LearnOrg
-            scope: profile
+            scope: profile,system
         provider:
           nextcloud:
             authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
