@@ -41,6 +41,7 @@ import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_FILE_PATH;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_USERID;
 
 import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
+import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 @Service("autoAssignAssignee")
 @Slf4j
 public class AutoAssignAssignee implements JavaDelegate  {
@@ -136,6 +137,6 @@ public class AutoAssignAssignee implements JavaDelegate  {
         String approver = node.path("Department-Head").asText();
         log.debug("Auto assigning the task to {}", approver);
 
-        execution.setVariable("approver", approver);
+        execution.setVariable(APPROVER_KEY, approver);
     }
 }

@@ -9,5 +9,5 @@ public class WorkflowConstants {
     public static final String DUE_DATE_KEY = "due_date";
     public static final String RECOMMENDATION_KEY = "recommendation";
     public static final String APPROVED_KEY = "approved";
-
+    public static final String APPROVER_KEY = "approver";
 }
