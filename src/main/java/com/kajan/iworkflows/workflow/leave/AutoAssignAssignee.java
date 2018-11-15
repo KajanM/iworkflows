@@ -38,6 +38,8 @@ import java.util.List;
 import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_DEPARTMENT;
 import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
+import static com.kajan.iworkflows.util.Constants.SYSTEM_KEY;
+
 @Service("autoAssignAssignee")
 @Slf4j
 public class AutoAssignAssignee implements JavaDelegate  {
@@ -117,9 +119,9 @@ public class AutoAssignAssignee implements JavaDelegate  {
             log.debug("learnorg department : "+ role);
 
             String access_token_url = buildUrl(role);
-            String principal = SecurityContextHolder.getContext().getAuthentication().getName();
-            log.debug("principal : "+ principal + " " + oauthTokenService.getToken(principal, LEARNORG));
-            TokenDTO tokenDTO = oauthTokenService.getToken(principal, LEARNORG);
+//            String principal = SecurityContextHolder.getContext().getAuthentication().getName();
+            log.debug("system key : "+ SYSTEM_KEY + " " + oauthTokenService.getToken(SYSTEM_KEY, LEARNORG));
+            TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
             String accesstoken = tokenDTO.getAccessToken().getValue();
             log.debug("Access Token : " + accesstoken);
 
