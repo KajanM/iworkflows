@@ -56,6 +56,12 @@ nextcloud:
     userinfo: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
     file: http://iworkflows.projects.mrt.ac.lk/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
 
+iworkflows:
+  credentials:
+    nextcloud:
+      username: admin
+      password: 1234
+
 ---
 spring:
   profiles: h2

@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.controller.nextcloud;
 
+import com.github.sardine.DavResource;
 import com.kajan.iworkflows.service.NextcloudService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/nextcloud")
@@ -44,7 +46,7 @@ public class NextCloudWebDavController {
     }
 
     @GetMapping("/files/dir")
-    public String getDirList() {
+    public List<DavResource> getDirList() {
         return nextcloudService.getDirectoryList("");
     }
 

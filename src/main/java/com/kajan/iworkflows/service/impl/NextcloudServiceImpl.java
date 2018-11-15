@@ -1,11 +1,12 @@
 package com.kajan.iworkflows.service.impl;
 
+import com.github.sardine.DavResource;
+import com.github.sardine.Sardine;
 import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.exception.UnauthorizedException;
 import com.kajan.iworkflows.service.NextcloudService;
 import com.kajan.iworkflows.service.OauthTokenService;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.StringJoiner;
+import java.util.List;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_FILE_PATH;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_USERID;
@@ -38,6 +39,7 @@ public class NextcloudServiceImpl implements NextcloudService {
 
     private OauthTokenService oauthTokenService;
     private RestTemplate restTemplate;
+    private Sardine iworkflowsWebDavClient;
 
     private HttpHeaders getNextcloudHeaders(String principal) {
         TokenDTO tokenDTO = oauthTokenService.getToken(principal, NEXTCLOUD);
@@ -84,49 +86,21 @@ public class NextcloudServiceImpl implements NextcloudService {
         return response;
     }
 
-    public String getDirectoryList(String filePath) {
-        OkHttpClient client = new OkHttpClient();
-        String credential = Credentials.basic("admin", "1234");
-
+    public List<DavResource> getDirectoryList(String filePath) {
         String url = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, "admin")
                 .replace(PLACEHOLDER_FILE_PATH, filePath);
 
-        StringJoiner joiner = new StringJoiner("\n");
-        joiner.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        joiner.add("<d:propfind xmlns:d=\"DAV:\">");
-        joiner.add("<d:prop xmlns:oc=\"http://owncloud.org/ns\">");
-        joiner.add("<d:getlastmodified/>");
-        joiner.add("<d:getcontentlength/>");
-        joiner.add("<d:getcontenttype/>");
-        joiner.add("<oc:permissions/>");
-        joiner.add("<d:resourcetype/>");
-        joiner.add("<d:getetag/>");
-        joiner.add("</d:prop>");
-        joiner.add("</d:propfind>");
-
-        //String body = "<d:propfind xmlns:d=\"DAV:\" xmlns:cs=\"http://calendarserver.org/ns/\">\n" +
-        //        "  <d:prop>\n" +
-        //        "     <d:displayname />\n" +
-        //        "     <d:getetag />\n" +
-        //        "  </d:prop>\n" +
-        //        "</d:propfind>";
-        Request request = new Request.Builder()
-                .url(url)
-                .method("PROPFIND", RequestBody.create(MediaType.parse(joiner.toString()), joiner.toString()))
-                .header("DEPTH", "1")
-                .header("Authorization", credential)
-                .header("Content-Type", "text/xml")
-                .build();
-
-        Response response = null;
+        List<DavResource> resources = null;
         try {
-            response = client.newCall(request).execute();
-            return response.body().string();
+            resources = iworkflowsWebDavClient.list(url);
         } catch (IOException e) {
-            log.error("unable to retrieve directory list", e);
+            log.error("Unable to retrieve directory list from NextCloud", e);
         }
-
-        return null;
+        for (DavResource res : resources)
+        {
+           log.debug("Found file from server: {}", res);
+        }
+        return resources;
 
     }
 
@@ -153,5 +127,10 @@ public class NextcloudServiceImpl implements NextcloudService {
             String authHeader = "Basic " + new String( encodedAuth );
             set( "Authorization", authHeader );
         }};
+    }
+
+    @Autowired
+    public void setIworkflowsWebDavClient(Sardine iworkflowsWebDavClient) {
+        this.iworkflowsWebDavClient = iworkflowsWebDavClient;
     }
 }
