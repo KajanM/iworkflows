@@ -43,5 +43,9 @@ public class NextCloudWebDavController {
         return nextcloudService.uploadFileAsIworkflows("/attachments/leave/leave.txt", "this is a sample upload");
     }
 
+    @GetMapping("/files/dir")
+    public String getDirList() {
+        return nextcloudService.getDirectoryList("");
+    }
 
 }

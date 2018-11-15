@@ -5,15 +5,21 @@ import com.kajan.iworkflows.exception.UnauthorizedException;
 import com.kajan.iworkflows.service.NextcloudService;
 import com.kajan.iworkflows.service.OauthTokenService;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.StringJoiner;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_FILE_PATH;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_USERID;
@@ -38,7 +44,7 @@ public class NextcloudServiceImpl implements NextcloudService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HEADER_OCS_API_REQUEST, HEADER_VALUE_TRUE);
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
         headers.add(HttpHeaders.AUTHORIZATION, HEADER_VALUE_BEARER + tokenDTO.getAccessToken().getValue());
         return headers;
     }
@@ -76,6 +82,52 @@ public class NextcloudServiceImpl implements NextcloudService {
                 (uri, HttpMethod.PUT, new HttpEntity<>(fileContent, createHeaders("admin", "1234")), String.class);
 
         return response;
+    }
+
+    public String getDirectoryList(String filePath) {
+        OkHttpClient client = new OkHttpClient();
+        String credential = Credentials.basic("admin", "1234");
+
+        String url = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, "admin")
+                .replace(PLACEHOLDER_FILE_PATH, filePath);
+
+        StringJoiner joiner = new StringJoiner("\n");
+        joiner.add("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        joiner.add("<d:propfind xmlns:d=\"DAV:\">");
+        joiner.add("<d:prop xmlns:oc=\"http://owncloud.org/ns\">");
+        joiner.add("<d:getlastmodified/>");
+        joiner.add("<d:getcontentlength/>");
+        joiner.add("<d:getcontenttype/>");
+        joiner.add("<oc:permissions/>");
+        joiner.add("<d:resourcetype/>");
+        joiner.add("<d:getetag/>");
+        joiner.add("</d:prop>");
+        joiner.add("</d:propfind>");
+
+        //String body = "<d:propfind xmlns:d=\"DAV:\" xmlns:cs=\"http://calendarserver.org/ns/\">\n" +
+        //        "  <d:prop>\n" +
+        //        "     <d:displayname />\n" +
+        //        "     <d:getetag />\n" +
+        //        "  </d:prop>\n" +
+        //        "</d:propfind>";
+        Request request = new Request.Builder()
+                .url(url)
+                .method("PROPFIND", RequestBody.create(MediaType.parse(joiner.toString()), joiner.toString()))
+                .header("DEPTH", "1")
+                .header("Authorization", credential)
+                .header("Content-Type", "text/xml")
+                .build();
+
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            log.error("unable to retrieve directory list", e);
+        }
+
+        return null;
+
     }
 
     private String getIworkflowsUri(String filepath) {

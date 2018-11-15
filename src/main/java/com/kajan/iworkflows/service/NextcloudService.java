@@ -8,4 +8,6 @@ public interface NextcloudService {
     String getFileAsIworkflows(String filepath);
 
     ResponseEntity<String> uploadFileAsIworkflows(String filePath, String fileContent);
+
+    String getDirectoryList(String filePath);
 }

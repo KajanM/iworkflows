@@ -56,6 +56,8 @@ dependencies {
 
     compile('com.auth0:java-jwt:3.4.0')
     compile ('com.google.guava:guava:27.0-jre')
+    compile ('com.squareup.okhttp3:okhttp:3.11.0')
+    compile ('com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.0')
     
     //webdav client
 //    compile ("com.github.lookfirst:sardine:5.8")
