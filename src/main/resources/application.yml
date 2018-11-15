@@ -52,9 +52,15 @@ moodle:
 
 nextcloud:
   uri:
-    root: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/{userid}
-    userinfo: http://localhost:8090/nextcloud/ocs/v1.php/cloud/users/{userid}
-    file: http://localhost:8090/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
+    root: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
+    userinfo: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
+    file: http://iworkflows.projects.mrt.ac.lk/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
+
+iworkflows:
+  credentials:
+    nextcloud:
+      username: admin
+      password: 1234
 
 ---
 spring:
