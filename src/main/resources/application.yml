@@ -69,6 +69,8 @@ nextcloud:
 learnorg:
   uri:
     system: https://10.8.90.4/oauth/iworkflows.php?department={role}
+    userinfo: http://10.8.90.4/oauth/user_info.php
+
 ---
 spring:
   profiles: h2

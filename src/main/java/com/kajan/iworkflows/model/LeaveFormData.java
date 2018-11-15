@@ -14,6 +14,8 @@ public class LeaveFormData {
     private String role;
     private String email;
     private String mobileNo;
+    private String telephoneNo;
+    private String address;
     private int casual;
     private int medical;
     private int vacation;
