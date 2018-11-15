@@ -2,10 +2,10 @@ package com.kajan.iworkflows.workflow.leave;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kajan.iworkflows.model.Mapper;
+import com.kajan.iworkflows.model.GroupMapper;
 import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.service.OauthTokenService;
-import com.kajan.iworkflows.service.impl.MapperServiceImpl;
+import com.kajan.iworkflows.service.impl.GroupMapperServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
@@ -42,13 +42,13 @@ import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 @Slf4j
 public class AutoAssignAssignee implements JavaDelegate  {
 
-    private final MapperServiceImpl mapService;
+    private final GroupMapperServiceImpl mapService;
     private final RestTemplate restTemplate;
     private final OauthTokenService oauthTokenService;
     private final String webserviceUri;
 
     @Autowired
-    public AutoAssignAssignee(MapperServiceImpl mapService, RestTemplate restTemplate, OauthTokenService oauthTokenService,
+    public AutoAssignAssignee(GroupMapperServiceImpl mapService, RestTemplate restTemplate, OauthTokenService oauthTokenService,
                               @Value("${learnorg.uri.system}") String webserviceUri) {
         this.mapService = mapService;
         this.restTemplate = restTemplate;
@@ -103,15 +103,15 @@ public class AutoAssignAssignee implements JavaDelegate  {
         Collection<? extends GrantedAuthority> groups = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         log.debug("task owner's groups : " + groups);
 
-        List<Mapper> userStoreList = new ArrayList<>();
-        Mapper userStore;
+        List<GroupMapper> userStoreList = new ArrayList<>();
+        GroupMapper userStore;
         String role = null;
         for (GrantedAuthority group : groups) {
             if ( !(mapService.findByIworkflowsRole(group.toString())).iterator().hasNext()){
                 continue;
             }
             mapService.findByIworkflowsRole(group.toString()).forEach(userStoreList::add);
-            Iterable<Mapper> results = mapService.findByIworkflowsRole(group.toString());
+            Iterable<GroupMapper> results = mapService.findByIworkflowsRole(group.toString());
             userStore = userStoreList.get(0);
             role = userStore.getLearnorgRole();
             log.debug("learnorg department : "+ role);

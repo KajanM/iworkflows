@@ -10,7 +10,7 @@ import java.util.Objects;
  * Created by User on 11/12/2018.
  */
 @Entity
-public class Mapper {
+public class GroupMapper {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,10 +18,10 @@ public class Mapper {
     private String iworkflowsRole;
     private String learnorgRole;
 
-    protected Mapper() {
+    protected GroupMapper() {
     }
 
-    public Mapper(String iworkflowsRole, String learnorgRole) {
+    public GroupMapper(String iworkflowsRole, String learnorgRole) {
         this.iworkflowsRole = iworkflowsRole;
         this.learnorgRole = learnorgRole;
 
@@ -51,7 +51,7 @@ public class Mapper {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Mapper that = (Mapper) o;
+        GroupMapper that = (GroupMapper) o;
         return Objects.equals(id, that.id);
     }
 
@@ -62,7 +62,7 @@ public class Mapper {
 
     @Override
     public String toString() {
-        return "Mapper{" +
+        return "GroupMapper{" +
                 "id=" + id +
                 ", iworkflowsRole=" + iworkflowsRole +
                 ", learnorgRole=" + learnorgRole +

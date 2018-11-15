@@ -1,9 +1,7 @@
 package com.kajan.iworkflows.bootstrap;
 
-import com.kajan.iworkflows.model.Mapper;
-import com.kajan.iworkflows.model.mock.DummyUserStore;
-import com.kajan.iworkflows.repository.DummyUserStoreRepository;
-import com.kajan.iworkflows.repository.MapperRepository;
+import com.kajan.iworkflows.model.GroupMapper;
+import com.kajan.iworkflows.repository.GroupMapperRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -16,10 +14,10 @@ import org.springframework.context.annotation.Configuration;
  */
 public class AddRoles {
     @Bean
-    CommandLineRunner initDatabase(MapperRepository mapperRepository) {
+    CommandLineRunner initDatabase(GroupMapperRepository mapperRepository) {
         return args -> {
-            log.debug("Preloading " + mapperRepository.save(new Mapper("ROLE_CSE", "cse")));
-            log.debug("Preloading" + mapperRepository.save(new Mapper("ROLE_CIVIL","civil")));
+            log.debug("Preloading " + mapperRepository.save(new GroupMapper("ROLE_CSE", "cse")));
+            log.debug("Preloading" + mapperRepository.save(new GroupMapper("ROLE_CIVIL","civil")));
         };
     }
 
