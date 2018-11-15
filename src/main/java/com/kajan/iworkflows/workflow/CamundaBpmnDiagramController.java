@@ -3,9 +3,9 @@ package com.kajan.iworkflows.workflow;
 import com.google.common.io.CharStreams;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RepositoryService;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/camunda")
@@ -20,20 +22,31 @@ import java.io.Reader;
 public class CamundaBpmnDiagramController {
 
     private RepositoryService repositoryService;
+    private TaskService taskService;
 
-    @GetMapping("/diagram/{processDefinitionId}")
-    public ResponseEntity<String> getDiagram(@PathVariable("processDefinitionId") String processDefinitionId) {
+    @GetMapping("/diagram/{taskId}")
+    public Map<String, String> getDiagram(@PathVariable("taskId") String taskId) {
+        Task task = taskService.createTaskQuery().taskId(taskId).list().get(0);
+        String processDefinitionId = task.getProcessDefinitionId();
+        String diagram = null;
         try (final Reader reader = new InputStreamReader(repositoryService.getProcessModel(processDefinitionId))) {
-            String diagram = CharStreams.toString(reader);
-            return new ResponseEntity<>(diagram, HttpStatus.OK);
+            diagram = CharStreams.toString(reader);
         } catch (Exception e) {
-            log.error("Unable to get BPMN diagram for processDefinitionId: {}", processDefinitionId, e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error("Unable to get BPMN diagram for processDefinitionId: {}", taskId, e);
         }
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("xml", diagram);
+        resultMap.put("taskDefinitionKey", task.getTaskDefinitionKey());
+        return resultMap;
     }
 
     @Autowired
     public void setRepositoryService(RepositoryService repositoryService) {
         this.repositoryService = repositoryService;
+    }
+
+    @Autowired
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
     }
 }
