@@ -14,7 +14,7 @@ import java.security.Principal;
 
 @RestController
 @Slf4j
-@RequestMapping("/moodle")
+@RequestMapping("/api/v1/moodle")
 public class MoodleAssignmentController {
 
     private final MoodleService moodleService;

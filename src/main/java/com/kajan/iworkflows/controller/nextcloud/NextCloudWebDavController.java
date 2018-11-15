@@ -14,7 +14,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/nextcloud")
+@RequestMapping("/api/v1/nextcloud")
 public class NextCloudWebDavController {
 
     private final String WELCOME_FILE_PATH = "welcome.txt";
