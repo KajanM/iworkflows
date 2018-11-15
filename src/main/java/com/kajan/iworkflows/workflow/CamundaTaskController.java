@@ -16,6 +16,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.kajan.iworkflows.util.WorkflowConstants.RECOMMENDATION_KEY;
+
 @RestController
 @RequestMapping("api/v1/camunda/")
 @Slf4j
@@ -63,7 +65,7 @@ public class CamundaTaskController {
                 .filter(task -> task.getAssignee() != null && task.getAssignee().equalsIgnoreCase(principal.getName()))
                 .forEach(task -> {
                     MyTask myTask = MyTask.fromTask(task);
-                    myTask.setRecommendation((String) runtimeService.getVariable(task.getProcessInstanceId(), "recommendation"));
+                    myTask.setRecommendation((String) runtimeService.getVariable(task.getProcessInstanceId(), RECOMMENDATION_KEY));
                     myTasks.add(myTask);
                 });
         return myTasks;
