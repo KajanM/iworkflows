@@ -1,9 +1,11 @@
 package com.kajan.iworkflows.service;
 
-import org.springframework.http.HttpHeaders;
-
-import java.security.Principal;
+import org.springframework.http.ResponseEntity;
 
 public interface NextcloudService {
-    HttpHeaders getNextcloudHeaders(Principal principal);
+    String getFile(String principal, String filePath);
+
+    String getFileAsIworkflows(String filepath);
+
+    ResponseEntity<String> uploadFileAsIworkflows(String filePath, String fileContent);
 }
