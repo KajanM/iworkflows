@@ -14,7 +14,7 @@ public class SubmittedRequest implements Serializable {
     private String taskId;
     private String processInstanceId;
     private String processDefinitionId;
-    private String type;
+    private String name;
     private Date submittedDate;
     private Date dueDate;
     private String assignee;
@@ -24,7 +24,7 @@ public class SubmittedRequest implements Serializable {
         request.setTaskId(task.getId());
         request.setProcessInstanceId(task.getProcessInstanceId());
         request.setProcessDefinitionId(task.getProcessDefinitionId());
-        request.setType(task.getName());
+        request.setName(task.getName());
         request.setSubmittedDate(task.getCreateTime());
         request.setDueDate(task.getDueDate());
         request.setAssignee(task.getAssignee());
