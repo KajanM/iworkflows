@@ -6,9 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.StringJoiner;
 
 import static com.kajan.iworkflows.util.WorkflowConstants.LEAVE_DETAILS_KEY;
@@ -19,21 +20,29 @@ public class HandleAttachment implements JavaDelegate {
 
     private NextcloudService nextcloudService;
 
-    @Value("${nextcloud.uri.file}")
-    private String uploadUrl;
-
     @Override
     public void execute(DelegateExecution execution) {
         SubmittedLeaveFormDetails data = (SubmittedLeaveFormDetails) execution.getVariable(LEAVE_DETAILS_KEY);
 
-        StringJoiner joiner = new StringJoiner("/");
-        joiner.add(data.getFaculty());
-        joiner.add(data.getDepartment());
-        joiner.add(data.getStartDate());
-        joiner.add(data.getEmployeeId() + ".pdf");
-        // TODO: kajan, instead of uploading to the same location, create directories on the fly
-        nextcloudService.uploadFileAsIworkflows("/attachments/leave/leave2.txt", "this is a sample leave file");
-        log.debug("Successfully stored attachment to {}", joiner.toString());
+        List<String> paths = Arrays.asList(
+                "leave-attachments",
+                data.getFaculty(),
+                data.getDepartment(),
+                data.getStartDate().replaceAll("/", "-"));
+
+        StringJoiner path = new StringJoiner("/");
+        paths.forEach(pathFragment -> {
+            path.add(pathFragment);
+            if(!nextcloudService.exists(path.toString())){
+                nextcloudService.createDirectory(path.toString());
+            }
+        });
+
+        //todo: kajan, populate nextcloud with actual attachment
+        path.add(data.getEmployeeId() + ".txt");
+
+        nextcloudService.uploadFileAsIworkflows(path.toString(), "this is a sample leave file");
+        log.debug("Successfully stored attachment to {}", path.toString());
     }
 
     @Autowired

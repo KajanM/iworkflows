@@ -86,6 +86,7 @@ public class NextcloudServiceImpl implements NextcloudService {
         return response;
     }
 
+    @Override
     public List<DavResource> getDirectoryList(String filePath) {
         String url = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, "admin")
                 .replace(PLACEHOLDER_FILE_PATH, filePath);
@@ -96,12 +97,35 @@ public class NextcloudServiceImpl implements NextcloudService {
         } catch (IOException e) {
             log.error("Unable to retrieve directory list from NextCloud", e);
         }
+        if(resources == null) return null;
+
         for (DavResource res : resources)
         {
            log.debug("Found file from server: {}", res);
         }
         return resources;
 
+    }
+
+    @Override
+    public void createDirectory(String directoryPath) {
+        String url = getIworkflowsUri(directoryPath);
+        try {
+            iworkflowsWebDavClient.createDirectory(url);
+        } catch (IOException e) {
+            log.error("Unable to create specified directory in NextCloud", e);
+        }
+    }
+
+    @Override
+    public boolean exists(String resourcePath) {
+        String url = getIworkflowsUri(resourcePath);
+        try {
+            return iworkflowsWebDavClient.exists(url);
+        } catch (IOException e) {
+            log.error("Unable to check if the resource exist in NextCloud or not", e);
+        }
+        return false;
     }
 
     private String getIworkflowsUri(String filepath) {

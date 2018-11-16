@@ -1,7 +1,7 @@
 package com.kajan.iworkflows.workflow;
 
-import com.kajan.iworkflows.workflow.dto.MyTask;
-import com.kajan.iworkflows.workflow.dto.SubmittedRequest;
+import com.kajan.iworkflows.workflow.dto.MyTaskBasicDetails;
+import com.kajan.iworkflows.workflow.dto.SubmittedRequestBasicDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
@@ -58,17 +58,17 @@ public class CamundaTaskController {
      * @return the list of tasks that the requesting user is assigned to
      */
     @GetMapping("my-tasks")
-    public List<MyTask> getTasks(Principal principal) {
-        List<MyTask> myTasks = new ArrayList<>();
+    public List<MyTaskBasicDetails> getTasks(Principal principal) {
+        List<MyTaskBasicDetails> result = new ArrayList<>();
         taskService
                 .createTaskQuery().list().stream()
                 .filter(task -> task.getAssignee() != null && task.getAssignee().equalsIgnoreCase(principal.getName()))
                 .forEach(task -> {
-                    MyTask myTask = MyTask.fromTask(task);
-                    myTask.setRecommendation((String) runtimeService.getVariable(task.getProcessInstanceId(), RECOMMENDATION_KEY));
-                    myTasks.add(myTask);
+                    MyTaskBasicDetails myTaskBasicDetails = MyTaskBasicDetails.fromTask(task);
+                    myTaskBasicDetails.setRecommendation((String) runtimeService.getVariable(task.getProcessInstanceId(), RECOMMENDATION_KEY));
+                    result.add(myTaskBasicDetails);
                 });
-        return myTasks;
+        return result;
     }
 
     /**
@@ -78,15 +78,15 @@ public class CamundaTaskController {
      * @return the list of tasks that the requesting user submitted
      */
     @GetMapping("submitted-tasks")
-    public List<SubmittedRequest> getSubmittedRequests(Principal principal) {
-        List<SubmittedRequest> submittedRequests = new ArrayList<>();
+    public List<SubmittedRequestBasicDetails> getSubmittedRequests(Principal principal) {
+        List<SubmittedRequestBasicDetails> submittedRequestBasicDetails = new ArrayList<>();
         taskService
                 .createTaskQuery().list().stream()
                 .filter(task -> task.getOwner() != null && task.getOwner().equalsIgnoreCase(principal.getName()))
                 .forEach(task -> {
-                    SubmittedRequest request = SubmittedRequest.fromTask(task);
-                    submittedRequests.add(request);
+                    SubmittedRequestBasicDetails request = SubmittedRequestBasicDetails.fromTask(task);
+                    submittedRequestBasicDetails.add(request);
                 });
-        return submittedRequests;
+        return submittedRequestBasicDetails;
     }
 }
