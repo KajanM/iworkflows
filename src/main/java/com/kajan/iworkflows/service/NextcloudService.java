@@ -13,4 +13,8 @@ public interface NextcloudService {
     ResponseEntity<String> uploadFileAsIworkflows(String filePath, String fileContent);
 
     List<DavResource> getDirectoryList(String filePath);
+
+    void createDirectory(String directoryPath);
+
+    boolean exists(String resourcePath);
 }
