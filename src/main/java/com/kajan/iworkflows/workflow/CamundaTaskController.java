@@ -3,6 +3,7 @@ package com.kajan.iworkflows.workflow;
 import com.kajan.iworkflows.workflow.dto.MyTaskBasicDetails;
 import com.kajan.iworkflows.workflow.dto.SubmittedRequestBasicDetails;
 import lombok.extern.slf4j.Slf4j;
+import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.rest.dto.task.TaskDto;
@@ -16,6 +17,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.kajan.iworkflows.util.WorkflowConstants.APPROVED_KEY;
 import static com.kajan.iworkflows.util.WorkflowConstants.RECOMMENDATION_KEY;
 
 @RestController
@@ -25,11 +27,13 @@ public class CamundaTaskController {
 
     private final TaskService taskService;
     private final RuntimeService runtimeService;
+    private final HistoryService historyService;
 
     @Autowired
-    public CamundaTaskController(TaskService taskService, RuntimeService runtimeService) {
+    public CamundaTaskController(TaskService taskService, RuntimeService runtimeService, HistoryService historyService) {
         this.taskService = taskService;
         this.runtimeService = runtimeService;
+        this.historyService = historyService;
     }
 
     /**
@@ -60,6 +64,7 @@ public class CamundaTaskController {
     @GetMapping("my-tasks")
     public List<MyTaskBasicDetails> getTasks(Principal principal) {
         List<MyTaskBasicDetails> result = new ArrayList<>();
+
         taskService
                 .createTaskQuery().list().stream()
                 .filter(task -> task.getAssignee() != null && task.getAssignee().equalsIgnoreCase(principal.getName()))
@@ -79,14 +84,41 @@ public class CamundaTaskController {
      */
     @GetMapping("submitted-tasks")
     public List<SubmittedRequestBasicDetails> getSubmittedRequests(Principal principal) {
-        List<SubmittedRequestBasicDetails> submittedRequestBasicDetails = new ArrayList<>();
+        List<SubmittedRequestBasicDetails> result = new ArrayList<>();
+
         taskService
                 .createTaskQuery().list().stream()
                 .filter(task -> task.getOwner() != null && task.getOwner().equalsIgnoreCase(principal.getName()))
                 .forEach(task -> {
                     SubmittedRequestBasicDetails request = SubmittedRequestBasicDetails.fromTask(task);
-                    submittedRequestBasicDetails.add(request);
+                    result.add(request);
                 });
-        return submittedRequestBasicDetails;
+
+        historyService.createHistoricTaskInstanceQuery()
+                .finished().list().stream()
+                .filter(historicTaskInstance -> historicTaskInstance.getOwner() != null && historicTaskInstance.getOwner().equalsIgnoreCase(principal.getName()))
+                .forEach(instance -> {
+                    SubmittedRequestBasicDetails details = SubmittedRequestBasicDetails.fromHistoricTaskInstance(instance);
+
+                    details.setStatus(getTaskStatus(instance.getProcessInstanceId()));
+                    result.add(details);
+                });
+        return result;
+    }
+
+    private String getTaskStatus(String processInstanceId) {
+        Boolean approved = (Boolean) historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .variableName(APPROVED_KEY).list().get(0).getValue();
+
+        String status;
+        if (approved == null) {
+            status = "deleted";
+        } else if (approved) {
+            status = "approved";
+        } else {
+            status = "rejected";
+        }
+        return status;
     }
 }
