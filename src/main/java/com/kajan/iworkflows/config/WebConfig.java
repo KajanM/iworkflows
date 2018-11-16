@@ -1,5 +1,8 @@
 package com.kajan.iworkflows.config;
 
+import com.github.sardine.Sardine;
+import com.github.sardine.SardineFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
@@ -15,9 +18,21 @@ import javax.net.ssl.SSLContext;
 @Configuration
 public class WebConfig {
 
+    @Value("${iworkflows.credentials.nextcloud.username}")
+    private String nextCloudUsername;
+
+    @Value("${iworkflows.credentials.nextcloud.password}")
+    private String nextcloudPassword;
+
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public Sardine iworkflowsWebDavClient() {
+        return SardineFactory.begin(nextCloudUsername, nextcloudPassword);
     }
 
 
