@@ -29,7 +29,7 @@ public class LearnOrgServiceImpl implements LearnOrgService {
     private final RestTemplate restTemplate;
 
     @Value("${learnorg.uri.userinfo}")
-    private String webserviceUri;
+    private String userInfoUri;
 
     @Autowired
     public LearnOrgServiceImpl(OauthTokenService oauthTokenService, RestTemplate restTemplate) {
@@ -47,15 +47,14 @@ public class LearnOrgServiceImpl implements LearnOrgService {
         MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
         map.add("access_token", accesstoken);
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-        log.debug("uri : " + webserviceUri);
-        ResponseEntity<String> respons = this.restTemplate.postForEntity( "https://10.8.90.4/oauth/user_info.php", request , String.class );
-        log.debug("Response ---------" + respons.getBody());
+        log.debug("uri : " + userInfoUri);
+        ResponseEntity<String> response = this.restTemplate.postForEntity( "http://10.8.90.4/oauth/user_info.php", request , String.class );
+        log.debug("Response ---------" + response.getBody());
 
-        // Get the appprover From the recieved JSON response
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = null;
         try {
-            node = mapper.readTree(respons.getBody());
+            node = mapper.readTree(response.getBody());
         } catch (IOException e) {
             e.printStackTrace();
         }

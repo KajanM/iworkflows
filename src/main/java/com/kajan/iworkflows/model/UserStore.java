@@ -25,7 +25,7 @@ public class UserStore {
         this.faculty = user.path(FACULTY_KEY).asText();
         this.department = user.path(DEPARTMENT_KEY).asText();
         this.email = user.path(EMAIL_KEY).asText();
-        this.mobileNo = user.path(MOBILE_KEY).asText();
+        this.mobileNo = user.path(TELEPHONE_KEY).asText();
         this.telephoneNo = user.path(TELEPHONE_KEY).asText();
         this.address = user.path(ADDRESS_KEY).asText();
         this.casual = user.path(CASUAL_KEY).asInt();

@@ -25,8 +25,8 @@ public class Constants {
     public static final String FACULTY_KEY = "Faculty";
     public static final String DEPARTMENT_KEY = "Department";
     public static final String EMAIL_KEY = "Primary_Email";
-    public static final String MOBILE_KEY = "Current_Mobile";
-    public static final String TELEPHONE_KEY = "Permanat_Telephone";
+    public static final String MOBILE_KEY = "Permanat_Telephone";
+    public static final String TELEPHONE_KEY = "Current_Home_Telephone";
     public static final String ADDRESS_KEY = "Current_Address";
     public static final String CASUAL_KEY = "Casual_Leave";
     public static final String MEDICAL_KEY = "Medical_Leave";
