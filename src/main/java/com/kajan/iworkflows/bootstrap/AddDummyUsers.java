@@ -18,12 +18,12 @@ public class AddDummyUsers {
                     "kasthuri.14@cse.mrt.ac.lk", "077-9577217", 3, 4, 1)));
             log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("kajan", "140709U", "Engineering", "CSE", "Student",
                     "kajan.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
-            log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("ramiya", "140709U", "Engineering", "CSE", "Student",
-                    "kajan.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
-            log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("kirisanth", "140709U", "Engineering", "CSE", "Student",
-                    "kajan.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
-            log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("shadhini", "140709U", "Engineering", "CSE", "Student",
-                    "kajan.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
+            log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("ramiya", "140494D", "Engineering", "CSE", "Student",
+                    "ramiya.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
+            log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("kirisanth", "140306G", "Engineering", "CSE", "Student",
+                    "kirisanth.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
+            log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("shadhini", "140512V", "Engineering", "CSE", "Student",
+                    "shadhini.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
         };
     }
 
