@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class LeavePostRejectService implements JavaDelegate {
     @Override
-    public void execute(DelegateExecution execution) throws Exception {
+    public void execute(DelegateExecution execution) {
         log.debug("Leave request rejected");
     }
 }
