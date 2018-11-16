@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.workflow.leave;
 
+import com.kajan.iworkflows.workflow.dto.MyTaskFullDetails;
 import com.kajan.iworkflows.workflow.dto.SubmittedLeaveFormDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RuntimeService;
@@ -60,5 +61,13 @@ public class CamundaLeaveProcessController {
             log.error("Unable to complete the task", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/details/{processInstanceId}")
+    public MyTaskFullDetails getDetails(@PathVariable("processInstanceId") String processInstanceId) {
+        SubmittedLeaveFormDetails leaveFormDetails =  (SubmittedLeaveFormDetails)runtimeService.getVariable(processInstanceId, LEAVE_DETAILS_KEY);
+        MyTaskFullDetails fullDetails = new MyTaskFullDetails();
+        fullDetails.setLeaveFormDetails(leaveFormDetails);
+        return fullDetails;
     }
 }
