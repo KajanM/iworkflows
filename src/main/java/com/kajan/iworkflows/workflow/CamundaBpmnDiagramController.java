@@ -24,15 +24,15 @@ public class CamundaBpmnDiagramController {
     private RepositoryService repositoryService;
     private TaskService taskService;
 
-    @GetMapping("/diagram/{taskId}")
-    public Map<String, String> getDiagram(@PathVariable("taskId") String taskId) {
-        Task task = taskService.createTaskQuery().taskId(taskId).list().get(0);
+    @GetMapping("/diagram/{processInstanceId}")
+    public Map<String, String> getDiagram(@PathVariable("processInstanceId") String processInstanceId) {
+        Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).list().get(0);
         String processDefinitionId = task.getProcessDefinitionId();
         String diagram = null;
         try (final Reader reader = new InputStreamReader(repositoryService.getProcessModel(processDefinitionId))) {
             diagram = CharStreams.toString(reader);
         } catch (Exception e) {
-            log.error("Unable to get BPMN diagram for processDefinitionId: {}", taskId, e);
+            log.error("Unable to get BPMN diagram for processDefinitionId: {}", processInstanceId, e);
         }
         Map<String, String> resultMap = new HashMap<>();
         resultMap.put("xml", diagram);
