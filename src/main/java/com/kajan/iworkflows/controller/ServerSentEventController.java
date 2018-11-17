@@ -15,14 +15,14 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-public class ServerSideEventController {
+public class ServerSentEventController {
 
     public static final Map<Principal, SseEmitter> emitters = Collections.synchronizedMap(new HashMap<>());
 
     private final ServerSideEventService serverSideEventService;
 
     @Autowired
-    public ServerSideEventController(ServerSideEventService serverSideEventService) {
+    public ServerSentEventController(ServerSideEventService serverSideEventService) {
         this.serverSideEventService = serverSideEventService;
     }
 
