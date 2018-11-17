@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -78,12 +79,14 @@ public class NextcloudServiceImpl implements NextcloudService {
     }
 
     @Override
-    public ResponseEntity<String> uploadFileAsIworkflows(String filePath, String fileContent) {
-        String uri = getIworkflowsUri(filePath);
-        ResponseEntity<String> response = restTemplate.exchange
-                (uri, HttpMethod.PUT, new HttpEntity<>(fileContent, createHeaders("admin", "1234")), String.class);
-
-        return response;
+    public ResponseEntity<String> uploadFileAsIworkflows(String filePath, MultipartFile fileContent) {
+        try {
+            String uri = getIworkflowsUri(filePath);
+            iworkflowsWebDavClient.put(uri, fileContent.getInputStream());
+        } catch (IOException e) {
+            log.error("Unable to get stream from file");
+        }
+        return ResponseEntity.ok().build();
     }
 
     @Override
@@ -118,14 +121,14 @@ public class NextcloudServiceImpl implements NextcloudService {
     }
 
     @Override
-    public boolean exists(String resourcePath) {
+    public boolean notExists(String resourcePath) {
         String url = getIworkflowsUri(resourcePath);
         try {
-            return iworkflowsWebDavClient.exists(url);
+            return !iworkflowsWebDavClient.exists(url);
         } catch (IOException e) {
             log.error("Unable to check if the resource exist in NextCloud or not", e);
         }
-        return false;
+        return true;
     }
 
     private String getIworkflowsUri(String filepath) {

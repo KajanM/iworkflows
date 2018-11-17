@@ -33,7 +33,7 @@ public class HandleAttachment implements JavaDelegate {
         StringJoiner path = new StringJoiner("/");
         paths.forEach(pathFragment -> {
             path.add(pathFragment);
-            if(!nextcloudService.exists(path.toString())){
+            if(nextcloudService.notExists(path.toString())){
                 nextcloudService.createDirectory(path.toString());
             }
         });
@@ -41,7 +41,7 @@ public class HandleAttachment implements JavaDelegate {
         //todo: kajan, populate nextcloud with actual attachment
         path.add(data.getEmployeeId() + ".txt");
 
-        nextcloudService.uploadFileAsIworkflows(path.toString(), "this is a sample leave file");
+        //nextcloudService.uploadFileAsIworkflows(path.toString(), "this is a sample leave file");
         log.debug("Successfully stored attachment to {}", path.toString());
     }
 

@@ -1,9 +1,9 @@
 logging:
   level:
     com.kajan: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.ldap: DEBUG
-    org.camunda.bpm.springboot: DEBUG
+#    org.springframework.security: DEBUG
+#    org.springframework.ldap: DEBUG
+#    org.camunda.bpm.springboot: DEBUG
 
 camunda.bpm:
   admin-user:
