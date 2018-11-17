@@ -33,10 +33,20 @@ spring:
             client-id: 1006906289665-gnqn7aq78n707c2glp580jf5lk26lbs1.apps.googleusercontent.com
             client-secret: FDfO-FBzTlFUT3k7r7WYubYk
             redirect-uri-template: http://localhost:8080/token/code/google
+          learnorg:
+            client-id: iworkflows
+            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
+            redirect-uri-template: http://localhost:4200/connect/learnorg
+            authorization-grant-type: authorization_code
+            client-name: LearnOrg
+            scope: profile
         provider:
           nextcloud:
             authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
             token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+          learnorg:
+            authorization-uri: http://10.8.90.4/oauth/login.php
+            token-uri: http://10.8.90.4/oauth/token.php
 
 moodle:
   name: Moodle
@@ -62,6 +72,10 @@ iworkflows:
       username: admin
       password: 1234
 
+learnorg:
+  uri:
+    system: https://10.8.90.4/oauth/iworkflows.php?department={role}
+    userinfo: http://10.8.90.4/oauth/user_info.php
 ---
 spring:
   profiles: h2
@@ -96,11 +110,21 @@ spring:
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
+          learnorg:
+            client-id: iworkflows
+            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
+            redirect-uri-template: http://localhost:4200/connect/learn_org
+            authorization-grant-type: authorization_code
+            client-name: LearnOrg
+            scope: profile
 
         provider:
           nextcloud:
             authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
             token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+          learn_org:
+            authorization-uri: https://10.8.90.4/oauth/login.php
+            token-uri: https://10.8.90.4/oauth/token.php
 
 nextcloud:
   uri:
@@ -124,10 +148,21 @@ spring:
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
+          learnorg:
+            client-id: iworkflows
+            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
+            redirect-uri-template: http://localhost:4200/connect/learnorg
+            authorization-grant-type: authorization_code
+            client-name: LearnOrg
+            scope: profile
 
         provider:
           nextcloud:
             nextcloud:
               authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
               token-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/api/v1/token
+            learnorg:
+              learnorg:
+                authorization-uri: https://10.8.90.4/oauth/login.php
+                token-uri: https://10.8.90.4/oauth/token.php
 
