@@ -6,6 +6,7 @@ import com.kajan.iworkflows.model.mock.DummyUserStore;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.service.impl.DummyUserStoreServiceImpl;
 import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
+import com.kajan.iworkflows.service.impl.NextcloudServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,41 +26,26 @@ public class CamundaFormController {
     private final DummyUserStoreServiceImpl storeService;
     private final OauthTokenService oauthTokenService;
     private final RestTemplate restTemplate;
+    private final LearnOrgServiceImpl learnOrgService;
 
     @Autowired
-    public CamundaFormController(DummyUserStoreServiceImpl storeService,OauthTokenService oauthTokenService, RestTemplate restTemplate)
+    public CamundaFormController(DummyUserStoreServiceImpl storeService,OauthTokenService oauthTokenService, RestTemplate restTemplate, LearnOrgServiceImpl learnOrgService)
     {
         this.storeService = storeService;
         this.oauthTokenService = oauthTokenService;
         this.restTemplate = restTemplate;
+        this.learnOrgService = learnOrgService;
     }
 
     @GetMapping("leave-form")
     public LeaveFormData leaveForm(Principal principal) {
 //        List<DummyUserStore> userStoreList = new ArrayList<>();
-//
 //        storeService.findByPrincipal(principal.getName()).forEach(userStoreList::add);
 //        DummyUserStore userStore = userStoreList.get(0);
 
-        LearnOrgServiceImpl userInfo = new LearnOrgServiceImpl(oauthTokenService, restTemplate);
-        UserStore userStore = new UserStore(userInfo.getLearnOrgUserInfo(principal));
 
-        LeaveFormData form = new LeaveFormData();
-
-//        form.setId(userStore.getId());
-        form.setPrincipal(userStore.getFistName());
-        form.setEmployeeId(userStore.getEmployeeId());
-        form.setFaculty(userStore.getFaculty());
-        form.setDepartment(userStore.getDepartment());
-        form.setRole(userStore.getRole());
-        form.setEmail(userStore.getEmail());
-        form.setMobileNo(userStore.getMobileNo());
-        form.setTelephoneNo(userStore.getTelephoneNo());
-        form.setAddress(userStore.getAddress());
-        form.setCasual(userStore.getCasual());
-        form.setMedical(userStore.getMedical());
-        form.setVacation(userStore.getVacation());
-
+        UserStore userStore = learnOrgService.getLearnOrgUserInfo(principal);
+        LeaveFormData form = LeaveFormData.fromUserStore(userStore);
         return form;
     }
 }

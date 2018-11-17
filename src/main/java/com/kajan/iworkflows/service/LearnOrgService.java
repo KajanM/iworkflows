@@ -1,9 +1,9 @@
 package com.kajan.iworkflows.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.kajan.iworkflows.model.UserStore;
 
 import java.security.Principal;
 
 public interface LearnOrgService {
-    JsonNode getLearnOrgUserInfo(Principal principal);
+    UserStore getLearnOrgUserInfo(Principal principal);
 }
