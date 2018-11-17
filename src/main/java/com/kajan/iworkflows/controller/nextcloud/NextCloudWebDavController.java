@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,11 +37,6 @@ public class NextCloudWebDavController {
     public ResponseEntity<String> getWelcomeTxtAsIworkflows(Principal principal) {
         String file = nextcloudService.getFileAsIworkflows(WELCOME_FILE_PATH);
         return new ResponseEntity<>(file, HttpStatus.OK);
-    }
-
-    @PostMapping("/files/iworkflows")
-    public ResponseEntity<String> storeFile() {
-        return nextcloudService.uploadFileAsIworkflows("/attachments/leave/leave.txt", "this is a sample upload");
     }
 
     @GetMapping("/files/dir")
