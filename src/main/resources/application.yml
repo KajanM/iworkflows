@@ -5,6 +5,8 @@ logging:
 #    org.springframework.ldap: DEBUG
 #    org.camunda.bpm.springboot: DEBUG
 
+testing: true
+
 camunda.bpm:
   admin-user:
     id: kajan
