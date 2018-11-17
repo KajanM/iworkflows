@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 import java.security.Principal;
 import java.text.DateFormat;
@@ -44,13 +45,17 @@ public class FileController {
 
         StringJoiner path = new StringJoiner("/");
         paths.forEach(pathFragment -> {
-            path.add(pathFragment);
+            path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
             if (nextcloudService.notExists(path.toString())) {
                 nextcloudService.createDirectory(path.toString());
             }
         });
 
-        path.add(file.getOriginalFilename());
+        if (file.getOriginalFilename() == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        path.add(UriUtils.encodePathSegment(file.getOriginalFilename(), "UTF-8"));
 
         nextcloudService.uploadFileAsIworkflows(path.toString(), file);
         log.debug("Successfully stored attachment to {}", path.toString());
