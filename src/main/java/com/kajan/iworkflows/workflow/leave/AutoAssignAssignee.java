@@ -2,8 +2,8 @@ package com.kajan.iworkflows.workflow.leave;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kajan.iworkflows.model.GroupMapper;
 import com.kajan.iworkflows.dto.TokenDTO;
+import com.kajan.iworkflows.model.GroupMapper;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.service.impl.GroupMapperServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,10 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,27 +22,19 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-
+import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 
-import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_DEPARTMENT;
-import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 import static com.kajan.iworkflows.util.Constants.SYSTEM_KEY;
+import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
+import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
+import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
 
 
 @Service("autoAssignAssignee")
@@ -51,6 +46,9 @@ public class AutoAssignAssignee implements JavaDelegate  {
     private final OauthTokenService oauthTokenService;
     private final String webserviceUri;
     private final String HEADER_VALUE_BASIC = "Basic ";
+
+    @Value("${testing}")
+    private Boolean testing;
 
     @Autowired
     public AutoAssignAssignee(GroupMapperServiceImpl mapService, RestTemplate restTemplate, OauthTokenService oauthTokenService,
@@ -99,31 +97,38 @@ public class AutoAssignAssignee implements JavaDelegate  {
             e.printStackTrace();
         }
     }
+
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         // owner is the one who submitted the leave request
-        String owner = (String) execution.getVariable("owner");
+        String owner = (String) execution.getVariable(OWNER_KEY);
         log.debug("Owner of the tasks is {}", owner);
 
-        Collection<? extends GrantedAuthority> groups = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-        log.debug("task owner's groups : " + groups);
+        String approver = null;
 
-        List<GroupMapper> userStoreList = new ArrayList<>();
-        GroupMapper userStore;
-        String role = null;
-        for (GrantedAuthority group : groups) {
-            if ( !(mapService.findByIworkflowsRole(group.toString())).iterator().hasNext()){
-                continue;
-            }
-            mapService.findByIworkflowsRole(group.toString()).forEach(userStoreList::add);
-            Iterable<GroupMapper> results = mapService.findByIworkflowsRole(group.toString());
-            userStore = userStoreList.get(0);
-            role = userStore.getLearnorgRole();
-            log.debug("learnorg department : "+ role);
+        if(testing) {
+            //since learnorg can only be acccessed via uni wifi :(
+            approver = "kajan";
+        } else {
+            Collection<? extends GrantedAuthority> groups = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+            log.debug("task owner's groups : " + groups);
 
-            String url = buildUrl(role);
+            List<GroupMapper> userStoreList = new ArrayList<>();
+            GroupMapper userStore;
+            String role;
+            for (GrantedAuthority group : groups) {
+                if (!(mapService.findByIworkflowsRole(group.toString())).iterator().hasNext()) {
+                    continue;
+                }
+                mapService.findByIworkflowsRole(group.toString()).forEach(userStoreList::add);
+                Iterable<GroupMapper> results = mapService.findByIworkflowsRole(group.toString());
+                userStore = userStoreList.get(0);
+                role = userStore.getLearnorgRole();
+                log.debug("learnorg department : {}", role);
+
+                String url = buildUrl(role);
 //            String principal = SecurityContextHolder.getContext().getAuthentication().getName();
-            log.debug("system key : "+ SYSTEM_KEY );
+                log.debug("system key : {}", SYSTEM_KEY);
 
 //            String encoding = Base64.getEncoder().encodeToString(("iworkflows:iworkflows").getBytes());
 //            HttpHeaders headers = new HttpHeaders();
@@ -135,28 +140,28 @@ public class AutoAssignAssignee implements JavaDelegate  {
 //            log.debug("Response ---------" + response.getBody());
 
 
-            TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
-            String accesstoken = tokenDTO.getAccessToken().getValue();
-            log.debug("Access Token : " + accesstoken);
+                TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
+                String accesstoken = tokenDTO.getAccessToken().getValue();
+                log.debug("Access Token : " + accesstoken);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-            map.add("access_token", accesstoken);
-            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-            ResponseEntity<String> response = this.restTemplate.postForEntity( url, request , String.class );
-            log.debug("Response ---------" + response.getBody());
+                MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+                map.add("access_token", accesstoken);
+                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+                ResponseEntity<String> response = this.restTemplate.postForEntity(url, request, String.class);
+                log.debug("Response --------- {}", response.getBody());
 
-            // Get the appprover From the recieved JSON response
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(response.getBody());
-            String approver = node.path("Department-Head").asText();
-            log.debug("Auto assigning the task to {}", approver);
-
-            execution.setVariable(APPROVER_KEY, approver);
-            break;
+                // Get the appprover From the recieved JSON response
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode node = mapper.readTree(response.getBody());
+                approver = node.path("Department-Head").asText();
+                break;
+            }
         }
+        log.debug("Auto assigning the task to {}", approver);
+        execution.setVariable(APPROVER_KEY, approver);
 
     }
 

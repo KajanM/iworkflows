@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.model;
 
+import com.kajan.iworkflows.model.mock.DummyUserStore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -41,6 +42,26 @@ public class LeaveFormData {
         data.setCasualAllowed(userStore.getCasualAllowed());
         data.setMedicalAllowed(userStore.getMedicalAllowed());
         data.setVacationAllowed(userStore.getVacationAllowed());
+        return data;
+    }
+
+    public static LeaveFormData fromDummyUserStore(DummyUserStore userStore) {
+        LeaveFormData data = new LeaveFormData();
+        data.setPrincipal(userStore.getPrincipal());
+        data.setEmployeeId(userStore.getEmployeeId());
+        data.setFaculty(userStore.getFaculty());
+        data.setDepartment(userStore.getDepartment());
+        data.setRole(userStore.getRole());
+        data.setEmail(userStore.getEmail());
+        data.setMobileNo(userStore.getMobileNo());
+        data.setTelephoneNo("0214568973");
+        data.setAddress("Vavuniya");
+        data.setCasual(5);
+        data.setMedical(7);
+        data.setVacation(8);
+        data.setCasualAllowed(21);
+        data.setMedicalAllowed(20);
+        data.setVacationAllowed(30);
         return data;
     }
 }
