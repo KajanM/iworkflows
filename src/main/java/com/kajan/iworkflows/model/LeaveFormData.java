@@ -20,6 +20,9 @@ public class LeaveFormData {
     private int casual;
     private int medical;
     private int vacation;
+    private int casualAllowed;
+    private int medicalAllowed;
+    private int vacationAllowed;
 
     public static LeaveFormData fromUserStore(UserStore userStore) {
         LeaveFormData data = new LeaveFormData();
@@ -36,7 +39,9 @@ public class LeaveFormData {
         data.setCasual(userStore.getCasual());
         data.setMedical(userStore.getMedical());
         data.setVacation(userStore.getVacation());
-
+        data.setCasualAllowed(userStore.getCasualAllowed());
+        data.setMedicalAllowed(userStore.getMedicalAllowed());
+        data.setVacationAllowed(userStore.getVacationAllowed());
         return data;
     }
 }

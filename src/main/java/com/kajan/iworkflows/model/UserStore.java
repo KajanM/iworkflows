@@ -19,5 +19,8 @@ public class UserStore {
     private int casual;
     private int medical;
     private int vacation;
+    private int casualAllowed;
+    private int medicalAllowed;
+    private int vacationAllowed;
 
 }
