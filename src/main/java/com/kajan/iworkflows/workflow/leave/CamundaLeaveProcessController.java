@@ -53,19 +53,25 @@ public class CamundaLeaveProcessController {
     @PostMapping("/complete/{taskId}/{approved}")
     public ResponseEntity<?> completeTask(@PathVariable("taskId") String taskId, @PathVariable("approved") Boolean approved) {
         try {
-            taskService.setVariable(taskId, APPROVED_KEY, approved);
+            String processInstanceId = taskService.createTaskQuery().taskId(taskId).list().get(0).getProcessInstanceId();
+            Object headApproved = runtimeService.getVariable(processInstanceId, HEAD_APPROVED_KEY);
+            if (headApproved == null) {
+                taskService.setVariable(taskId, HEAD_APPROVED_KEY, approved);
+            } else {
+                taskService.setVariable(taskId, CLERK_APPROVED_KEY, approved);
+            }
             taskService.complete(taskId);
             log.debug("Task {} completed successfully", taskId);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             log.error("Unable to complete the task", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping("/details/{processInstanceId}")
     public MyTaskFullDetails getDetails(@PathVariable("processInstanceId") String processInstanceId) {
-        SubmittedLeaveFormDetails leaveFormDetails =  (SubmittedLeaveFormDetails)runtimeService.getVariable(processInstanceId, LEAVE_DETAILS_KEY);
+        SubmittedLeaveFormDetails leaveFormDetails = (SubmittedLeaveFormDetails) runtimeService.getVariable(processInstanceId, LEAVE_DETAILS_KEY);
         MyTaskFullDetails fullDetails = new MyTaskFullDetails();
         fullDetails.setLeaveFormDetails(leaveFormDetails);
         return fullDetails;

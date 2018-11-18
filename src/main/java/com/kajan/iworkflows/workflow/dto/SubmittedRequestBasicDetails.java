@@ -26,7 +26,7 @@ public class SubmittedRequestBasicDetails implements Serializable {
         request.setTaskId(task.getId());
         request.setProcessInstanceId(task.getProcessInstanceId());
         request.setProcessDefinitionId(task.getProcessDefinitionId());
-        request.setStatus("in_progress");
+        //request.setStatus("in_progress");
         request.setName(task.getName());
         request.setSubmittedDate(task.getCreateTime());
         request.setDueDate(task.getDueDate());

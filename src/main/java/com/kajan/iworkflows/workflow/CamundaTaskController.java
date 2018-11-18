@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.rest.dto.task.TaskDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,8 +18,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.kajan.iworkflows.util.WorkflowConstants.APPROVED_KEY;
-import static com.kajan.iworkflows.util.WorkflowConstants.RECOMMENDATION_KEY;
+import static com.kajan.iworkflows.util.WorkflowConstants.*;
 
 @RestController
 @RequestMapping("api/v1/camunda/")
@@ -91,6 +91,7 @@ public class CamundaTaskController {
                 .filter(task -> task.getOwner() != null && task.getOwner().equalsIgnoreCase(principal.getName()))
                 .forEach(task -> {
                     SubmittedRequestBasicDetails request = SubmittedRequestBasicDetails.fromTask(task);
+                    request.setStatus(getTaskStatus(task.getProcessInstanceId()));
                     result.add(request);
                 });
 
@@ -107,18 +108,23 @@ public class CamundaTaskController {
     }
 
     private String getTaskStatus(String processInstanceId) {
-        Boolean approved = (Boolean) historyService.createHistoricVariableInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .variableName(APPROVED_KEY).list().get(0).getValue();
 
-        String status;
-        if (approved == null) {
-            status = "deleted";
-        } else if (approved) {
-            status = "approved";
-        } else {
-            status = "rejected";
-        }
-        return status;
+        List<HistoricVariableInstance> headApprovedList = historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .variableName(HEAD_APPROVED_KEY).list();
+
+        List<HistoricVariableInstance> clerkApprovedList = historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .variableName(CLERK_APPROVED_KEY).list();
+
+        if(headApprovedList.isEmpty()) return "in_progress";
+
+        if(!(Boolean) headApprovedList.get(0).getValue()) return "rejected";
+
+        if (clerkApprovedList.isEmpty()) return "head_recommended";
+
+        if(!(Boolean) clerkApprovedList.get(0).getValue()) return "rejected";
+
+        return "approved";
     }
 }
