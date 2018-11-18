@@ -72,10 +72,10 @@
       <bpmn:outgoing>SequenceFlow_0sd1it4</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="SequenceFlow_0sd1it4" name="no" sourceRef="ExclusiveGateway_0ewj8hc" targetRef="leave_post_reject_service">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not approved}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not headApproved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_1uidix0" name="yes" sourceRef="ExclusiveGateway_0ewj8hc" targetRef="Task_1idyi4l">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{approved}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{headApproved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0ycr5sh" sourceRef="determine_recommendation" targetRef="ExclusiveGateway_01waf2f" />
     <bpmn:sequenceFlow id="SequenceFlow_0r73bwm" sourceRef="ExclusiveGateway_01waf2f" targetRef="review_leave" />
