@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 public class UserStore {
     //    private Long id;
     private String firstName;
-    private String userID;
+    private String employeeId;
     private String faculty;
     private String department;
     private String role;

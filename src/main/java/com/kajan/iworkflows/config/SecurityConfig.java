@@ -62,14 +62,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    //@Override
-    //public void configure(AuthenticationManagerBuilder auth) throws Exception {
-    //    auth
-    //            .ldapAuthentication()
-    //            .userDnPatterns("cn={0},ou=users")
-    //            .groupSearchFilter("member={0}")
-    //            .contextSource()
-    //            .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
-    //}
+//    @Override
+//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth
+//                .ldapAuthentication()
+//                .userDnPatterns("cn={0},ou=users")
+//                .groupSearchFilter("member={0}")
+//                .contextSource()
+//                .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
+//    }
 
 }
