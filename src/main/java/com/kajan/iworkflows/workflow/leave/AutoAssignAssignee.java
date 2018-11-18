@@ -2,8 +2,8 @@ package com.kajan.iworkflows.workflow.leave;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.model.GroupMapper;
+import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.service.impl.GroupMapperServiceImpl;
 import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
@@ -25,6 +25,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 
@@ -104,7 +105,7 @@ public class AutoAssignAssignee implements JavaDelegate {
 
         String approver = null;
 
-        if (testing) {
+        if(testing) {
             //since learnorg can only be acccessed via uni wifi :(
             approver = "kajan";
         } else {
@@ -130,18 +131,18 @@ public class AutoAssignAssignee implements JavaDelegate {
                 ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
                 log.debug("Response ---------" + response.getBody());
 
-                //            TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
-                //            String accesstoken = tokenDTO.getAccessToken().getValue();
-                //            log.debug("Access Token : " + accesstoken);
-                //
-                //            HttpHeaders headers = new HttpHeaders();
-                //            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                //
-                //            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-                //            map.add("access_token", accesstoken);
-                //            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-                //            ResponseEntity<String> response = this.restTemplate.postForEntity( url, request , String.class );
-                //            log.debug("Response ---------" + response.getBody());
+//            TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
+//            String accesstoken = tokenDTO.getAccessToken().getValue();
+//            log.debug("Access Token : " + accesstoken);
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+//            map.add("access_token", accesstoken);
+//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+//            ResponseEntity<String> response = this.restTemplate.postForEntity( url, request , String.class );
+//            log.debug("Response ---------" + response.getBody());
 
                 // Get the appprover From the recieved JSON response
                 ObjectMapper mapper = new ObjectMapper();
