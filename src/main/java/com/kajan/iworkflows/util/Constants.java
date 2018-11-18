@@ -7,6 +7,7 @@ public class Constants {
     public static final String PLACEHOLDER_MOODLE_WSTOKEN = "{wstoken}";
     public static final String PLACEHOLDER_MOODLE_WSFUNCTION = "{wsfunction}";
     public static final String PLACEHOLDER_LEARNORG_DEPARTMENT = "{role}";
+    public static final String PLACEHOLDER_LEARNORG_WSFUNCTION = "{wsfunction}";
 
     public static final String TOKEN_KEY = "token";
     public static final String ERROR_KEY = "error";

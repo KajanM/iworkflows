@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_DEPARTMENT;
+import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_WSFUNCTION;
 import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
 
@@ -38,6 +39,7 @@ public class AutoAssignAssignee implements JavaDelegate {
     private final RestTemplate restTemplate;
     private final LearnOrgServiceImpl learnOrgService;
     private final String webserviceUri;
+    private final String wsfunction;
 
     @Value("${testing}")
     private Boolean testing;
@@ -45,11 +47,13 @@ public class AutoAssignAssignee implements JavaDelegate {
     @Autowired
     public AutoAssignAssignee(GroupMapperServiceImpl mapService, RestTemplate restTemplate,
                               LearnOrgServiceImpl learnOrgService,
-                              @Value("${learnorg.uri.system}") String webserviceUri) {
+                              @Value("${learnorg.uri.system}") String webserviceUri,
+                              @Value("${learnorg.wsfunction.get-department-head}") String wsfunction) {
         this.mapService = mapService;
         this.restTemplate = restTemplate;
         this.webserviceUri = webserviceUri;
         this.learnOrgService = learnOrgService;
+        this.wsfunction = wsfunction;
     }
 
     static {
@@ -57,14 +61,16 @@ public class AutoAssignAssignee implements JavaDelegate {
     }
 
     private static void disableSslVerification() {
-        try{
+        try {
             // Create a trust manager that does not validate certificate chains
-            TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
                 public X509Certificate[] getAcceptedIssuers() {
                     return null;
                 }
+
                 public void checkClientTrusted(X509Certificate[] certs, String authType) {
                 }
+
                 public void checkServerTrusted(X509Certificate[] certs, String authType) {
                 }
             }
@@ -99,7 +105,7 @@ public class AutoAssignAssignee implements JavaDelegate {
 
         String approver = null;
 
-        if(testing) {
+        if (testing) {
             //since learnorg can only be acccessed via uni wifi :(
             approver = "kajan";
         } else {
@@ -118,7 +124,7 @@ public class AutoAssignAssignee implements JavaDelegate {
                 role = userStore.getLearnorgRole();
                 log.debug("learnorg department : " + role);
 
-                String url = buildUrl(role);
+                String url = buildUrl(role, wsfunction);
                 log.debug("url : " + url);
 
                 HttpEntity<String> request = new HttpEntity<>("", learnOrgService.getLearnOrgHeadersAsIworkflows());
@@ -150,8 +156,9 @@ public class AutoAssignAssignee implements JavaDelegate {
 
     }
 
-    private String buildUrl(String role) {
-        String uri = webserviceUri.replace(PLACEHOLDER_LEARNORG_DEPARTMENT, role);
+    private String buildUrl(String role, String wsfunction) {
+        String uri = webserviceUri.replace(PLACEHOLDER_LEARNORG_DEPARTMENT, role)
+                .replace(PLACEHOLDER_LEARNORG_WSFUNCTION, wsfunction);
         log.debug("BuiltURL: {}", uri);
         return uri;
     }
