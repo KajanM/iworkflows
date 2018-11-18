@@ -1,10 +1,13 @@
 package com.kajan.iworkflows.controller;
 
+import com.kajan.iworkflows.model.UserStore;
 import com.kajan.iworkflows.model.mock.DummyUserStore;
 import com.kajan.iworkflows.service.NextcloudService;
 import com.kajan.iworkflows.service.impl.DummyUserStoreServiceImpl;
+import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,28 +31,48 @@ public class FileController {
 
     private NextcloudService nextcloudService;
     private DummyUserStoreServiceImpl userStoreService;
+    private LearnOrgServiceImpl learnOrgService;
+
+    @Value("${testing}")
+    private Boolean testing;
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Principal principal) {
         // TODO: replace logic of getting user data from dummy user store
-        DummyUserStore userStore = userStoreService.findByPrincipal(principal.getName()).iterator().next();
-
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        List<String> paths = Arrays.asList(
-                "leave-attachments",
-                userStore.getFaculty(),
-                userStore.getDepartment(),
-                dateFormat.format(new Date()),
-                userStore.getEmployeeId());
-
         StringJoiner path = new StringJoiner("/");
-        paths.forEach(pathFragment -> {
-            path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
-            if (nextcloudService.notExists(path.toString())) {
-                nextcloudService.createDirectory(path.toString());
-            }
-        });
+        if (testing) {
+            DummyUserStore userStore = userStoreService.findByPrincipal(principal.getName()).iterator().next();
+            List<String> paths = Arrays.asList(
+                    "leave-attachments",
+                    userStore.getFaculty(),
+                    userStore.getDepartment(),
+                    dateFormat.format(new Date()),
+                    userStore.getEmployeeId());
+
+            paths.forEach(pathFragment -> {
+                path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
+                if (nextcloudService.notExists(path.toString())) {
+                    nextcloudService.createDirectory(path.toString());
+                }
+            });
+        } else {
+            UserStore userStore = learnOrgService.getLearnOrgUserInfo(principal);
+            List<String> paths = Arrays.asList(
+                    "leave-attachments",
+                    userStore.getFaculty(),
+                    userStore.getDepartment(),
+                    dateFormat.format(new Date()),
+                    userStore.getEmployeeId());
+
+            paths.forEach(pathFragment -> {
+                path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
+                if (nextcloudService.notExists(path.toString())) {
+                    nextcloudService.createDirectory(path.toString());
+                }
+            });
+        }
+
 
         if (file.getOriginalFilename() == null) {
             return ResponseEntity.badRequest().build();
@@ -72,5 +95,10 @@ public class FileController {
     @Autowired
     public void setUserStoreService(DummyUserStoreServiceImpl userStoreService) {
         this.userStoreService = userStoreService;
+    }
+
+    @Autowired
+    public void setLearnOrgService(LearnOrgServiceImpl learnOrgService) {
+        this.learnOrgService = learnOrgService;
     }
 }

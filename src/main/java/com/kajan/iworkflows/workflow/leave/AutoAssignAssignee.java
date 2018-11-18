@@ -3,8 +3,6 @@ package com.kajan.iworkflows.workflow.leave;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kajan.iworkflows.model.GroupMapper;
-import com.kajan.iworkflows.dto.TokenDTO;
-import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.service.impl.GroupMapperServiceImpl;
 import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -12,12 +10,11 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.*;
@@ -29,8 +26,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_DEPARTMENT;
-import static com.kajan.iworkflows.util.Constants.SYSTEM_KEY;
-import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
 import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
 

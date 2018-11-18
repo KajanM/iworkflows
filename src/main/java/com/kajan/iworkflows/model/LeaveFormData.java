@@ -28,7 +28,7 @@ public class LeaveFormData {
         LeaveFormData data = new LeaveFormData();
 //        data.setId(userStore.getId());
         data.setPrincipal(userStore.getFirstName());
-        data.setEmployeeId(userStore.getUserID());
+        data.setEmployeeId(userStore.getEmployeeId());
         data.setFaculty(userStore.getFaculty());
         data.setDepartment(userStore.getDepartment());
         data.setRole(userStore.getRole());
