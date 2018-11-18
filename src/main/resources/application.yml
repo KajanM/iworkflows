@@ -73,6 +73,9 @@ iworkflows:
     nextcloud:
       username: admin
       password: 1234
+    learnorg:
+      username: iworkflows
+      password: iworkflows
 
 learnorg:
   uri:

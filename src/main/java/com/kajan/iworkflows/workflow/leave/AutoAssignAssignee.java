@@ -2,19 +2,17 @@ package com.kajan.iworkflows.workflow.leave;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.model.GroupMapper;
+import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.service.impl.GroupMapperServiceImpl;
+import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -26,11 +24,20 @@ import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_DEPARTMENT;
+import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
 import static com.kajan.iworkflows.util.Constants.SYSTEM_KEY;
 import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
 import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
@@ -39,24 +46,24 @@ import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
 
 @Service("autoAssignAssignee")
 @Slf4j
-public class AutoAssignAssignee implements JavaDelegate  {
+public class AutoAssignAssignee implements JavaDelegate {
 
     private final GroupMapperServiceImpl mapService;
     private final RestTemplate restTemplate;
-    private final OauthTokenService oauthTokenService;
+    private final LearnOrgServiceImpl learnOrgService;
     private final String webserviceUri;
-    private final String HEADER_VALUE_BASIC = "Basic ";
 
     @Value("${testing}")
     private Boolean testing;
 
     @Autowired
-    public AutoAssignAssignee(GroupMapperServiceImpl mapService, RestTemplate restTemplate, OauthTokenService oauthTokenService,
+    public AutoAssignAssignee(GroupMapperServiceImpl mapService, RestTemplate restTemplate,
+                              LearnOrgServiceImpl learnOrgService,
                               @Value("${learnorg.uri.system}") String webserviceUri) {
         this.mapService = mapService;
         this.restTemplate = restTemplate;
-        this.oauthTokenService = oauthTokenService;
         this.webserviceUri = webserviceUri;
+        this.learnOrgService = learnOrgService;
     }
 
     static {
@@ -97,7 +104,6 @@ public class AutoAssignAssignee implements JavaDelegate  {
             e.printStackTrace();
         }
     }
-
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         // owner is the one who submitted the leave request
@@ -115,43 +121,35 @@ public class AutoAssignAssignee implements JavaDelegate  {
 
             List<GroupMapper> userStoreList = new ArrayList<>();
             GroupMapper userStore;
-            String role;
+            String role = null;
             for (GrantedAuthority group : groups) {
                 if (!(mapService.findByIworkflowsRole(group.toString())).iterator().hasNext()) {
                     continue;
                 }
                 mapService.findByIworkflowsRole(group.toString()).forEach(userStoreList::add);
-                Iterable<GroupMapper> results = mapService.findByIworkflowsRole(group.toString());
                 userStore = userStoreList.get(0);
                 role = userStore.getLearnorgRole();
-                log.debug("learnorg department : {}", role);
+                log.debug("learnorg department : " + role);
 
                 String url = buildUrl(role);
-//            String principal = SecurityContextHolder.getContext().getAuthentication().getName();
-                log.debug("system key : {}", SYSTEM_KEY);
+                log.debug("url : " + url);
 
-//            String encoding = Base64.getEncoder().encodeToString(("iworkflows:iworkflows").getBytes());
+                HttpEntity<String> request = new HttpEntity<>("", learnOrgService.getLearnOrgHeadersAsIworkflows());
+                ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+                log.debug("Response ---------" + response.getBody());
+
+//            TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
+//            String accesstoken = tokenDTO.getAccessToken().getValue();
+//            log.debug("Access Token : " + accesstoken);
+//
 //            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
-//            headers.add(HttpHeaders.AUTHORIZATION, HEADER_VALUE_BASIC + encoding);
-//            HttpEntity<String>  request = new HttpEntity<>("", headers);
-//            log.debug(url);
-//            ResponseEntity<String> response = restTemplate.postForEntity( url, request , String.class );
+//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+//            map.add("access_token", accesstoken);
+//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+//            ResponseEntity<String> response = this.restTemplate.postForEntity( url, request , String.class );
 //            log.debug("Response ---------" + response.getBody());
-
-
-                TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
-                String accesstoken = tokenDTO.getAccessToken().getValue();
-                log.debug("Access Token : " + accesstoken);
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-                MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-                map.add("access_token", accesstoken);
-                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-                ResponseEntity<String> response = this.restTemplate.postForEntity(url, request, String.class);
-                log.debug("Response --------- {}", response.getBody());
 
                 // Get the appprover From the recieved JSON response
                 ObjectMapper mapper = new ObjectMapper();
