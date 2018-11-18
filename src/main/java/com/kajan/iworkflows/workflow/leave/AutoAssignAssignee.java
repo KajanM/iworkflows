@@ -131,18 +131,18 @@ public class AutoAssignAssignee implements JavaDelegate {
                 ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
                 log.debug("Response ---------" + response.getBody());
 
-                //            TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
-                //            String accesstoken = tokenDTO.getAccessToken().getValue();
-                //            log.debug("Access Token : " + accesstoken);
-                //
-                //            HttpHeaders headers = new HttpHeaders();
-                //            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                //
-                //            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-                //            map.add("access_token", accesstoken);
-                //            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-                //            ResponseEntity<String> response = this.restTemplate.postForEntity( url, request , String.class );
-                //            log.debug("Response ---------" + response.getBody());
+//            TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
+//            String accesstoken = tokenDTO.getAccessToken().getValue();
+//            log.debug("Access Token : " + accesstoken);
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+//            map.add("access_token", accesstoken);
+//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+//            ResponseEntity<String> response = this.restTemplate.postForEntity( url, request , String.class );
+//            log.debug("Response ---------" + response.getBody());
 
                 // Get the appprover From the recieved JSON response
                 ObjectMapper mapper = new ObjectMapper();
