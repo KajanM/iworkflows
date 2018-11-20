@@ -1,21 +1,25 @@
 package com.kajan.iworkflows.service;
 
 import com.github.sardine.DavResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface NextcloudService {
-    String getFile(String principal, String filePath);
+    InputStream getFile(String principal, String filePath);
 
-    String getFileAsIworkflows(String filepath);
+    InputStreamResource getFileAsIworkflows(String filepath);
+
+    ResponseEntity<String> uploadFile(String principal, String filePath, MultipartFile fileContent);
 
     ResponseEntity<String> uploadFileAsIworkflows(String filePath, MultipartFile fileContent);
 
-    List<DavResource> getDirectoryList(String filePath);
+    List<DavResource> getDirectoryListForIworkflows(String filePath);
 
-    void createDirectory(String directoryPath);
+    void createDirectoryAsIworkflows(String directoryPath);
 
     boolean notExists(String resourcePath);
 }
