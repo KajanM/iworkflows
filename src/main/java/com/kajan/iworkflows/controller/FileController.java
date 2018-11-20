@@ -53,7 +53,7 @@ public class FileController {
             paths.forEach(pathFragment -> {
                 path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
                 if (nextcloudService.notExists(path.toString())) {
-                    nextcloudService.createDirectory(path.toString());
+                    nextcloudService.createDirectoryAsIworkflows(path.toString());
                 }
             });
         } else {
@@ -68,7 +68,7 @@ public class FileController {
             paths.forEach(pathFragment -> {
                 path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
                 if (nextcloudService.notExists(path.toString())) {
-                    nextcloudService.createDirectory(path.toString());
+                    nextcloudService.createDirectoryAsIworkflows(path.toString());
                 }
             });
         }

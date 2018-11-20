@@ -5,7 +5,7 @@ logging:
 #    org.springframework.ldap: DEBUG
 #    org.camunda.bpm.springboot: DEBUG
 
-testing: true
+testing: false
 
 camunda.bpm:
   admin-user:
@@ -36,9 +36,9 @@ spring:
             client-secret: FDfO-FBzTlFUT3k7r7WYubYk
             redirect-uri-template: http://localhost:8080/token/code/google
           learnorg:
-            client-id: iworkflows
-            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
-            redirect-uri-template: http://localhost:4200/connect/learnorg
+            client-id: iworkflows_test
+            client-secret: b53809d8afad66df6730073ae70adbbf974b220494a4e585
+            redirect-uri-template: http://localhost:8080/connect/learnorg
             authorization-grant-type: authorization_code
             client-name: LearnOrg
             scope: profile

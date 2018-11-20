@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -38,12 +40,18 @@ public class NextcloudServiceImpl implements NextcloudService {
     @Value("${nextcloud.uri.file}")
     private String FILE_ROOT_URI_TEMPLATE;
 
+    @Value("${iworkflows.credentials.nextcloud.username}")
+    private String IWORKFLOWS_NEXTCLOUD_USERNAME;
+
     private OauthTokenService oauthTokenService;
     private RestTemplate restTemplate;
     private Sardine iworkflowsWebDavClient;
 
     private HttpHeaders getNextcloudHeaders(String principal) {
         TokenDTO tokenDTO = oauthTokenService.getToken(principal, NEXTCLOUD);
+        if (tokenDTO == null) {
+            throw new UnauthorizedException("No NextCloud access token found for " + principal);
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HEADER_OCS_API_REQUEST, HEADER_VALUE_TRUE);
@@ -53,14 +61,14 @@ public class NextcloudServiceImpl implements NextcloudService {
     }
 
     @Override
-    public String getFile(String principal, String filePath) {
+    public InputStream getFile(String principal, String filePath) {
         String uri = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, principal.toLowerCase())
                 .replace(PLACEHOLDER_FILE_PATH, filePath);
         HttpEntity<String> httpEntity = new HttpEntity<>("", getNextcloudHeaders(principal));
         log.info("Making request to {} to download the file with headers {}", uri, httpEntity);
-        ResponseEntity<String> responseEntity = null;
+        ResponseEntity<InputStream> responseEntity;
         try {
-            responseEntity = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String.class);
+            responseEntity = restTemplate.exchange(uri, HttpMethod.GET, httpEntity, InputStream.class);
         } catch (RestClientException e) {
             log.error("Error occured while trying to download a file from NextCloud", e);
             throw new UnauthorizedException();
@@ -69,13 +77,33 @@ public class NextcloudServiceImpl implements NextcloudService {
     }
 
     @Override
-    public String getFileAsIworkflows(String filepath) {
-        // TODO: kajan, get iworkflows credentials from property file instead
+    public InputStreamResource getFileAsIworkflows(String filepath) {
         String uri = getIworkflowsUri(filepath);
-        ResponseEntity<String> file = restTemplate.exchange
-                (uri, HttpMethod.GET, new HttpEntity<String>(createHeaders("admin", "1234")), String.class);
+        try {
+            InputStream file = iworkflowsWebDavClient.get(uri);
+            InputStreamResource resource = new InputStreamResource(file);
+            return resource;
+        } catch (IOException e) {
+            log.error("Unable to get file from NextCloud as iworkflows user", e);
+        }
 
-        return file.getBody();
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<String> uploadFile(String principal, String filePath, MultipartFile fileContent) {
+        String uri = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, principal.toLowerCase())
+                .replace(PLACEHOLDER_FILE_PATH, filePath);
+        HttpEntity<String> httpEntity = new HttpEntity<>("", getNextcloudHeaders(principal));
+        log.info("Uploading file to {} with headers {}", uri, httpEntity);
+        ResponseEntity<String> responseEntity;
+        try {
+            responseEntity = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity, String.class);
+        } catch (RestClientException e) {
+            log.error("Error occured while trying to download a file from NextCloud", e);
+            throw new UnauthorizedException();
+        }
+        return responseEntity;
     }
 
     @Override
@@ -90,8 +118,8 @@ public class NextcloudServiceImpl implements NextcloudService {
     }
 
     @Override
-    public List<DavResource> getDirectoryList(String filePath) {
-        String url = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, "admin")
+    public List<DavResource> getDirectoryListForIworkflows(String filePath) {
+        String url = FILE_ROOT_URI_TEMPLATE.replace(PLACEHOLDER_USERID, IWORKFLOWS_NEXTCLOUD_USERNAME)
                 .replace(PLACEHOLDER_FILE_PATH, filePath);
 
         List<DavResource> resources = null;
@@ -111,7 +139,7 @@ public class NextcloudServiceImpl implements NextcloudService {
     }
 
     @Override
-    public void createDirectory(String directoryPath) {
+    public void createDirectoryAsIworkflows(String directoryPath) {
         String url = getIworkflowsUri(directoryPath);
         try {
             iworkflowsWebDavClient.createDirectory(url);
