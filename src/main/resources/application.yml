@@ -25,9 +25,9 @@ spring:
       client:
         registration:
           nextcloud:
-            client-id: 7OiShZdlpyzvZYgUZ3gPt8aveCyWGh46715CBqeqfGmlAHGf4skyglgZ9zx6TF3p
-            client-secret: 07SxAA19BWzRBr65GGjsqcsXrzBeAA9n7ArfwkLAkddKaZCxhrAK9ERmdn93Uyil
-            redirect-uri-template: http://localhost:4200/connect/nextcloud
+            client-id: UroTGPr7pGFj1KTp7rKuJJjJbalkOYzshJYgBLWyrZmzwdIZBlPlvL3E99fsjEqI
+            client-secret: gGQDmSns5VLlX9kFqPrB4Gus3DkpH7ZXaZRKX4aEyuzu87wnwxWmxYgMSmw9D3Yr
+            redirect-uri-template: http://localhost:8080/connect/nextcloud
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
