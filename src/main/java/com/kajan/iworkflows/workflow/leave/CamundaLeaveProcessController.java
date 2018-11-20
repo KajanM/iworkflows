@@ -34,7 +34,7 @@ public class CamundaLeaveProcessController {
 
     @PostMapping("/start")
     public ResponseEntity<?> startProcess(@RequestBody SubmittedLeaveFormDetails leaveDetails, Principal principal) {
-        try {
+         try {
             ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey(LEAVE_PROCESS_DEFINITION_KEY,
                     Variables
                             .putValue(OWNER_KEY, principal.getName())
@@ -46,7 +46,7 @@ public class CamundaLeaveProcessController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             log.error("Unable to start the process", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.badRequest().build();
         }
     }
 

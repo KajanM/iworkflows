@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,7 @@ public class SubmittedLeaveFormDetails implements Serializable {
     private String leaveType;
     private String startDate;
     private String endDate;
+    private int takenCasualLeaves;
+    private int takenMedicalLeaves;
+    private List<String> documents;
 }
