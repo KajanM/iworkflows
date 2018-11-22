@@ -83,7 +83,7 @@ learnorg:
     userinfo: http://10.8.90.4/oauth/user_info.php
   wsfunction:
     get-department-head: get_head_by_department
-
+    set-approved-leave: set_leave_taken
 ---
 spring:
   profiles: h2

@@ -13,14 +13,14 @@ public class UserStore {
     private String department;
     private String role;
     private String primaryEmail;
-    private String permanentTelephone;
-    private String currentHomeTelephone;
+    private String permanatTelephone;
+    private String currentMobile;
     private String currentAddress;
     private int casual;
     private int medical;
     private int vacation;
-    private int casualAllowed;
-    private int medicalAllowed;
-    private int vacationAllowed;
+    private int remainingCasualLeaves;
+    private int remainingMedicalLeaves;
+    private int remainingVacationLeaves;
 
 }
