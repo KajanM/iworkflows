@@ -20,6 +20,7 @@ public class AddDummyUsers implements CommandLineRunner {
     public void run(String... args) {
 
         DummyUserStore userStore = new DummyUserStore();
+        userStore.setId(1L);
         userStore.setPrincipal("kasthuri");
         userStore.setEmployeeId("140379F");
         userStore.setFaculty("Engineering");
@@ -33,6 +34,7 @@ public class AddDummyUsers implements CommandLineRunner {
         log.debug("Preloading ", userStoreRepository.save(userStore));
 
         userStore = new DummyUserStore();
+        userStore.setId(2L);
         userStore.setPrincipal("kajan");
         userStore.setEmployeeId("140709U");
         userStore.setFaculty("Engineering");
@@ -45,6 +47,8 @@ public class AddDummyUsers implements CommandLineRunner {
         userStore.setVacation(10);
         log.debug("Preloading ", userStoreRepository.save(userStore));
 
+        userStore = new DummyUserStore();
+        userStore.setId(3L);
         userStore.setPrincipal("ramiya");
         userStore.setEmployeeId("140494D");
         userStore.setFaculty("Engineering");
@@ -57,6 +61,8 @@ public class AddDummyUsers implements CommandLineRunner {
         userStore.setVacation(10);
         log.debug("Preloading ", userStoreRepository.save(userStore));
 
+        userStore = new DummyUserStore();
+        userStore.setId(4L);
         userStore.setPrincipal("kirisanth");
         userStore.setEmployeeId("140494D");
         userStore.setFaculty("Engineering");
