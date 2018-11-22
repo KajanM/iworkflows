@@ -24,4 +24,5 @@ public class SubmittedLeaveFormDetails implements Serializable {
     private int takenCasualLeaves;
     private int takenMedicalLeaves;
     private List<String> documents;
+    private String submittedDate;
 }

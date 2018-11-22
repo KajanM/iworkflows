@@ -15,20 +15,59 @@ public class AddDummyUsers implements CommandLineRunner {
 
     private DummyUserStoreRepository userStoreRepository;
 
+    @SuppressWarnings("Duplicates")
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
-        log.debug("Preloading " + userStoreRepository.save(new DummyUserStore("kasthuri", "140379F", "Engineering", "CSE", "Student",
-                "kasthuri.14@cse.mrt.ac.lk", "077-9577217", 3, 4, 1)));
-        log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("kajan", "140709U", "Engineering", "CSE", "Student",
-                "kajan.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
-        log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("ramiya", "140494D", "Engineering", "CSE", "Student",
-                "ramiya.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
-        log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("kirisanth", "140306G", "Engineering", "CSE", "Student",
-                "kirisanth.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
-        log.debug("Preloading" + userStoreRepository.save(new DummyUserStore("shadhini", "140512V", "Engineering", "CSE", "Student",
-                "shadhini.14@cse.mrt.ac.lk", "077-0774946", 2, 0, 6)));
+        DummyUserStore userStore = new DummyUserStore();
+        userStore.setPrincipal("kasthuri");
+        userStore.setEmployeeId("140379F");
+        userStore.setFaculty("Engineering");
+        userStore.setDepartment("CSE");
+        userStore.setRole("Student");
+        userStore.setEmail("kasthuri.14@cse.mrt.ac.lk");
+        userStore.setMobileNo("077-9577217");
+        userStore.setCasual(5);
+        userStore.setMedical(3);
+        userStore.setVacation(10);
+        log.debug("Preloading ", userStoreRepository.save(userStore));
 
+        userStore = new DummyUserStore();
+        userStore.setPrincipal("kajan");
+        userStore.setEmployeeId("140709U");
+        userStore.setFaculty("Engineering");
+        userStore.setDepartment("CSE");
+        userStore.setRole("Student");
+        userStore.setEmail("kajan.14@cse.mrt.ac.lk");
+        userStore.setMobileNo("077-0774946");
+        userStore.setCasual(5);
+        userStore.setMedical(3);
+        userStore.setVacation(10);
+        log.debug("Preloading ", userStoreRepository.save(userStore));
+
+        userStore.setPrincipal("ramiya");
+        userStore.setEmployeeId("140494D");
+        userStore.setFaculty("Engineering");
+        userStore.setDepartment("CSE");
+        userStore.setRole("Student");
+        userStore.setEmail("ramiya.14@cse.mrt.ac.lk");
+        userStore.setMobileNo("077-9577217");
+        userStore.setCasual(5);
+        userStore.setMedical(3);
+        userStore.setVacation(10);
+        log.debug("Preloading ", userStoreRepository.save(userStore));
+
+        userStore.setPrincipal("kirisanth");
+        userStore.setEmployeeId("140494D");
+        userStore.setFaculty("Engineering");
+        userStore.setDepartment("CSE");
+        userStore.setRole("Student");
+        userStore.setEmail("kirisanth.14@cse.mrt.ac.lk");
+        userStore.setMobileNo("077-9577217");
+        userStore.setCasual(5);
+        userStore.setMedical(3);
+        userStore.setVacation(10);
+        log.debug("Preloading ", userStoreRepository.save(userStore));
     }
 
     @Autowired

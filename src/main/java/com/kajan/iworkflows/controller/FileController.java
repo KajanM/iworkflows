@@ -1,5 +1,6 @@
 package com.kajan.iworkflows.controller;
 
+import com.kajan.iworkflows.exception.IworkflowsWebDavException;
 import com.kajan.iworkflows.model.UserStore;
 import com.kajan.iworkflows.model.mock.DummyUserStore;
 import com.kajan.iworkflows.service.NextcloudService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,6 +25,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
+
+import static com.kajan.iworkflows.util.Constants.*;
 
 @RestController
 @RequestMapping("/api/v1/file")
@@ -36,43 +40,33 @@ public class FileController {
     @Value("${testing}")
     private Boolean testing;
 
+    @Value("${iworkflows.credentials.nextcloud.username}")
+    private String IWORKFLOWS_USERNAME;
+
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Principal principal) {
-        // TODO: replace logic of getting user data from dummy user store
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        StringJoiner path = new StringJoiner("/");
+        DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+        StringJoiner path = new StringJoiner(PATH_DELIMTER);
+        UserStore userStore;
         if (testing) {
-            DummyUserStore userStore = userStoreService.findByPrincipal(principal.getName()).iterator().next();
-            List<String> paths = Arrays.asList(
-                    "leave-attachments",
-                    userStore.getFaculty(),
-                    userStore.getDepartment(),
-                    dateFormat.format(new Date()),
-                    userStore.getEmployeeId());
-
-            paths.forEach(pathFragment -> {
-                path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
-                if (nextcloudService.notExists(path.toString())) {
-                    nextcloudService.createDirectoryAsIworkflows(path.toString());
-                }
-            });
+            userStore = DummyUserStore.toUserStore(userStoreService.findByPrincipal(principal.getName()).iterator().next());
         } else {
-            UserStore userStore = learnOrgService.getLearnOrgUserInfo(principal);
-            List<String> paths = Arrays.asList(
-                    "leave-attachments",
-                    userStore.getFaculty(),
-                    userStore.getDepartment(),
-                    dateFormat.format(new Date()),
-                    userStore.getEmployeeId());
-
-            paths.forEach(pathFragment -> {
-                path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
-                if (nextcloudService.notExists(path.toString())) {
-                    nextcloudService.createDirectoryAsIworkflows(path.toString());
-                }
-            });
+            userStore = learnOrgService.getLearnOrgUserInfo(principal);
         }
 
+        List<String> paths = Arrays.asList(
+                LEAVE_ATTACHMENTS_DIR_NAME,
+                userStore.getFaculty(),
+                userStore.getDepartment(),
+                dateFormat.format(new Date()),
+                userStore.getEmployeeId());
+
+        paths.forEach(pathFragment -> {
+            path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
+            if (!nextcloudService.exists(IWORKFLOWS_USERNAME, path.toString())) {
+                nextcloudService.createDirectory(IWORKFLOWS_USERNAME, path.toString());
+            }
+        });
 
         if (file.getOriginalFilename() == null) {
             return ResponseEntity.badRequest().build();
@@ -80,11 +74,15 @@ public class FileController {
 
         path.add(UriUtils.encodePathSegment(file.getOriginalFilename(), "UTF-8"));
 
-        nextcloudService.uploadFileAsIworkflows(path.toString(), file);
+        try {
+            nextcloudService.uploadFile(IWORKFLOWS_USERNAME, path.toString(), file.getInputStream());
+        } catch (IOException e) {
+            log.error("Unable to upload file to NextCloud", e);
+            throw new IworkflowsWebDavException("Unable to upload file to NextCloud");
+        }
         log.debug("Successfully stored attachment to {}", path.toString());
 
         return ResponseEntity.ok().build();
-
     }
 
     @Autowired
