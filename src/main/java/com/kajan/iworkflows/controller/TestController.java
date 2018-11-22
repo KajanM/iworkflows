@@ -1,6 +1,6 @@
 package com.kajan.iworkflows.controller;
 
-import com.kajan.iworkflows.exception.IworkflowsUnauthorizedException;
+import com.kajan.iworkflows.exception.IworkflowsPreConditionRequiredException;
 import com.kajan.iworkflows.exception.IworkflowsWebDavException;
 import com.kajan.iworkflows.service.NextcloudService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class TestController {
 
     @GetMapping("/401")
     public String simulate401() {
-        throw new IworkflowsUnauthorizedException();
+        throw new IworkflowsPreConditionRequiredException();
     }
 
     @GetMapping("/get-file")

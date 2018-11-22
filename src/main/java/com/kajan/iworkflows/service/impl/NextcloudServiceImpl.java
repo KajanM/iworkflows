@@ -4,7 +4,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.Sardine;
 import com.github.sardine.SardineFactory;
 import com.kajan.iworkflows.dto.TokenDTO;
-import com.kajan.iworkflows.exception.IworkflowsUnauthorizedException;
+import com.kajan.iworkflows.exception.IworkflowsPreConditionRequiredException;
 import com.kajan.iworkflows.exception.IworkflowsWebDavException;
 import com.kajan.iworkflows.service.NextcloudService;
 import com.kajan.iworkflows.service.OauthTokenService;
@@ -153,7 +153,7 @@ public class NextcloudServiceImpl implements NextcloudService {
         // create bearer auth header for the requesting user
         TokenDTO tokenDTO = oauthTokenService.getToken(principal, NEXTCLOUD);
         if (tokenDTO == null) {
-            throw new IworkflowsUnauthorizedException("No NextCloud access token found for " + principal);
+            throw new IworkflowsPreConditionRequiredException("No NextCloud access token found for " + principal);
         }
         headers.put(HttpHeaders.AUTHORIZATION, HEADER_VALUE_BEARER + tokenDTO.getAccessToken().getValue());
         return headers;
