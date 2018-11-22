@@ -3,6 +3,7 @@ package com.kajan.iworkflows.controller;
 import com.kajan.iworkflows.exception.IworkflowsWebDavException;
 import com.kajan.iworkflows.model.UserStore;
 import com.kajan.iworkflows.model.mock.DummyUserStore;
+import com.kajan.iworkflows.service.LearnOrgService;
 import com.kajan.iworkflows.service.NextcloudService;
 import com.kajan.iworkflows.service.impl.DummyUserStoreServiceImpl;
 import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
@@ -35,7 +36,7 @@ public class FileController {
 
     private NextcloudService nextcloudService;
     private DummyUserStoreServiceImpl userStoreService;
-    private LearnOrgServiceImpl learnOrgService;
+    private LearnOrgService learnOrgService;
 
     @Value("${testing}")
     private Boolean testing;
