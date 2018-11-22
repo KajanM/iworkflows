@@ -10,6 +10,9 @@ public class WorkflowConstants {
     public static final String RECOMMENDATION_KEY = "recommendation";
     public static final String HEAD_APPROVED_KEY = "headApproved";
     public static final String CLERK_APPROVED_KEY = "clerkApproved";
+    public static final String HEAD_APPROVER_KEY = "head";
+    public static final String CLERK_APPROVER_KEY = "clerk";
+    public static final String LEAVE_TYPE_KEY = "leave_type";
     public static final String APPROVER_KEY = "approver";
 
     public static final String LEAVE_ATTACHMENTS_KEY = "leave-attachments";

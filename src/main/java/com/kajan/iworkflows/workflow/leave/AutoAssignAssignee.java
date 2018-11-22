@@ -1,7 +1,6 @@
 package com.kajan.iworkflows.workflow.leave;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kajan.iworkflows.model.Approver;
 import com.kajan.iworkflows.model.GroupMapper;
 import com.kajan.iworkflows.service.impl.GroupMapperServiceImpl;
 import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
@@ -27,8 +26,7 @@ import java.util.List;
 
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_DEPARTMENT;
 import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_WSFUNCTION;
-import static com.kajan.iworkflows.util.WorkflowConstants.APPROVER_KEY;
-import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
+import static com.kajan.iworkflows.util.WorkflowConstants.*;
 
 
 @Service("autoAssignAssignee")
@@ -103,11 +101,12 @@ public class AutoAssignAssignee implements JavaDelegate {
         String owner = (String) execution.getVariable(OWNER_KEY);
         log.debug("Owner of the tasks is {}", owner);
 
-        String approver = null;
-
+        String head = null;
+        String clerk = null;
         if (testing) {
             //since learnorg can only be acccessed via uni wifi :(
-            approver = "kajan";
+            head = "kajan";
+            clerk = "kirisanth";
         } else {
             Collection<? extends GrantedAuthority> groups = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
             log.debug("task owner's groups : " + groups);
@@ -128,38 +127,27 @@ public class AutoAssignAssignee implements JavaDelegate {
                 log.debug("url : " + url);
 
                 HttpEntity<String> request = new HttpEntity<>("", learnOrgService.getLearnOrgHeadersAsIworkflows());
-                ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+                ResponseEntity<Approver> response = restTemplate.postForEntity(url, request, Approver.class);
                 log.debug("Response ---------" + response.getBody());
 
-//            TokenDTO tokenDTO = oauthTokenService.getToken(SYSTEM_KEY, LEARNORG);
-//            String accesstoken = tokenDTO.getAccessToken().getValue();
-//            log.debug("Access Token : " + accesstoken);
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//
-//            MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
-//            map.add("access_token", accesstoken);
-//            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-//            ResponseEntity<String> response = this.restTemplate.postForEntity( url, request , String.class );
-//            log.debug("Response ---------" + response.getBody());
-
-                // Get the appprover From the recieved JSON response
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode node = mapper.readTree(response.getBody());
-                approver = node.path("Department-Head").asText();
+                clerk = response.getBody().getClerk();
+                head = response.getBody().getHead();
                 break;
             }
         }
-        log.debug("Auto assigning the task to {}", approver);
-        execution.setVariable(APPROVER_KEY, approver);
+        log.debug("Auto assigning the task to HOD {}", head);
+        log.debug("Auto assigning the task to clerk {}", clerk);
+        execution.setVariable(HEAD_APPROVER_KEY, head);
+        execution.setVariable(CLERK_APPROVER_KEY, clerk);
+
 
     }
 
-    private String buildUrl(String role, String wsfunction) {
+    public String buildUrl(String role, String wsfunction) {
         String uri = webserviceUri.replace(PLACEHOLDER_LEARNORG_DEPARTMENT, role)
                 .replace(PLACEHOLDER_LEARNORG_WSFUNCTION, wsfunction);
         log.debug("BuiltURL: {}", uri);
         return uri;
     }
+
 }

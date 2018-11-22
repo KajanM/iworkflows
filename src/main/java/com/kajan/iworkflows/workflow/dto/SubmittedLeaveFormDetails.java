@@ -23,6 +23,21 @@ public class SubmittedLeaveFormDetails implements Serializable {
     private String endDate;
     private int takenCasualLeaves;
     private int takenMedicalLeaves;
+    private int takenVacationLeaves;
     private List<String> documents;
     private String submittedDate;
+    private int remainingCasualLeaves;
+    private int remainingMedicalLeaves;
+    private int remainingVacationLeaves;
+
+    public int getRemainingLeavesByLeaveType(String leaveType) {
+        if (leaveType == "casual") {
+            return getRemainingCasualLeaves();
+        } else if (leaveType == "medical") {
+            return getRemainingMedicalLeaves();
+        } else {
+            return getRemainingVacationLeaves();
+
+        }
+    }
 }
