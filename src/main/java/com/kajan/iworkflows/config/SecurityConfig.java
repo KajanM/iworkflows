@@ -32,6 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .authorizeRequests()
+                .antMatchers("/login", "/static/**", "**.css", "**.js", "/", "**.svg", "**.png")
+                .permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/login", "/register").permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable();
@@ -39,34 +41,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // TODO: Kajan, turn CSRF protection on
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .passwordEncoder(passwordEncoder())
-                .withUser("kajan")
-                .password(passwordEncoder().encode("kajan"))
-                .roles("USER")
-                .and()
-                .withUser("admin")
-                .password(passwordEncoder().encode("admin"))
-                .roles("ADMIN")
-                .and()
-                .withUser("kasthuri")
-                .password(passwordEncoder().encode("kasthuri"))
-                .roles("USER")
-                .and()
-                .withUser("ramiya")
-                .password(passwordEncoder().encode("ramiya"))
-                .roles("USER")
-                .and()
-                .withUser("kirisanth")
-                .password(passwordEncoder().encode("kirisanth"))
-                .roles("USER")
-                .and()
-                .withUser("shadhini")
-                .password(passwordEncoder().encode("shadhini"))
-                .roles("USER");
-    }
+    //@Override
+    //protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    //    auth.inMemoryAuthentication()
+    //            .passwordEncoder(passwordEncoder())
+    //            .withUser("kajan")
+    //            .password(passwordEncoder().encode("kajan"))
+    //            .roles("USER")
+    //            .and()
+    //            .withUser("admin")
+    //            .password(passwordEncoder().encode("admin"))
+    //            .roles("ADMIN")
+    //            .and()
+    //            .withUser("kasthuri")
+    //            .password(passwordEncoder().encode("kasthuri"))
+    //            .roles("USER")
+    //            .and()
+    //            .withUser("ramiya")
+    //            .password(passwordEncoder().encode("ramiya"))
+    //            .roles("USER")
+    //            .and()
+    //            .withUser("kirisanth")
+    //            .password(passwordEncoder().encode("kirisanth"))
+    //            .roles("USER")
+    //            .and()
+    //            .withUser("shadhini")
+    //            .password(passwordEncoder().encode("shadhini"))
+    //            .roles("USER");
+    //}
 
     @Override
     public void configure(WebSecurity web) {
@@ -98,14 +100,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-//    @Override
-//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth
-//                .ldapAuthentication()
-//                .userDnPatterns("cn={0},ou=users")
-//                .groupSearchFilter("member={0}")
-//                .contextSource()
-//                .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
-//    }
+    @Override
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .ldapAuthentication()
+                .userDnPatterns("cn={0},ou=users")
+                .groupSearchFilter("member={0}")
+                .contextSource()
+                .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
+    }
 
 }

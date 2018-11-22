@@ -2,10 +2,11 @@ logging:
   level:
     com.kajan: DEBUG
     org.springframework.security: DEBUG
+#    com.github.sardine: DEBUG
 #    org.springframework.ldap: DEBUG
 #    org.camunda.bpm.springboot: DEBUG
 
-testing: true
+testing: false
 
 camunda.bpm:
   admin-user:
@@ -15,19 +16,18 @@ camunda.bpm:
   filter:
     create: All tasks
 
-
 spring:
   profiles:
-    active: h2
+    active: h2, angular
 
   security:
     oauth2:
       client:
         registration:
           nextcloud:
-            client-id: 7OiShZdlpyzvZYgUZ3gPt8aveCyWGh46715CBqeqfGmlAHGf4skyglgZ9zx6TF3p
-            client-secret: 07SxAA19BWzRBr65GGjsqcsXrzBeAA9n7ArfwkLAkddKaZCxhrAK9ERmdn93Uyil
-            redirect-uri-template: http://localhost:4200/connect/nextcloud
+            client-id: UroTGPr7pGFj1KTp7rKuJJjJbalkOYzshJYgBLWyrZmzwdIZBlPlvL3E99fsjEqI
+            client-secret: gGQDmSns5VLlX9kFqPrB4Gus3DkpH7ZXaZRKX4aEyuzu87wnwxWmxYgMSmw9D3Yr
+            redirect-uri-template: http://localhost:8080/connect/nextcloud
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
@@ -36,9 +36,9 @@ spring:
             client-secret: FDfO-FBzTlFUT3k7r7WYubYk
             redirect-uri-template: http://localhost:8080/token/code/google
           learnorg:
-            client-id: iworkflows
-            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
-            redirect-uri-template: http://localhost:4200/connect/learnorg
+            client-id: iworkflows_test
+            client-secret: b53809d8afad66df6730073ae70adbbf974b220494a4e585
+            redirect-uri-template: http://localhost:8080/connect/learnorg
             authorization-grant-type: authorization_code
             client-name: LearnOrg
             scope: profile
@@ -71,8 +71,8 @@ nextcloud:
 iworkflows:
   credentials:
     nextcloud:
-      username: admin
-      password: 1234
+      username: iworkflows
+      password: iworkflows
     learnorg:
       username: iworkflows
       password: iworkflows
@@ -83,6 +83,7 @@ learnorg:
     userinfo: http://10.8.90.4/oauth/user_info.php
   wsfunction:
     get-department-head: get_head_by_department
+
 ---
 spring:
   profiles: h2
@@ -98,9 +99,9 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 ---
 spring:
@@ -149,8 +150,8 @@ spring:
       client:
         registration:
           nextcloud:
-            client-id: ifYTmneaFMWjjU0abuWnpEviuYEZQe7lmSxWktJGInmBWCYbtMyLiaqAB3f7aR7q
-            client-secret: OljKGNJ5LgsorA3WqngJLOiRfn8vgTUdGXA1am3ePOcJQwD54H0L69se0mL69J21
+            client-id: 7OiShZdlpyzvZYgUZ3gPt8aveCyWGh46715CBqeqfGmlAHGf4skyglgZ9zx6TF3p
+            client-secret: 07SxAA19BWzRBr65GGjsqcsXrzBeAA9n7ArfwkLAkddKaZCxhrAK9ERmdn93Uyil
             redirect-uri-template: http://localhost:4200/connect/nextcloud
             authorization-grant-type: authorization_code
             client-name: NextCloud

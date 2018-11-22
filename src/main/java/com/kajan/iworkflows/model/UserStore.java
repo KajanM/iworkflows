@@ -13,7 +13,7 @@ public class UserStore {
     private String department;
     private String role;
     private String primaryEmail;
-    private String permanatTelephone;
+    private String permanentTelephone;
     private String currentHomeTelephone;
     private String currentAddress;
     private int casual;
