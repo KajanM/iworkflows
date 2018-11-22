@@ -109,7 +109,7 @@ public class AutoAssignAssignee implements JavaDelegate {
             clerk = "kirisanth";
         } else {
             Collection<? extends GrantedAuthority> groups = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-            log.debug("task owner's groups : " + groups);
+            log.debug("task owner's groups {}", groups);
 
             List<GroupMapper> userStoreList = new ArrayList<>();
             GroupMapper userStore;
@@ -121,10 +121,10 @@ public class AutoAssignAssignee implements JavaDelegate {
                 mapService.findByIworkflowsRole(group.toString()).forEach(userStoreList::add);
                 userStore = userStoreList.get(0);
                 role = userStore.getLearnorgRole();
-                log.debug("learnorg department : " + role);
+                log.debug("learnorg department : {}", role);
 
                 String url = buildUrl(role, wsfunction);
-                log.debug("url : " + url);
+                log.debug("url : {} ", url);
 
                 HttpEntity<String> request = new HttpEntity<>("", learnOrgService.getLearnOrgHeadersAsIworkflows());
                 ResponseEntity<Approver> response = restTemplate.postForEntity(url, request, Approver.class);

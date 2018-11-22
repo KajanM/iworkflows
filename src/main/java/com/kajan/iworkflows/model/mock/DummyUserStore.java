@@ -31,9 +31,9 @@ public class DummyUserStore {
     private int casual;
     private int medical;
     private int vacation;
-    private int casualAllowed;
-    private int medicalAllowed;
-    private int vacationAllowed;
+    private int remainingCasualLeaves;
+    private int remainingMedicalLeaves;
+    private int remainingVacationLeaves;
 
     public static UserStore toUserStore(DummyUserStore dummyUserStore) {
         UserStore userStore = new UserStore();
@@ -43,15 +43,15 @@ public class DummyUserStore {
         userStore.setDepartment(dummyUserStore.getDepartment());
         userStore.setRole(dummyUserStore.getRole());
         userStore.setPrimaryEmail(dummyUserStore.getEmail());
-        userStore.setPermanentTelephone("0215489765");
-        userStore.setCurrentHomeTelephone(dummyUserStore.getMobileNo());
+        userStore.setPermanatTelephone("0215489765");
+        userStore.setCurrentMobile(dummyUserStore.getMobileNo());
         userStore.setCurrentAddress("Colombo");
         userStore.setCasual(dummyUserStore.getCasual());
         userStore.setMedical(dummyUserStore.getMedical());
         userStore.setVacation(dummyUserStore.getVacation());
-        userStore.setCasualAllowed(7);
-        userStore.setMedicalAllowed(14);
-        userStore.setVacationAllowed(21);
+        userStore.setRemainingCasualLeaves(7);
+        userStore.setRemainingMedicalLeaves(14);
+        userStore.setRemainingVacationLeaves(21);
 
         return userStore;
     }

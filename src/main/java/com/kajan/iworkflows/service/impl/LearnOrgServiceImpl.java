@@ -1,7 +1,7 @@
 package com.kajan.iworkflows.service.impl;
 
 import com.kajan.iworkflows.dto.TokenDTO;
-import com.kajan.iworkflows.exception.UnauthorizedException;
+import com.kajan.iworkflows.exception.IworkflowsUnauthorizedException;
 import com.kajan.iworkflows.model.UserStore;
 import com.kajan.iworkflows.service.LearnOrgService;
 import com.kajan.iworkflows.service.OauthTokenService;
@@ -57,7 +57,7 @@ public class LearnOrgServiceImpl implements LearnOrgService {
         TokenDTO tokenDTO = this.oauthTokenService.getToken(principal.getName(), LEARNORG);
 
         if (tokenDTO == null) {
-            throw new UnauthorizedException("No LearnOrg access token found for " + principal);
+            throw new IworkflowsUnauthorizedException("No LearnOrg access token found for " + principal);
         }
         String accesstoken = tokenDTO.getAccessToken().getValue();
 
