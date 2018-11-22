@@ -12,4 +12,5 @@ public class WorkflowConstants {
     public static final String CLERK_APPROVED_KEY = "clerkApproved";
     public static final String APPROVER_KEY = "approver";
 
+    public static final String LEAVE_ATTACHMENTS_KEY = "leave-attachments";
 }

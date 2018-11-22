@@ -1,21 +1,22 @@
 package com.kajan.iworkflows.workflow.leave;
 
 import com.kajan.iworkflows.service.NextcloudService;
+import com.kajan.iworkflows.util.WorkflowConstants;
 import com.kajan.iworkflows.workflow.dto.SubmittedLeaveFormDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriUtils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
 
+import static com.kajan.iworkflows.util.Constants.PATH_DELIMTER;
 import static com.kajan.iworkflows.util.WorkflowConstants.LEAVE_DETAILS_KEY;
 import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
 
@@ -24,6 +25,9 @@ import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
 public class HandleAttachment implements JavaDelegate {
 
     private NextcloudService nextcloudService;
+
+    @Value("${iworkflows.credentials.nextcloud.username}")
+    private String IWORKFLOWS_USERNAME;
 
     @Override
     public void execute(DelegateExecution execution) {
@@ -34,37 +38,23 @@ public class HandleAttachment implements JavaDelegate {
             return;
         }
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String principal = (String) execution.getVariable(OWNER_KEY);
-        StringJoiner path = new StringJoiner("/");
+        StringJoiner path = new StringJoiner(PATH_DELIMTER);
         List<String> paths = Arrays.asList(
-                "leave-attachments",
+                WorkflowConstants.LEAVE_ATTACHMENTS_KEY,
                 data.getFaculty(),
                 data.getDepartment(),
-                dateFormat.format(new Date()));
+                data.getSubmittedDate(),
+                data.getEmployeeId());
 
-        paths.forEach(pathFragment -> {
-            path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
+        paths.forEach(pathFragment -> path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8")));
+
+        attachmentNames.forEach(attachment -> {
+            String encodedFileName = UriUtils.encodePathSegment(attachment, "UTF-8");
+
+            InputStream file = nextcloudService.getFile(IWORKFLOWS_USERNAME, path.toString() + "/" + encodedFileName);
+            nextcloudService.uploadFile(principal, attachment, file);
         });
-
-        //StringJoiner path = new StringJoiner("/");
-        //paths.forEach(pathFragment -> {
-        //    path.add(pathFragment);
-        //    if(nextcloudService.notExists(path.toString())){
-        //        nextcloudService.createDirectoryAsIworkflows(path.toString());
-        //    }
-        //});
-
-        //todo: kajan, populate nextcloud with actual attachment
-        //path.add(data.getEmployeeId() + ".txt");
-
-        //nextcloudService.uploadFileAsIworkflows(path.toString(), "this is a sample leave file");
-        //log.debug("Successfully stored attachment to {}", path.toString());
-        //nextcloudService.uploadFile(principal, "attachments/leave/" + )
-        //attachmentNames.forEach(attachment -> {
-        //    InputStreamResource resource = nextcloudService.getFileAsIworkflows(path.toString() + "/" + attachment);
-        //    //nextcloudService.uploadFile()
-        //});
     }
 
     @Autowired

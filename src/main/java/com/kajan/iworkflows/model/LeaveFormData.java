@@ -33,7 +33,7 @@ public class LeaveFormData {
         data.setDepartment(userStore.getDepartment());
         data.setRole(userStore.getRole());
         data.setEmail(userStore.getPrimaryEmail());
-        data.setMobileNo(userStore.getPermanatTelephone());
+        data.setMobileNo(userStore.getPermanentTelephone());
         data.setTelephoneNo(userStore.getCurrentHomeTelephone());
         data.setAddress(userStore.getCurrentAddress());
         data.setCasual(userStore.getCasual());

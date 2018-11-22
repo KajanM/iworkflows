@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static com.kajan.iworkflows.util.WorkflowConstants.*;
@@ -34,7 +37,10 @@ public class CamundaLeaveProcessController {
 
     @PostMapping("/start")
     public ResponseEntity<?> startProcess(@RequestBody SubmittedLeaveFormDetails leaveDetails, Principal principal) {
-         try {
+        log.debug("Leave request received principal: {}, leave details: {}", principal, leaveDetails);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        leaveDetails.setSubmittedDate(dateFormat.format(new Date()));
+        try {
             ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey(LEAVE_PROCESS_DEFINITION_KEY,
                     Variables
                             .putValue(OWNER_KEY, principal.getName())

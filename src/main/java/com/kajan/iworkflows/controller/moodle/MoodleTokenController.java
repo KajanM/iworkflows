@@ -22,7 +22,7 @@ import static com.kajan.iworkflows.util.Constants.*;
 import static com.kajan.iworkflows.util.Constants.TokenProvider.MOODLE;
 
 @RestController
-@RequestMapping("moodle/token")
+@RequestMapping("api/v1/moodle/")
 public class MoodleTokenController {
 
     private final Logger logger = LoggerFactory.getLogger(MoodleTokenController.class);
@@ -45,16 +45,11 @@ public class MoodleTokenController {
         this.oauthTokenService = oauthTokenService;
     }
 
-    @GetMapping
-    public String getLoginPageForMoodle() {
-        return "moodle-login";
-    }
-
-    @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PostMapping(value = "token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<?> getMoodleWebServiceToken(@RequestParam(USERNAME_KEY) String username, @RequestParam(PASSWORD_KEY) String password, Principal principal) {
         ResponseEntity<String> response = restTemplate.getForEntity(TOKEN_URI_TEMPLATE, String.class, username, password, WS_SHORT_NAME);
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = null;
+        JsonNode root;
         try {
             root = mapper.readTree(response.getBody());
         } catch (IOException e) {
