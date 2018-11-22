@@ -34,7 +34,7 @@ public class DetermineRecommendation implements JavaDelegate {
         log.debug("remaining leaves {} ", remainingLeave);
 
         if (remainingLeave < leaveAppliedFor) {
-            execution.setVariable(RECOMMENDATION_KEY, "not recommended");
+            execution.setVariable(RECOMMENDATION_KEY, "not_recommended");
         } else {
             execution.setVariable(RECOMMENDATION_KEY, "recommended");
         }
