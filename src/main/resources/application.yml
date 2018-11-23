@@ -25,8 +25,8 @@ spring:
       client:
         registration:
           nextcloud:
-            client-id: xsstgMF45igmSaMkSdK4FAVXGjrISTBiysfJmWToErWKyyaLx34cWPZXjZMP6Sfl
-            client-secret: awrEotqK09kj49RE4lClu3h1i6qUGbQJQv2CX2U9vhhypc4V1stUVK3GfBwRf6Lm
+            client-id: 54YBNb0fv566OfExSlxHjCPVKR73ljKhnOmP9rjVNQLTByMDBfwAE0TQGHYxuzzc
+            client-secret: jcNkqCokM5Z4QvHKeoo4UaqLWetoXUAwtiuAhxbqsqFJf7bGDJs06EgLKRhsQcQb
             redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:4200/connect/nextcloud
             authorization-grant-type: authorization_code
             client-name: NextCloud
