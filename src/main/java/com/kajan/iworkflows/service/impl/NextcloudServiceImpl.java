@@ -71,7 +71,7 @@ public class NextcloudServiceImpl implements NextcloudService {
 
         try {
             webDavClient.put(uri, fileContent, getAuthorizationHeader(principal));
-            log.info("Succesfully uploaded file to {}", uri);
+            log.info("Successfully uploaded file to {}", uri);
         } catch (IOException e) {
             log.error("Unable to upload the file to NextCloud", e);
             throw new IworkflowsWebDavException("Unable to upload the file to NextCloud");

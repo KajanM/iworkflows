@@ -31,30 +31,34 @@ public class HandleAttachment implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) {
-        SubmittedLeaveFormDetails data = (SubmittedLeaveFormDetails) execution.getVariable(LEAVE_DETAILS_KEY);
-        List<String> attachmentNames = data.getDocuments();
-        if(attachmentNames == null || attachmentNames.isEmpty()) {
-            log.debug("No attachments included, skipping attachment handling process");
-            return;
+        try {
+            SubmittedLeaveFormDetails data = (SubmittedLeaveFormDetails) execution.getVariable(LEAVE_DETAILS_KEY);
+            List<String> attachmentNames = data.getDocuments();
+            if(attachmentNames == null || attachmentNames.isEmpty()) {
+                log.debug("No attachments included, skipping attachment handling process");
+                return;
+            }
+
+            String principal = (String) execution.getVariable(OWNER_KEY);
+            StringJoiner path = new StringJoiner(PATH_DELIMTER);
+            List<String> paths = Arrays.asList(
+                    WorkflowConstants.LEAVE_ATTACHMENTS_KEY,
+                    data.getFaculty(),
+                    data.getDepartment(),
+                    data.getSubmittedDate(),
+                    data.getEmployeeId());
+
+            paths.forEach(pathFragment -> path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8")));
+
+            attachmentNames.forEach(attachment -> {
+                String encodedFileName = UriUtils.encodePathSegment(attachment, "UTF-8");
+
+                InputStream file = nextcloudService.getFile(IWORKFLOWS_USERNAME, path.toString() + "/" + encodedFileName);
+                nextcloudService.uploadFile(principal, encodedFileName, file);
+            });
+        } catch (Exception e) {
+            log.error("Unable to upload the file to user's NextCloud account", e);
         }
-
-        String principal = (String) execution.getVariable(OWNER_KEY);
-        StringJoiner path = new StringJoiner(PATH_DELIMTER);
-        List<String> paths = Arrays.asList(
-                WorkflowConstants.LEAVE_ATTACHMENTS_KEY,
-                data.getFaculty(),
-                data.getDepartment(),
-                data.getSubmittedDate(),
-                data.getEmployeeId());
-
-        paths.forEach(pathFragment -> path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8")));
-
-        attachmentNames.forEach(attachment -> {
-            String encodedFileName = UriUtils.encodePathSegment(attachment, "UTF-8");
-
-            InputStream file = nextcloudService.getFile(IWORKFLOWS_USERNAME, path.toString() + "/" + encodedFileName);
-            nextcloudService.uploadFile(principal, attachment, file);
-        });
     }
 
     @Autowired

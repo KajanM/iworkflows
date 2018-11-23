@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +62,7 @@ public class TestController {
     @PostMapping("/upload-as-user")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Principal principal) {
         try {
-            nextcloudService.uploadFile(principal.getName(), "welcome.txt", file.getInputStream());
+            nextcloudService.uploadFile(principal.getName(), UriUtils.encodePathSegment(file.getOriginalFilename(), "UTF-8"), file.getInputStream());
         } catch (IOException e) {
             log.error("Unable to upload file to NextCloud", e);
             throw new IworkflowsWebDavException("Unable to upload file to NextCloud");
