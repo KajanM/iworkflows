@@ -17,4 +17,6 @@ public interface NextcloudService {
     void createDirectory(String principal, String directoryPath);
 
     boolean exists(String principal, String resourcePath);
+
+    ResponseEntity<String> share(String principal, String resourcePath);
 }

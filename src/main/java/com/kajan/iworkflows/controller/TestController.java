@@ -39,8 +39,8 @@ public class TestController {
     }
 
     @GetMapping("/get-file")
-    public InputStream getFile(Principal principal) {
-        return nextcloudService.getFile(principal.getName(), "welcome.txt");
+    public InputStream getFile(@RequestParam("path") String resourcePath, Principal principal) {
+        return nextcloudService.getFile(principal.getName(), resourcePath);
     }
 
     @GetMapping("/get-file-iworkflows")
@@ -70,12 +70,17 @@ public class TestController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/transfer-to-nextcloud")
-    public ResponseEntity<?> transferToLocalNextcloud(Principal principal) {
-        //InputStream resource = ;
-        //nextcloudService.uploadFile(principal.getName(), "welcome.txt", nextcloudService.getFileAsIworkflows("welcome.txt"));
+    @GetMapping("/copy-to-user")
+    public ResponseEntity<?> copyToUser(Principal principal) {
+        InputStream inputStream = nextcloudService.getFile(IWORKFLOWS_USERNAME, "welcome.txt");
+        nextcloudService.uploadFile(principal.getName(), "welcome.txt", inputStream);
         return ResponseEntity.ok().build();
+    }
 
+    @GetMapping("/share")
+    public ResponseEntity<?> share(@RequestParam("path") String resourcePath, Principal principal) {
+        nextcloudService.share(principal.getName(), resourcePath);
+        return ResponseEntity.ok().build();
     }
 
     @Autowired
