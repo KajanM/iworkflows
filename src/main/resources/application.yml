@@ -6,7 +6,7 @@ logging:
 #    org.springframework.ldap: DEBUG
 #    org.camunda.bpm.springboot: DEBUG
 
-testing: true
+testing: false
 
 camunda.bpm:
   admin-user:
@@ -99,9 +99,9 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
-  jpa:
-    hibernate:
-      ddl-auto: update
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
 
 ---
 spring:
