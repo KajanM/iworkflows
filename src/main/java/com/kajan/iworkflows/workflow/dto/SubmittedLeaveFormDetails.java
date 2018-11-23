@@ -22,9 +22,18 @@ public class SubmittedLeaveFormDetails implements Serializable {
     private String startDate;
     private String endDate;
     private String comments;
-    private int takenCasualLeaves;
-    private int takenMedicalLeaves;
-    private int takenVacationLeaves;
+    /**
+     * taken casual leaves
+     */
+    private int casual;
+     /**
+     * taken medical leaves
+     */
+    private int medical;
+     /**
+     * taken vacation leaves
+     */
+    private int vacation;
     private List<String> documents;
     private String submittedDate;
     private int remainingCasual;
