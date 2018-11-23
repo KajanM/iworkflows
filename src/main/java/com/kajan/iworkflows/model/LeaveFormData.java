@@ -20,9 +20,9 @@ public class LeaveFormData {
     private int casual;
     private int medical;
     private int vacation;
-    private int casualAllowed;
-    private int medicalAllowed;
-    private int vacationAllowed;
+    private int remainingCasual;
+    private int remainingMedical;
+    private int remainingVacation;
 
     public static LeaveFormData fromUserStore(UserStore userStore) {
         LeaveFormData data = new LeaveFormData();
@@ -33,15 +33,15 @@ public class LeaveFormData {
         data.setDepartment(userStore.getDepartment());
         data.setRole(userStore.getRole());
         data.setEmail(userStore.getPrimaryEmail());
-        data.setMobileNo(userStore.getPermanentTelephone());
-        data.setTelephoneNo(userStore.getCurrentHomeTelephone());
+        data.setMobileNo(userStore.getCurrentMobile());
+        data.setTelephoneNo(userStore.getPermanatTelephone());
         data.setAddress(userStore.getCurrentAddress());
         data.setCasual(userStore.getCasual());
         data.setMedical(userStore.getMedical());
         data.setVacation(userStore.getVacation());
-        data.setCasualAllowed(userStore.getCasualAllowed());
-        data.setMedicalAllowed(userStore.getMedicalAllowed());
-        data.setVacationAllowed(userStore.getVacationAllowed());
+        data.setRemainingCasual(userStore.getRemainingCasualLeaves());
+        data.setRemainingVacation(userStore.getRemainingVacationLeaves());
+        data.setRemainingMedical(userStore.getRemainingMedicalLeaves());
         return data;
     }
 
@@ -59,9 +59,9 @@ public class LeaveFormData {
         data.setCasual(5);
         data.setMedical(7);
         data.setVacation(8);
-        data.setCasualAllowed(21);
-        data.setMedicalAllowed(20);
-        data.setVacationAllowed(30);
+        data.setRemainingCasual(21);
+        data.setRemainingMedical(20);
+        data.setRemainingVacation(30);
         return data;
     }
 }

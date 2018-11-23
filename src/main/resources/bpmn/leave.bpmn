@@ -7,16 +7,16 @@
     <bpmn:participant id="Participant_06ujbc6" name="LEARNORG" processRef="Process_0g20e4x" />
     <bpmn:participant id="Participant_1vvbfx1" name="NEXTCLOUD" processRef="Process_0ont040" />
     <bpmn:participant id="Participant_0xne8k4" name="Leave clerk" processRef="Process_07bigf3" />
-    <bpmn:messageFlow id="MessageFlow_1q2ceju" sourceRef="review_leave" targetRef="StartEvent_0f86c8j" />
-    <bpmn:messageFlow id="MessageFlow_15i8uc7" sourceRef="Task_0v4bexm" targetRef="review_leave" />
+    <bpmn:messageFlow id="MessageFlow_1q2ceju" sourceRef="review_leave_head" targetRef="StartEvent_0f86c8j" />
+    <bpmn:messageFlow id="MessageFlow_15i8uc7" sourceRef="Task_0v4bexm" targetRef="review_leave_head" />
     <bpmn:messageFlow id="MessageFlow_0o3lfic" sourceRef="auto_assign" targetRef="StartEvent_02qbey9" />
     <bpmn:messageFlow id="MessageFlow_0091ck4" sourceRef="auto_assign" targetRef="StartEvent_0ho9t39" />
     <bpmn:messageFlow id="MessageFlow_0ebqaqn" sourceRef="Task_0htw07h" targetRef="auto_assign" />
     <bpmn:messageFlow id="MessageFlow_1vdrk6h" sourceRef="Task_042t1g2" targetRef="auto_assign" />
     <bpmn:messageFlow id="MessageFlow_1dzhp34" sourceRef="Task_0e1svh6" targetRef="StartEvent_0t6tv19" />
     <bpmn:messageFlow id="MessageFlow_19tntyf" sourceRef="Task_1j6dd4n" targetRef="Task_0e1svh6" />
-    <bpmn:messageFlow id="MessageFlow_05d19m1" sourceRef="Task_1idyi4l" targetRef="StartEvent_0pb277v" />
-    <bpmn:messageFlow id="MessageFlow_1j49df0" sourceRef="Task_0qjmhh5" targetRef="Task_1idyi4l" />
+    <bpmn:messageFlow id="MessageFlow_05d19m1" sourceRef="review_leave_clerk" targetRef="StartEvent_0pb277v" />
+    <bpmn:messageFlow id="MessageFlow_1j49df0" sourceRef="Task_0qjmhh5" targetRef="review_leave_clerk" />
     <bpmn:association id="Association_0t5273j" sourceRef="DataStoreReference_1g0sj53" targetRef="TextAnnotation_0cdpfu1" />
   </bpmn:collaboration>
   <bpmn:process id="leave_process" name="Leave Process" isExecutable="true">
@@ -27,14 +27,14 @@
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>set_due_date</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>determine_recommendation</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>review_leave</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>review_leave_head</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0ewj8hc</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>auto_assign</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_0e1svh6</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0s8sl70</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0k8vitx</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>leave_post_approval_service</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_1idyi4l</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>review_leave_clerk</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>ExclusiveGateway_0dnk4d7</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>leave_post_reject_service</bpmn:flowNodeRef>
       </bpmn:lane>
@@ -62,7 +62,7 @@
       <bpmn:incoming>SequenceFlow_1dchghb</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ycr5sh</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:userTask id="review_leave" name="review leave request (head)" camunda:assignee="#{approver}" camunda:dueDate="#{due_date}">
+    <bpmn:userTask id="review_leave_head" name="review leave request (head)" camunda:assignee="#{head}" camunda:dueDate="#{due_date}">
       <bpmn:incoming>SequenceFlow_0r73bwm</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0ei2cg7</bpmn:outgoing>
     </bpmn:userTask>
@@ -74,12 +74,12 @@
     <bpmn:sequenceFlow id="SequenceFlow_0sd1it4" name="no" sourceRef="ExclusiveGateway_0ewj8hc" targetRef="leave_post_reject_service">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not headApproved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_1uidix0" name="yes" sourceRef="ExclusiveGateway_0ewj8hc" targetRef="Task_1idyi4l">
+    <bpmn:sequenceFlow id="SequenceFlow_1uidix0" name="yes" sourceRef="ExclusiveGateway_0ewj8hc" targetRef="review_leave_clerk">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{headApproved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="SequenceFlow_0ycr5sh" sourceRef="determine_recommendation" targetRef="ExclusiveGateway_01waf2f" />
-    <bpmn:sequenceFlow id="SequenceFlow_0r73bwm" sourceRef="ExclusiveGateway_01waf2f" targetRef="review_leave" />
-    <bpmn:sequenceFlow id="SequenceFlow_0ei2cg7" sourceRef="review_leave" targetRef="ExclusiveGateway_0ewj8hc" />
+    <bpmn:sequenceFlow id="SequenceFlow_0r73bwm" sourceRef="ExclusiveGateway_01waf2f" targetRef="review_leave_head" />
+    <bpmn:sequenceFlow id="SequenceFlow_0ei2cg7" sourceRef="review_leave_head" targetRef="ExclusiveGateway_0ewj8hc" />
     <bpmn:sequenceFlow id="SequenceFlow_1dchghb" sourceRef="ExclusiveGateway_0hh97pi" targetRef="determine_recommendation" />
     <bpmn:sequenceFlow id="SequenceFlow_1cl84au" sourceRef="ExclusiveGateway_0hh97pi" targetRef="set_due_date" />
     <bpmn:sequenceFlow id="SequenceFlow_1mtgpod" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_0hh97pi" />
@@ -112,7 +112,7 @@
       <bpmn:outgoing>SequenceFlow_1f5umt8</bpmn:outgoing>
       <bpmn:outgoing>SequenceFlow_0iubkgm</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:userTask id="Task_1idyi4l" name="review leave request (clerk)" camunda:assignee="kirisanth">
+    <bpmn:userTask id="review_leave_clerk" name="review leave request (clerk)" camunda:assignee="#{clerk}">
       <bpmn:incoming>SequenceFlow_1uidix0</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0vki4ke</bpmn:outgoing>
     </bpmn:userTask>
@@ -120,7 +120,7 @@
     <bpmn:sequenceFlow id="SequenceFlow_1f5umt8" name="yes" sourceRef="ExclusiveGateway_0dnk4d7" targetRef="leave_post_approval_service">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{clerkApproved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="SequenceFlow_0vki4ke" sourceRef="Task_1idyi4l" targetRef="ExclusiveGateway_0dnk4d7" />
+    <bpmn:sequenceFlow id="SequenceFlow_0vki4ke" sourceRef="review_leave_clerk" targetRef="ExclusiveGateway_0dnk4d7" />
     <bpmn:sequenceFlow id="SequenceFlow_0iubkgm" name="no" sourceRef="ExclusiveGateway_0dnk4d7" targetRef="leave_post_reject_service">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not clerkApproved}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
@@ -256,7 +256,7 @@
       <bpmndi:BPMNShape id="ServiceTask_0q6zmek_di" bpmnElement="set_due_date">
         <dc:Bounds x="387" y="623" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="UserTask_1l8fmjo_di" bpmnElement="review_leave">
+      <bpmndi:BPMNShape id="UserTask_1l8fmjo_di" bpmnElement="review_leave_head">
         <dc:Bounds x="763" y="713" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1mtgpod_di" bpmnElement="SequenceFlow_1mtgpod">
@@ -519,7 +519,7 @@
         <di:waypoint x="1381" y="662" />
         <di:waypoint x="1463" y="662" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="UserTask_18sip0b_di" bpmnElement="Task_1idyi4l">
+      <bpmndi:BPMNShape id="UserTask_18sip0b_di" bpmnElement="review_leave_clerk">
         <dc:Bounds x="1281" y="622" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_0dnk4d7_di" bpmnElement="ExclusiveGateway_0dnk4d7" isMarkerVisible="true">

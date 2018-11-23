@@ -83,7 +83,7 @@ learnorg:
     userinfo: http://10.8.90.4/oauth/user_info.php
   wsfunction:
     get-department-head: get_head_by_department
-
+    set-approved-leave: set_leave_taken
 ---
 spring:
   profiles: h2
@@ -99,9 +99,9 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
-  jpa:
-    hibernate:
-      ddl-auto: update
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
 
 ---
 spring:
