@@ -18,27 +18,27 @@ camunda.bpm:
 
 spring:
   profiles:
-    active: h2, angular
+    active: h2, angular-local
 
   security:
     oauth2:
       client:
         registration:
           nextcloud:
-            client-id: UroTGPr7pGFj1KTp7rKuJJjJbalkOYzshJYgBLWyrZmzwdIZBlPlvL3E99fsjEqI
-            client-secret: gGQDmSns5VLlX9kFqPrB4Gus3DkpH7ZXaZRKX4aEyuzu87wnwxWmxYgMSmw9D3Yr
-            redirect-uri-template: http://localhost:8080/connect/nextcloud
+            client-id: Nk1pciK2WjsMIoYVoZLgVWgP771OjiSUzRHiHYt96JhBy9XX2Zquc1IofJPkIAwR
+            client-secret: hrzQNt0JRKgmNinW07bNBmBugIWqyrOJGtCn40HPWWZNDoZW4gorvgCZdwLwu1d9
+            redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:4200/connect/nextcloud
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
           google:
             client-id: 1006906289665-gnqn7aq78n707c2glp580jf5lk26lbs1.apps.googleusercontent.com
             client-secret: FDfO-FBzTlFUT3k7r7WYubYk
-            redirect-uri-template: http://localhost:8080/token/code/google
+            redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:4200/token/code/google
           learnorg:
-            client-id: iworkflows_test
-            client-secret: b53809d8afad66df6730073ae70adbbf974b220494a4e585
-            redirect-uri-template: http://localhost:8080/connect/learnorg
+            client-id: iworkflows_server_test
+            client-secret: 688b10e0d1033410e214ebe6c27f0449609819e6b6593809
+            redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:4200/connect/learnorg
             authorization-grant-type: authorization_code
             client-name: LearnOrg
             scope: profile
@@ -103,36 +103,36 @@ spring:
 #    hibernate:
 #      ddl-auto: update
 
----
-spring:
-  profiles: server
-
-  security:
-    oauth2:
-      client:
-        registration:
-          nextcloud:
-            client-id: Bcwh8FjxJdrPfMH92VWDDOP74RaZjCCjqy32nhI5HG7pJC1UByL7l0ZL0eAFRDfr
-            client-secret: bt5b7s5J9HiKJne7hBKhhZvjnyXp3iWpJj1kkPuBje4S9ydtlle7g2ZI8bruu1Dg
-            redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:8080/token/code/nextcloud
-            authorization-grant-type: authorization_code
-            client-name: NextCloud
-            scope: read, write
-          learnorg:
-            client-id: iworkflows
-            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
-            redirect-uri-template: http://localhost:4200/connect/learn_org
-            authorization-grant-type: authorization_code
-            client-name: LearnOrg
-            scope: profile
-
-        provider:
-          nextcloud:
-            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
-            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
-          learnorg:
-            authorization-uri: https://10.8.90.4/oauth/login.php
-            token-uri: https://10.8.90.4/oauth/token.php
+#---
+#spring:
+#  profiles: server8080
+#
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          nextcloud:
+#            client-id: Bcwh8FjxJdrPfMH92VWDDOP74RaZjCCjqy32nhI5HG7pJC1UByL7l0ZL0eAFRDfr
+#            client-secret: bt5b7s5J9HiKJne7hBKhhZvjnyXp3iWpJj1kkPuBje4S9ydtlle7g2ZI8bruu1Dg
+#            redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:8080/token/code/nextcloud
+#            authorization-grant-type: authorization_code
+#            client-name: NextCloud
+#            scope: read, write
+#          learnorg:
+#            client-id: iworkflows
+#            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
+#            redirect-uri-template: http://localhost:4200/connect/learn_org
+#            authorization-grant-type: authorization_code
+#            client-name: LearnOrg
+#            scope: profile
+#
+#        provider:
+#          nextcloud:
+#            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
+#            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+#          learnorg:
+#            authorization-uri: https://10.8.90.4/oauth/login.php
+#            token-uri: https://10.8.90.4/oauth/token.php
 
 nextcloud:
   uri:
@@ -143,7 +143,7 @@ nextcloud:
 
 ---
 spring:
-  profiles: angular
+  profiles: angular-local
 
   security:
     oauth2:
@@ -157,8 +157,8 @@ spring:
             client-name: NextCloud
             scope: read, write
           learnorg:
-            client-id: iworkflows
-            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
+            client-id: iworkflows_s
+            client-secret: d6f2e99b4a7eb09af9823caf37909abeb52148e085b7b5be
             redirect-uri-template: http://localhost:4200/connect/learnorg
             authorization-grant-type: authorization_code
             client-name: LearnOrg
@@ -167,8 +167,8 @@ spring:
         provider:
           nextcloud:
             nextcloud:
-              authorization-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/authorize
-              token-uri: http://localhost:8090/nextcloud/index.php/apps/oauth2/api/v1/token
+              authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
+              token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
             learnorg:
               learnorg:
                 authorization-uri: https://10.8.90.4/oauth/login.php
