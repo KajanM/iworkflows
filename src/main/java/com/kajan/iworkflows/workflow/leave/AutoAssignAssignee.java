@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.net.ssl.*;
@@ -126,7 +128,10 @@ public class AutoAssignAssignee implements JavaDelegate {
                 String url = buildUrl(role, wsfunction);
                 log.debug("url : {} ", url);
 
-                HttpEntity<String> request = new HttpEntity<>("", learnOrgService.getLearnOrgHeadersAsIworkflows());
+                MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+                map.add("role", role);
+
+                HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, learnOrgService.getLearnOrgHeadersAsIworkflows());
                 ResponseEntity<Approver> response = restTemplate.postForEntity(url, request, Approver.class);
                 log.debug("Response ---------" + response.getBody());
 
@@ -144,7 +149,7 @@ public class AutoAssignAssignee implements JavaDelegate {
     }
 
     public String buildUrl(String role, String wsfunction) {
-        String uri = webserviceUri.replace(PLACEHOLDER_LEARNORG_DEPARTMENT, role)
+        String uri = webserviceUri
                 .replace(PLACEHOLDER_LEARNORG_WSFUNCTION, wsfunction);
         log.debug("BuiltURL: {}", uri);
         return uri;

@@ -79,7 +79,7 @@ iworkflows:
 
 learnorg:
   uri:
-    system: https://10.8.90.4/oauth/iworkflows.php?department={role}&wsfunction={wsfunction}
+    system: https://10.8.90.4/oauth/iworkflows.php?wsfunction={wsfunction}
     userinfo: http://10.8.90.4/oauth/user_info.php
   wsfunction:
     get-department-head: get_head_by_department
