@@ -40,39 +40,29 @@ public class CamundaLeaveProcessController {
         log.debug("Leave request received principal: {}, leave details: {}", principal, leaveDetails);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         leaveDetails.setSubmittedDate(dateFormat.format(new Date()));
-        try {
-            ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey(LEAVE_PROCESS_DEFINITION_KEY,
-                    Variables
-                            .putValue(OWNER_KEY, principal.getName())
-                            .putValue(LEAVE_DETAILS_KEY, leaveDetails));
+        ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey(LEAVE_PROCESS_DEFINITION_KEY,
+                Variables
+                        .putValue(OWNER_KEY, principal.getName())
+                        .putValue(LEAVE_DETAILS_KEY, leaveDetails));
 
-            List<Task> tasks = taskService.createTaskQuery().executionId(leaveProcess.getId()).list();
-            tasks.forEach(task -> taskService.setOwner(task.getId(), principal.getName()));
+        List<Task> tasks = taskService.createTaskQuery().executionId(leaveProcess.getId()).list();
+        tasks.forEach(task -> taskService.setOwner(task.getId(), principal.getName()));
 
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Unable to start the process", e);
-            return ResponseEntity.badRequest().build();
-        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/complete/{taskId}/{approved}")
     public ResponseEntity<?> completeTask(@PathVariable("taskId") String taskId, @PathVariable("approved") Boolean approved) {
-        try {
-            String processInstanceId = taskService.createTaskQuery().taskId(taskId).list().get(0).getProcessInstanceId();
-            Object headApproved = runtimeService.getVariable(processInstanceId, HEAD_APPROVED_KEY);
-            if (headApproved == null) {
-                taskService.setVariable(taskId, HEAD_APPROVED_KEY, approved);
-            } else {
-                taskService.setVariable(taskId, CLERK_APPROVED_KEY, approved);
-            }
-            taskService.complete(taskId);
-            log.debug("Task {} completed successfully", taskId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Unable to complete the task", e);
-            return ResponseEntity.badRequest().build();
+        String processInstanceId = taskService.createTaskQuery().taskId(taskId).list().get(0).getProcessInstanceId();
+        Object headApproved = runtimeService.getVariable(processInstanceId, HEAD_APPROVED_KEY);
+        if (headApproved == null) {
+            taskService.setVariable(taskId, HEAD_APPROVED_KEY, approved);
+        } else {
+            taskService.setVariable(taskId, CLERK_APPROVED_KEY, approved);
         }
+        taskService.complete(taskId);
+        log.debug("Task {} completed successfully", taskId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/details/{processInstanceId}")
