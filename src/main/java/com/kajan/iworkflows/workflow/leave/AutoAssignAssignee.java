@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_DEPARTMENT;
-import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_WSFUNCTION;
 import static com.kajan.iworkflows.util.WorkflowConstants.*;
 
 
@@ -125,7 +123,7 @@ public class AutoAssignAssignee implements JavaDelegate {
                 role = userStore.getLearnorgRole();
                 log.debug("learnorg department : {}", role);
 
-                String url = buildUrl(role, wsfunction);
+                String url = learnOrgService.buildUrl(webserviceUri, wsfunction);
                 log.debug("url : {} ", url);
 
                 MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
@@ -148,11 +146,11 @@ public class AutoAssignAssignee implements JavaDelegate {
 
     }
 
-    public String buildUrl(String role, String wsfunction) {
-        String uri = webserviceUri
-                .replace(PLACEHOLDER_LEARNORG_WSFUNCTION, wsfunction);
-        log.debug("BuiltURL: {}", uri);
-        return uri;
-    }
+    //public String buildUrl(String role, String wsfunction) {
+    //    String uri = webserviceUri
+    //            .replace(PLACEHOLDER_LEARNORG_WSFUNCTION, wsfunction);
+    //    log.debug("BuiltURL: {}", uri);
+    //    return uri;
+    //}
 
 }
