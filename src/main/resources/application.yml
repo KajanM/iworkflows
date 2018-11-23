@@ -157,8 +157,8 @@ spring:
             client-name: NextCloud
             scope: read, write
           learnorg:
-            client-id: iworkflows_s
-            client-secret: d6f2e99b4a7eb09af9823caf37909abeb52148e085b7b5be
+            client-id: iworkflows
+            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
             redirect-uri-template: http://localhost:4200/connect/learnorg
             authorization-grant-type: authorization_code
             client-name: LearnOrg
