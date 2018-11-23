@@ -29,6 +29,10 @@ public class DetermineRecommendation implements JavaDelegate {
         SubmittedLeaveFormDetails submittedLeaveFormDetails = (SubmittedLeaveFormDetails) execution.getVariable(LEAVE_DETAILS_KEY);
         String leaveType = submittedLeaveFormDetails.getLeaveType();
         int leaveAppliedFor = learnOrgService.getWorkingDaysBetweenTwoDates(submittedLeaveFormDetails.getStartDate(), submittedLeaveFormDetails.getEndDate());
+        String employeeId = submittedLeaveFormDetails.getEmployeeId();
+        execution.setVariable("employeeId",employeeId);
+        execution.setVariable("leaveType",leaveType);
+        execution.setVariable("leaveAppliedFor", leaveAppliedFor);
         log.debug("no leave applied for {} ", leaveAppliedFor);
         int remainingLeave = submittedLeaveFormDetails.getRemainingLeavesByLeaveType(leaveType);
         log.debug("remaining leaves {} ", remainingLeave);
