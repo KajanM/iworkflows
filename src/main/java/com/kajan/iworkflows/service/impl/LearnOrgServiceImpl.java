@@ -20,9 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import java.security.Principal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
@@ -92,21 +89,21 @@ public class LearnOrgServiceImpl implements LearnOrgService {
         return uri;
     }
 
-    public int getLeaveCount(String startDate, String endDate)
-            throws ParseException {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
-        LocalDate firstDate = LocalDate.parse(startDate, formatter);
-        LocalDate secondDate = LocalDate.parse(endDate, formatter);
-        Period period = Period.between(firstDate, secondDate);
-        int diff = period.getDays();
-        log.debug("diff {} ", diff);
-        return diff;
-    }
+    //public int getLeaveCount(String startDate, String endDate)
+    //        throws ParseException {
+    //
+    //    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+    //    LocalDate firstDate = LocalDate.parse(startDate, formatter);
+    //    LocalDate secondDate = LocalDate.parse(endDate, formatter);
+    //    Period period = Period.between(firstDate, secondDate);
+    //    int diff = period.getDays();
+    //    log.debug("diff {} ", diff);
+    //    return diff;
+    //}
 
     public int getWorkingDaysBetweenTwoDates(String firstDate, String secondDate) throws ParseException {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
         Date startDate = formatter.parse(firstDate);
         Date endDate = formatter.parse(secondDate);
 
