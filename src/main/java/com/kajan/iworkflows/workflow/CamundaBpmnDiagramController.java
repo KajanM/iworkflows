@@ -35,8 +35,9 @@ public class CamundaBpmnDiagramController {
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(processInstanceId).list();
         if(tasks.isEmpty()) {
             // task already completed
-            HistoricTaskInstance historicTaskInstance = historyService.createHistoricTaskInstanceQuery()
-                    .processInstanceId(processInstanceId).list().get(0);
+            List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
+                    .processInstanceId(processInstanceId).list();
+            HistoricTaskInstance historicTaskInstance = historicTaskInstances.get(historicTaskInstances.size() - 1);
             processDefinitionId = historicTaskInstance.getProcessDefinitionId();
             taskDefinitionKey = historicTaskInstance.getTaskDefinitionKey();
         } else {
