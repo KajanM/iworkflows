@@ -15,5 +15,5 @@ public class WorkflowConstants {
     public static final String LEAVE_TYPE_KEY = "leave_type";
     public static final String APPROVER_KEY = "approver";
 
-    public static final String LEAVE_ATTACHMENTS_KEY = "leave-attachments";
+    public static final String NEXTCLOUD_LEAVE_ATTACHMENTS_DIR_NAME = "leave-attachments";
 }
