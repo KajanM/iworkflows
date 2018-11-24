@@ -51,21 +51,30 @@ public class LearnOrgServiceImpl implements LearnOrgService {
 
     @Override
     public UserStore getLearnOrgUserInfo(Principal principal) {
-        TokenDTO tokenDTO = this.oauthTokenService.getToken(principal.getName(), LEARNORG);
 
-        if (tokenDTO == null) {
-            throw new IworkflowsPreConditionRequiredException("No LearnOrg access token found for " + principal);
+        try {
+            TokenDTO tokenDTO = this.oauthTokenService.getToken(principal.getName(), LEARNORG);
+
+            if (tokenDTO == null) {
+                log.warn("No LearnOrg access token found for {}", principal.getName());
+                throw new IworkflowsPreConditionRequiredException("No LearnOrg access token found for " + principal.getName());
+            }
+            String accesstoken = tokenDTO.getAccessToken().getValue();
+
+            MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+            map.add("access_token", accesstoken);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, getLearnOrgHeaders());
+            log.debug("uri : " + userInfoUri);
+            ResponseEntity<UserStore> response = this.restTemplate.postForEntity(userInfoUri, request, UserStore.class);
+            log.debug("Response ---------" + response.getBody());
+
+            return response.getBody();
+        } catch (IworkflowsPreConditionRequiredException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Unable to get user info from LearnOrg", e);
+            throw new IworkflowsPreConditionRequiredException("Unable to get user info from LearnOrg");
         }
-        String accesstoken = tokenDTO.getAccessToken().getValue();
-
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        map.add("access_token", accesstoken);
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, getLearnOrgHeaders());
-        log.debug("uri : " + userInfoUri);
-        ResponseEntity<UserStore> response = this.restTemplate.postForEntity(userInfoUri, request, UserStore.class);
-        log.debug("Response ---------" + response.getBody());
-
-        return response.getBody();
     }
 
     public HttpHeaders getLearnOrgHeaders() {
