@@ -24,8 +24,6 @@ public class DetermineRecommendation implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) throws ParseException {
-        // TODO: add actual logic to determine recommendation
-
         SubmittedLeaveFormDetails submittedLeaveFormDetails = (SubmittedLeaveFormDetails) execution.getVariable(LEAVE_DETAILS_KEY);
         String leaveType = submittedLeaveFormDetails.getLeaveType();
         int leaveAppliedFor = learnOrgService.getWorkingDaysBetweenTwoDates(submittedLeaveFormDetails.getStartDate(), submittedLeaveFormDetails.getEndDate());
