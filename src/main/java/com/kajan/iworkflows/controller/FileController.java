@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RuntimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,7 +75,6 @@ public class FileController {
             }
         });
 
-
         if (file.getOriginalFilename() == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -94,25 +94,43 @@ public class FileController {
 
     @GetMapping("/{processInstanceId}/{fileName}")
     public ResponseEntity<byte[]> getFile(@PathVariable("processInstanceId") String processInstanceId, @PathVariable("fileName") String fileName) {
-        SubmittedLeaveFormDetails subittedLeaveFormDetails = (SubmittedLeaveFormDetails) runtimeService.getVariable(processInstanceId, LEAVE_DETAILS_KEY);
-        DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
+        SubmittedLeaveFormDetails submittedLeaveFormDetails = (SubmittedLeaveFormDetails) runtimeService.getVariable(processInstanceId, LEAVE_DETAILS_KEY);
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
         uriBuilder.pathSegment(
                 LEAVE_ATTACHMENTS_DIR_NAME,
-                subittedLeaveFormDetails.getFaculty(),
-                subittedLeaveFormDetails.getDepartment(),
-                dateFormat.format(new Date()),
-                subittedLeaveFormDetails.getEmployeeId(),
+                submittedLeaveFormDetails.getFaculty().toLowerCase().replace(" ", "-"),
+                submittedLeaveFormDetails.getDepartment().toLowerCase(),
+                submittedLeaveFormDetails.getSubmittedDate(),
+                submittedLeaveFormDetails.getEmployeeId(),
                 fileName
         );
 
         InputStream fileStream = nextcloudService.getFile(IWORKFLOWS_USERNAME, uriBuilder.toUriString());
         try {
-            return ResponseEntity.ok(ByteStreams.toByteArray(fileStream));
+            return ResponseEntity
+                    .ok()
+                    .contentType(resolveMediaType(fileName))
+                    .body(ByteStreams.toByteArray(fileStream));
         } catch (IOException e) {
-            log.error("Unable to convert to byte array");
+            log.error("Unable to convert to byte array", e);
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    private MediaType resolveMediaType(String fileName) {
+        if (fileName.endsWith(".png")) {
+            return MediaType.IMAGE_PNG;
+        }
+        if (fileName.endsWith(".pdf")) {
+            return MediaType.APPLICATION_PDF;
+        }
+        if (fileName.endsWith(".jpeg")) {
+            return MediaType.IMAGE_JPEG;
+        }
+        if (fileName.endsWith(".txt")) {
+            return MediaType.TEXT_XML;
+        }
+        throw new UnsupportedOperationException("Finding appropriate MediaType for " + fileName + " failed");
     }
 
     @Autowired
