@@ -19,7 +19,7 @@ public class Constants {
 
     public static final String DATE_PATTERN = "yyyy-MM-dd";
 
-    public static final String PATH_DELIMTER = "/";
+    public static final String URI_PATH_DELIMITER = "/";
 
     public enum TokenProvider {
 

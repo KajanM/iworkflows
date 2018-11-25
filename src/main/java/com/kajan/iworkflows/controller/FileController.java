@@ -13,10 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RuntimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,9 +27,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.StringJoiner;
 
-import static com.kajan.iworkflows.util.Constants.*;
+import static com.kajan.iworkflows.util.Constants.DATE_PATTERN;
+import static com.kajan.iworkflows.util.Constants.LEAVE_ATTACHMENTS_DIR_NAME;
 import static com.kajan.iworkflows.util.WorkflowConstants.LEAVE_DETAILS_KEY;
 
 @RestController
@@ -51,7 +52,6 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file, Principal principal) {
         DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-        StringJoiner path = new StringJoiner(PATH_DELIMTER);
         UserStore userStore;
         if (testing) {
             userStore = DummyUserStore.toUserStore(userStoreService.findByPrincipal(principal.getName()).iterator().next());
@@ -61,15 +61,17 @@ public class FileController {
 
         List<String> paths = Arrays.asList(
                 LEAVE_ATTACHMENTS_DIR_NAME,
-                userStore.getFaculty(),
-                userStore.getDepartment(),
+                userStore.getFaculty().toLowerCase().replace(" ", "-"),
+                userStore.getDepartment().toLowerCase(),
                 dateFormat.format(new Date()),
                 userStore.getEmployeeId());
 
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
+
         paths.forEach(pathFragment -> {
-            path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
-            if (!nextcloudService.exists(IWORKFLOWS_USERNAME, path.toString())) {
-                nextcloudService.createDirectory(IWORKFLOWS_USERNAME, path.toString());
+            uriBuilder.pathSegment(pathFragment);
+            if (!nextcloudService.exists(IWORKFLOWS_USERNAME, uriBuilder.toUriString())) {
+                nextcloudService.createDirectory(IWORKFLOWS_USERNAME, uriBuilder.toUriString());
             }
         });
 
@@ -77,44 +79,58 @@ public class FileController {
             return ResponseEntity.badRequest().build();
         }
 
-        path.add(UriUtils.encodePathSegment(file.getOriginalFilename(), "UTF-8"));
+        uriBuilder.pathSegment(file.getOriginalFilename());
 
         try {
-            nextcloudService.uploadFile(IWORKFLOWS_USERNAME, path.toString(), file.getInputStream());
+            nextcloudService.uploadFile(IWORKFLOWS_USERNAME, uriBuilder.toUriString(), file.getInputStream());
         } catch (IOException e) {
             log.error("Unable to upload file to NextCloud", e);
             throw new IworkflowsWebDavException("Unable to upload file to NextCloud");
         }
-        log.debug("Successfully stored attachment to {}", path.toString());
+        log.debug("Successfully stored attachment to {}", uriBuilder.toUriString());
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{processInstanceId}/{fileName}")
     public ResponseEntity<byte[]> getFile(@PathVariable("processInstanceId") String processInstanceId, @PathVariable("fileName") String fileName) {
-        SubmittedLeaveFormDetails subittedLeaveFormDetails = (SubmittedLeaveFormDetails) runtimeService.getVariable(processInstanceId, LEAVE_DETAILS_KEY);
-        DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN);
-        StringJoiner path = new StringJoiner(PATH_DELIMTER);
-        List<String> paths = Arrays.asList(
+        SubmittedLeaveFormDetails submittedLeaveFormDetails = (SubmittedLeaveFormDetails) runtimeService.getVariable(processInstanceId, LEAVE_DETAILS_KEY);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance();
+        uriBuilder.pathSegment(
                 LEAVE_ATTACHMENTS_DIR_NAME,
-                subittedLeaveFormDetails.getFaculty(),
-                subittedLeaveFormDetails.getDepartment(),
-                dateFormat.format(new Date()),
-                subittedLeaveFormDetails.getEmployeeId(),
+                submittedLeaveFormDetails.getFaculty().toLowerCase().replace(" ", "-"),
+                submittedLeaveFormDetails.getDepartment().toLowerCase(),
+                submittedLeaveFormDetails.getSubmittedDate(),
+                submittedLeaveFormDetails.getEmployeeId(),
                 fileName
         );
 
-        paths.forEach(pathFragment -> {
-            path.add(UriUtils.encodePathSegment(pathFragment, "UTF-8"));
-        });
-
-        InputStream fileStream = nextcloudService.getFile(IWORKFLOWS_USERNAME, path.toString());
+        InputStream fileStream = nextcloudService.getFile(IWORKFLOWS_USERNAME, uriBuilder.toUriString());
         try {
-            return ResponseEntity.ok(ByteStreams.toByteArray(fileStream));
+            return ResponseEntity
+                    .ok()
+                    .contentType(resolveMediaType(fileName))
+                    .body(ByteStreams.toByteArray(fileStream));
         } catch (IOException e) {
-            log.error("Unable to convert to byte array");
+            log.error("Unable to convert to byte array", e);
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    private MediaType resolveMediaType(String fileName) {
+        if (fileName.endsWith(".png")) {
+            return MediaType.IMAGE_PNG;
+        }
+        if (fileName.endsWith(".pdf")) {
+            return MediaType.APPLICATION_PDF;
+        }
+        if (fileName.endsWith(".jpeg")) {
+            return MediaType.IMAGE_JPEG;
+        }
+        if (fileName.endsWith(".txt")) {
+            return MediaType.TEXT_XML;
+        }
+        throw new UnsupportedOperationException("Finding appropriate MediaType for " + fileName + " failed");
     }
 
     @Autowired

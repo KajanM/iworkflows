@@ -66,7 +66,8 @@ nextcloud:
   uri:
     root: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
     userinfo: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
-    file: http://iworkflows.projects.mrt.ac.lk/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
+    ocs-share-api: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v2.php/apps/files_sharing/api/v1/shares
+    file: http://iworkflows.projects.mrt.ac.lk/nextcloud/remote.php/dav/files
 
 iworkflows:
   credentials:
@@ -99,47 +100,9 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
-
-#---
-#spring:
-#  profiles: server8080
-#
-#  security:
-#    oauth2:
-#      client:
-#        registration:
-#          nextcloud:
-#            client-id: Bcwh8FjxJdrPfMH92VWDDOP74RaZjCCjqy32nhI5HG7pJC1UByL7l0ZL0eAFRDfr
-#            client-secret: bt5b7s5J9HiKJne7hBKhhZvjnyXp3iWpJj1kkPuBje4S9ydtlle7g2ZI8bruu1Dg
-#            redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:8080/token/code/nextcloud
-#            authorization-grant-type: authorization_code
-#            client-name: NextCloud
-#            scope: read, write
-#          learnorg:
-#            client-id: iworkflows
-#            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
-#            redirect-uri-template: http://localhost:4200/connect/learn_org
-#            authorization-grant-type: authorization_code
-#            client-name: LearnOrg
-#            scope: profile
-#
-#        provider:
-#          nextcloud:
-#            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
-#            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
-#          learnorg:
-#            authorization-uri: https://10.8.90.4/oauth/login.php
-#            token-uri: https://10.8.90.4/oauth/token.php
-
-nextcloud:
-  uri:
-    root: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
-    userinfo: http://iworkflows.projects.mrt.ac.lk/nextcloud/ocs/v1.php/cloud/users/{userid}
-    file: http://iworkflows.projects.mrt.ac.lk/nextcloud/remote.php/dav/files/{userid}/{path-to-file}
-
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 ---
 spring:
