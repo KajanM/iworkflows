@@ -18,7 +18,7 @@ camunda.bpm:
 
 spring:
   profiles:
-    active: h2, angular-local
+    active: h2, angular-local, testing
 
   security:
     oauth2:
@@ -85,6 +85,15 @@ learnorg:
   wsfunction:
     get-department-head: get_head_by_department
     set-approved-leave: set_leave_taken
+#server:
+#  ssl:
+#    key-store-type: PKCS12
+#    ssl.key-store: file:baeldung.p12
+#    key-password: baeldung
+#    key-alias: baeldung
+#    enabled: false
+#security:
+#  require-ssl: true
 ---
 spring:
   profiles: h2
@@ -137,3 +146,8 @@ spring:
                 authorization-uri: https://10.8.90.4/oauth/login.php
                 token-uri: https://10.8.90.4/oauth/token.php
 
+---
+spring:
+  profiles: testing
+
+testing: true
