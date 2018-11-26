@@ -26,11 +26,11 @@ public class SubmittedLeaveFormDetails implements Serializable {
      * taken casual leaves
      */
     private int casual;
-     /**
+    /**
      * taken medical leaves
      */
     private int medical;
-     /**
+    /**
      * taken vacation leaves
      */
     private int vacation;
@@ -41,12 +41,13 @@ public class SubmittedLeaveFormDetails implements Serializable {
     private int remainingVacation;
 
     public int getRemainingLeavesByLeaveType(String leaveType) {
-        if (leaveType == "casual") {
-            return getRemainingCasual();
-        } else if (leaveType == "medical") {
-            return getRemainingMedical();
-        } else {
-            return getRemainingVacation();
+        switch (leaveType) {
+            case "Casual":
+                return getRemainingCasual();
+            case "Medical":
+                return getRemainingMedical();
+            default:
+                return getRemainingVacation();
 
         }
     }

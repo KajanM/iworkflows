@@ -103,6 +103,7 @@ public class AutoAssignAssignee implements JavaDelegate {
 
         String head = null;
         String clerk = null;
+        String role = null;
         if (testing) {
             //since learnorg can only be acccessed via uni wifi :(
             head = "kajan";
@@ -113,7 +114,7 @@ public class AutoAssignAssignee implements JavaDelegate {
 
             List<GroupMapper> userStoreList = new ArrayList<>();
             GroupMapper userStore;
-            String role = null;
+
             for (GrantedAuthority group : groups) {
                 if (!(mapService.findByIworkflowsRole(group.toString())).iterator().hasNext()) {
                     continue;
@@ -121,7 +122,7 @@ public class AutoAssignAssignee implements JavaDelegate {
                 mapService.findByIworkflowsRole(group.toString()).forEach(userStoreList::add);
                 userStore = userStoreList.get(0);
                 role = userStore.getLearnorgRole();
-                log.debug("learnorg department : {}", role);
+                log.debug("Corresponding requestor's learnorg department : {}", role);
 
                 String url = learnOrgService.buildUrl(webserviceUri, wsfunction);
                 log.debug("url : {} ", url);
@@ -138,8 +139,8 @@ public class AutoAssignAssignee implements JavaDelegate {
                 break;
             }
         }
-        log.debug("Auto assigning the task to HOD {}", head);
-        log.debug("Auto assigning the task to clerk {}", clerk);
+        log.debug("Auto assigning the task to HOD of {} : {}", role, head);
+        log.debug("Auto assigning the task to Clerk of {} : {}", role, clerk);
         execution.setVariable(HEAD_APPROVER_KEY, head);
         execution.setVariable(CLERK_APPROVER_KEY, clerk);
 

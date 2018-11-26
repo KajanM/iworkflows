@@ -61,12 +61,12 @@ public class LearnOrgServiceImpl implements LearnOrgService {
             }
             String accesstoken = tokenDTO.getAccessToken().getValue();
 
-            MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-            map.add("access_token", accesstoken);
-            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, getLearnOrgHeaders());
-            log.debug("uri : " + userInfoUri);
-            ResponseEntity<UserStore> response = this.restTemplate.postForEntity(userInfoUri, request, UserStore.class);
-            log.debug("Response ---------" + response.getBody());
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+        map.add("access_token", accesstoken);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, getLearnOrgHeaders());
+        log.debug("fetching data from learnorg user info uri {} : " + userInfoUri);
+        ResponseEntity<UserStore> response = this.restTemplate.postForEntity(userInfoUri, request, UserStore.class);
+        log.debug("Response from Learnorg---------" + response.getBody());
 
             return response.getBody();
         } catch (IworkflowsPreConditionRequiredException e) {
