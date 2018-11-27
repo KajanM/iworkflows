@@ -64,8 +64,8 @@ dependencies {
     
     //camunda
     compile('org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter:3.0.0')
-//    compile('org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:3.0.0')
-//    compile('org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:3.0.0')
+    compile('org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-rest:3.0.0')
+    compile('org.camunda.bpm.springboot:camunda-bpm-spring-boot-starter-webapp:3.0.0')
 
     //commons
     compile('com.google.guava:guava:27.0-jre')

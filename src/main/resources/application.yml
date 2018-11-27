@@ -85,6 +85,15 @@ learnorg:
   wsfunction:
     get-department-head: get_head_by_department
     set-approved-leave: set_leave_taken
+#server:
+#  ssl:
+#    key-store-type: PKCS12
+#    ssl.key-store: file:baeldung.p12
+#    key-password: baeldung
+#    key-alias: baeldung
+#    enabled: false
+#security:
+#  require-ssl: true
 ---
 spring:
   profiles: h2
