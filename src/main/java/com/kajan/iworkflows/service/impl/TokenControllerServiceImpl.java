@@ -9,6 +9,7 @@ import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
 import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
@@ -135,7 +136,9 @@ public class TokenControllerServiceImpl implements TokenControllerService {
 
         TokenResponse tokenResponse = null;
         try {
-            tokenResponse = TokenResponse.parse(tokenRequest.toHTTPRequest().send());
+            HTTPRequest request = tokenRequest.toHTTPRequest();
+            request.setContentType("application/json");
+            tokenResponse = TokenResponse.parse(request.send());
         } catch (ParseException e) {
             logger.error("Unable to parse response from token endpoint", e);
         } catch (IOException e) {
