@@ -37,11 +37,12 @@ public class SecurityConfig {
                         .httpBasic()
                         .and()
                         .authorizeRequests()
-                        .antMatchers("/login", "/static/**", "**.css", "**.js", "/", "**.svg", "**.png")
+                        .antMatchers("/login")
                         .permitAll()
                         .antMatchers(HttpMethod.OPTIONS, "/login", "/register").permitAll()
                         .anyRequest().authenticated()
-                        .and().csrf().disable();
+                        .and().csrf().disable()
+                        .logout().logoutUrl("/api/logout");
                 //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                 // TODO: Kajan, turn CSRF protection on
             }
@@ -95,11 +96,12 @@ public class SecurityConfig {
                         .httpBasic()
                         .and()
                         .authorizeRequests()
-                        .antMatchers("/login", "/static/**", "**.css", "**.js", "/", "**.svg", "**.png")
+                        .antMatchers("/login")
                         .permitAll()
                         .antMatchers(HttpMethod.OPTIONS, "/login", "/register").permitAll()
                         .anyRequest().authenticated()
-                        .and().csrf().disable();
+                        .and().csrf().disable()
+                        .logout().logoutUrl("/api/logout");;
                 //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                 // TODO: Kajan, turn CSRF protection on
             }
