@@ -219,6 +219,7 @@ spring:
           github:
             authorization-uri: https://github.com/login/oauth/authorize
             token-uri: https://github.com/login/oauth/access_token
+            scope: repo
           nextcloud:
             authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
             token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
