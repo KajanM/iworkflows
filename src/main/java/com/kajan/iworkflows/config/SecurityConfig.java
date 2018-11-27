@@ -3,6 +3,7 @@ package com.kajan.iworkflows.config;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -24,56 +25,106 @@ import java.util.Collections;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .httpBasic()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/login", "/static/**", "**.css", "**.js", "/", "**.svg", "**.png")
-                .permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/login", "/register").permitAll()
-                .anyRequest().authenticated()
-                .and().csrf().disable();
-        //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-        // TODO: Kajan, turn CSRF protection on
+    @Bean
+    @Profile("testing")
+    WebSecurityConfigurerAdapter testing() {
+        return new WebSecurityConfigurerAdapter() {
+            @Override
+            protected void configure(HttpSecurity http) throws Exception {
+                http
+                        .httpBasic()
+                        .and()
+                        .authorizeRequests()
+                        .antMatchers("/login")
+                        .permitAll()
+                        .antMatchers(HttpMethod.OPTIONS, "/login", "/register").permitAll()
+                        .anyRequest().authenticated()
+                        .and().csrf().disable()
+                        .logout().logoutUrl("/api/logout");
+                //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                // TODO: Kajan, turn CSRF protection on
+            }
+
+            @Override
+            protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+                auth.inMemoryAuthentication()
+                        .passwordEncoder(passwordEncoder())
+                        .withUser("kajan")
+                        .password(passwordEncoder().encode("kajan"))
+                        .roles("USER")
+                        .and()
+                        .withUser("admin")
+                        .password(passwordEncoder().encode("admin"))
+                        .roles("ADMIN")
+                        .and()
+                        .withUser("kasthuri")
+                        .password(passwordEncoder().encode("kasthuri"))
+                        .roles("USER")
+                        .and()
+                        .withUser("ramiya")
+                        .password(passwordEncoder().encode("ramiya"))
+                        .roles("USER")
+                        .and()
+                        .withUser("kirisanth")
+                        .password(passwordEncoder().encode("kirisanth"))
+                        .roles("USER")
+                        .and()
+                        .withUser("shadhini")
+                        .password(passwordEncoder().encode("shadhini"))
+                        .roles("USER");
+            }
+
+            @Override
+            public void configure(WebSecurity web) {
+                web.ignoring().requestMatchers(CorsUtils::isPreFlightRequest);
+            }
+
+        };
     }
 
-    //@Override
-    //protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    //    auth.inMemoryAuthentication()
-    //            .passwordEncoder(passwordEncoder())
-    //            .withUser("kajan")
-    //            .password(passwordEncoder().encode("kajan"))
-    //            .roles("USER")
-    //            .and()
-    //            .withUser("admin")
-    //            .password(passwordEncoder().encode("admin"))
-    //            .roles("ADMIN")
-    //            .and()
-    //            .withUser("kasthuri")
-    //            .password(passwordEncoder().encode("kasthuri"))
-    //            .roles("USER")
-    //            .and()
-    //            .withUser("ramiya")
-    //            .password(passwordEncoder().encode("ramiya"))
-    //            .roles("USER")
-    //            .and()
-    //            .withUser("kirisanth")
-    //            .password(passwordEncoder().encode("kirisanth"))
-    //            .roles("USER")
-    //            .and()
-    //            .withUser("shadhini")
-    //            .password(passwordEncoder().encode("shadhini"))
-    //            .roles("USER");
-    //}
+    @Bean
+    @Profile("!testing")
+    public WebSecurityConfigurerAdapter ldap() {
+        return new WebSecurityConfigurerAdapter() {
 
-    @Override
-    public void configure(WebSecurity web) {
-        web.ignoring().requestMatchers(CorsUtils::isPreFlightRequest);
+            @SuppressWarnings("Duplicates")
+            @Override
+            protected void configure(HttpSecurity http) throws Exception {
+                http
+                        .httpBasic()
+                        .and()
+                        .authorizeRequests()
+                        .antMatchers("/login")
+                        .permitAll()
+                        .antMatchers(HttpMethod.OPTIONS, "/login", "/register").permitAll()
+                        .anyRequest().authenticated()
+                        .and().csrf().disable()
+                        .logout().logoutUrl("/api/logout");;
+                //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+                // TODO: Kajan, turn CSRF protection on
+            }
+
+            @Override
+            public void configure(WebSecurity web) {
+                web.ignoring().requestMatchers(CorsUtils::isPreFlightRequest);
+            }
+
+            @Override
+            public void configure(AuthenticationManagerBuilder auth) throws Exception {
+                auth
+                        .ldapAuthentication()
+                        .userDnPatterns("cn={0},ou=users")
+                        .groupSearchFilter("member={0}")
+                        .contextSource()
+                        .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
+            }
+        };
     }
+
+
+
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -98,16 +149,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .ldapAuthentication()
-                .userDnPatterns("cn={0},ou=users")
-                .groupSearchFilter("member={0}")
-                .contextSource()
-                .url("ldap://iworkflows.projects.mrt.ac.lk:389/dc=iworkflows,dc=projects,dc=mrt,dc=ac,dc=lk");
     }
 
 }

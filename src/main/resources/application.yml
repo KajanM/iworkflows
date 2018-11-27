@@ -1,7 +1,7 @@
 logging:
   level:
     com.kajan: DEBUG
-    org.springframework.security: DEBUG
+#    org.springframework.security: DEBUG
 #    com.github.sardine: DEBUG
 #    org.springframework.ldap: DEBUG
 #    org.camunda.bpm.springboot: DEBUG
@@ -18,7 +18,7 @@ camunda.bpm:
 
 spring:
   profiles:
-    active: h2, angular-local
+    active: h2, nginx-local-s, testing
 
   security:
     oauth2:
@@ -85,6 +85,15 @@ learnorg:
   wsfunction:
     get-department-head: get_head_by_department
     set-approved-leave: set_leave_taken
+#server:
+#  ssl:
+#    key-store-type: PKCS12
+#    ssl.key-store: file:baeldung.p12
+#    key-password: baeldung
+#    key-alias: baeldung
+#    enabled: false
+#security:
+#  require-ssl: true
 ---
 spring:
   profiles: h2
@@ -117,6 +126,7 @@ spring:
             client-secret: 07SxAA19BWzRBr65GGjsqcsXrzBeAA9n7ArfwkLAkddKaZCxhrAK9ERmdn93Uyil
             redirect-uri-template: http://localhost:4200/connect/nextcloud
             authorization-grant-type: authorization_code
+
             client-name: NextCloud
             scope: read, write
           learnorg:
@@ -129,11 +139,96 @@ spring:
 
         provider:
           nextcloud:
-            nextcloud:
-              authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
-              token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
-            learnorg:
-              learnorg:
-                authorization-uri: https://10.8.90.4/oauth/login.php
-                token-uri: https://10.8.90.4/oauth/token.php
+            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
+            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+          learnorg:
+            authorization-uri: https://10.8.90.4/oauth/login.php
+            token-uri: https://10.8.90.4/oauth/token.php
 
+---
+spring:
+  profiles: nginx-local
+
+  security:
+    oauth2:
+      client:
+        registration:
+          nextcloud:
+            client-id: QArWjXEMv9cwWBPmMsSLH6H1lvliOWoz4ZUmNJdmqeG0RJEzD8SbduFYg3lysALF
+            client-secret: 0EglGAu6nS7j2irThKYQD5bJZlGZbHHWEBlK5ydi85163QeGS7IMLLgAF7wmWAaK
+            redirect-uri-template: http://localhost:80/connect/nextcloud
+            authorization-grant-type: authorization_code
+            client-name: NextCloud
+            scope: read, write
+          learnorg:
+            client-id: iworkflows
+            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
+            redirect-uri-template: http://localhost:4200/connect/learnorg
+            authorization-grant-type: authorization_code
+            client-name: LearnOrg
+            scope: profile
+
+        provider:
+          nextcloud:
+            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
+            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+          learnorg:
+            authorization-uri: https://10.8.90.4/oauth/login.php
+            token-uri: https://10.8.90.4/oauth/token.php
+
+
+---
+spring:
+  profiles: nginx-local-s
+
+  security:
+    oauth2:
+      client:
+        registration:
+          asana:
+            client-id: 923555116588679
+            client-secret: 0ddf1489941f8b88125d607b79fef6fb
+            redirect-uri-template: https://localhost/connect/asana
+            authorization-grant-type: authorization_code
+            client-name: Asana
+            scope: default
+          github:
+            client-id: dad2aeed19ee40c70c92
+            client-secret: 29e9d576e72f7b86b8fe34e0e44160b1ddd27678
+            redirect-uri-template: https://localhost/connect/github
+#            authorization-grant-type: authorization_code
+            client-name: GitHub
+          nextcloud:
+            client-id: 28ZLbXzqcdRwLAdWc0hW7QT6ZHT54kWtrHq7KViOi7wT9k6DggiwWp2CGumZHlkJ
+            client-secret: 4jCVVlYQT7bdsk150byltrABPFxOz4QGx86eveC4LNaVZFKkrevAx8W6xqecjfYK
+            redirect-uri-template: https://localhost/connect/nextcloud
+            authorization-grant-type: authorization_code
+            client-name: NextCloud
+            scope: read, write
+          learnorg:
+            client-id: iworkflows
+            client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
+            redirect-uri-template: http://localhost:4200/connect/learnorg
+            authorization-grant-type: authorization_code
+            client-name: LearnOrg
+            scope: profile
+
+        provider:
+          asana:
+            authorization-uri: https://app.asana.com/-/oauth_authorize
+            token-uri: https://app.asana.com/-/oauth_token
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+          nextcloud:
+            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
+            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+          learnorg:
+            authorization-uri: https://10.8.90.4/oauth/login.php
+            token-uri: https://10.8.90.4/oauth/token.php
+
+---
+spring:
+  profiles: testing
+
+testing: true
