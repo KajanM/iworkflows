@@ -10,9 +10,11 @@ import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,33 +136,44 @@ public class TokenControllerServiceImpl implements TokenControllerService {
         // Make the token request
         TokenRequest tokenRequest = new TokenRequest(tokenEndpoint, clientAuth, codeGrant);
 
-        TokenResponse tokenResponse = null;
+        TokenResponse tokenResponse;
+        AccessToken accessToken;
+        TokenDTO tokenDTO = new TokenDTO();
+        tokenDTO.setAuthorizationCode(code);
+        tokenDTO.setTokenProvider(registrationId);
         try {
             HTTPRequest request = tokenRequest.toHTTPRequest();
-            request.setContentType("application/json");
-            tokenResponse = TokenResponse.parse(request.send());
+            //request.setContentType("application/json");
+            HTTPResponse response = request.send();
+
+            if (registrationId != TokenProvider.GITHUB) {
+                tokenResponse = TokenResponse.parse(response);
+                if (tokenResponse != null && !tokenResponse.indicatesSuccess()) {
+                    // We got an error response...
+                    TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
+                }
+
+                AccessTokenResponse successTokenResponse = tokenResponse.toSuccessResponse();
+
+                // Get the access token, the server may also return a refresh token
+                accessToken = successTokenResponse.getTokens().getAccessToken();
+                RefreshToken refreshToken = successTokenResponse.getTokens().getRefreshToken();
+                tokenDTO.setAccessToken(accessToken);
+                tokenDTO.setRefreshToken(refreshToken);
+
+            } else {
+                // TODO: temporary fix to get access token from github
+                String content = response.getContent();
+                String accessTokenStr = content.substring(content.indexOf("=") + 1, content.indexOf("&"));
+                accessToken = new BearerAccessToken(accessTokenStr);
+                tokenDTO.setAccessToken(accessToken);
+            }
         } catch (ParseException e) {
             logger.error("Unable to parse response from token endpoint", e);
         } catch (IOException e) {
             logger.error("Unable to reach token end point", e);
         }
 
-        if (tokenResponse != null && !tokenResponse.indicatesSuccess()) {
-            // We got an error response...
-            TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
-        }
-
-        AccessTokenResponse successTokenResponse = tokenResponse.toSuccessResponse();
-
-        // Get the access token, the server may also return a refresh token
-        AccessToken accessToken = successTokenResponse.getTokens().getAccessToken();
-        RefreshToken refreshToken = successTokenResponse.getTokens().getRefreshToken();
-
-        TokenDTO tokenDTO = new TokenDTO();
-        tokenDTO.setAuthorizationCode(code);
-        tokenDTO.setAccessToken(accessToken);
-        tokenDTO.setRefreshToken(refreshToken);
-        tokenDTO.setTokenProvider(registrationId);
 
         oauthTokenService.setToken(principal.getName(), tokenDTO);
     }
