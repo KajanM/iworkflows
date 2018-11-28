@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0xt7fak" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
+  <bpmn:process id="github-asana" isExecutable="true">
+    <bpmn:sequenceFlow id="SequenceFlow_174uiz8" sourceRef="StartEvent_1" targetRef="check_issues_in_github" />
+    <bpmn:serviceTask id="check_issues_in_github" name="check issues in github" camunda:delegateExpression="#{checkGithubIssue}">
+      <bpmn:incoming>SequenceFlow_174uiz8</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0jm07o7</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="create_new_task_in_asana" name="create new task in asana" camunda:delegateExpression="#{createNewTaskInAsana}">
+      <bpmn:incoming>SequenceFlow_19vhzby</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0yt7ppf</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndEvent_0t07gi5">
+      <bpmn:incoming>SequenceFlow_0yt7ppf</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0yt7ppf" sourceRef="create_new_task_in_asana" targetRef="EndEvent_0t07gi5" />
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_174uiz8</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R1000/PT5M</bpmn:timeCycle>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1qgg8lq" name="new issue created?">
+      <bpmn:incoming>SequenceFlow_0jm07o7</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_19vhzby</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1pibedb</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0jm07o7" sourceRef="check_issues_in_github" targetRef="ExclusiveGateway_1qgg8lq" />
+    <bpmn:sequenceFlow id="SequenceFlow_19vhzby" name="yes" sourceRef="ExclusiveGateway_1qgg8lq" targetRef="create_new_task_in_asana">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{new_issue}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="EndEvent_0jip2ih">
+      <bpmn:incoming>SequenceFlow_1pibedb</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1pibedb" name="no" sourceRef="ExclusiveGateway_1qgg8lq" targetRef="EndEvent_0jip2ih">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not new_issue}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:textAnnotation id="TextAnnotation_0mf9msg">
+      <bpmn:text>Every one minute</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0fkan9u" sourceRef="StartEvent_1" targetRef="TextAnnotation_0mf9msg" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="github-asana">
+      <bpmndi:BPMNEdge id="SequenceFlow_174uiz8_di" bpmnElement="SequenceFlow_174uiz8">
+        <di:waypoint x="209" y="120" />
+        <di:waypoint x="259" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_140fqwo_di" bpmnElement="check_issues_in_github">
+        <dc:Bounds x="259" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1p6vtyp_di" bpmnElement="create_new_task_in_asana">
+        <dc:Bounds x="553" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0t07gi5_di" bpmnElement="EndEvent_0t07gi5">
+        <dc:Bounds x="703" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0yt7ppf_di" bpmnElement="SequenceFlow_0yt7ppf">
+        <di:waypoint x="653" y="120" />
+        <di:waypoint x="703" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_14u5kc9_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="173" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1qgg8lq_di" bpmnElement="ExclusiveGateway_1qgg8lq" isMarkerVisible="true">
+        <dc:Bounds x="413" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="414" y="65" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0jm07o7_di" bpmnElement="SequenceFlow_0jm07o7">
+        <di:waypoint x="359" y="120" />
+        <di:waypoint x="413" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_19vhzby_di" bpmnElement="SequenceFlow_19vhzby">
+        <di:waypoint x="463" y="120" />
+        <di:waypoint x="553" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="500" y="102" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0jip2ih_di" bpmnElement="EndEvent_0jip2ih">
+        <dc:Bounds x="553" y="212" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1pibedb_di" bpmnElement="SequenceFlow_1pibedb">
+        <di:waypoint x="438" y="145" />
+        <di:waypoint x="438" y="230" />
+        <di:waypoint x="553" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="447" y="185" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_0mf9msg_di" bpmnElement="TextAnnotation_0mf9msg">
+        <dc:Bounds x="209" y="22" width="100" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0fkan9u_di" bpmnElement="Association_0fkan9u">
+        <di:waypoint x="203" y="107" />
+        <di:waypoint x="242" y="62" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -23,6 +23,8 @@ public class Constants {
 
     public enum TokenProvider {
 
+        ASANA("asana"),
+        GITHUB("github"),
         NEXTCLOUD("nextcloud"),
         MOODLE("moodle"),
         LEARNORG("learnorg"),
