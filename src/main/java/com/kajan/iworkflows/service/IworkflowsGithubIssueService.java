@@ -31,12 +31,12 @@ public class IworkflowsGithubIssueService {
                 .filter(issue -> issue.getNumber() > lastIssueId)
                 .collect(Collectors.toList());
 
-        //filteredIssues.forEach(issue -> {
-        //    GithubIssue githubIssue = new GithubIssue();
-        //    githubIssue.setPrincipal(principal);
-        //    githubIssue.setIssueNumber(issue.getNumber());
-        //    githubRepository.save(githubIssue);
-        //});
+        filteredIssues.forEach(issue -> {
+            GithubIssue githubIssue = new GithubIssue();
+            githubIssue.setPrincipal(principal);
+            githubIssue.setIssueNumber(issue.getNumber());
+            githubRepository.save(githubIssue);
+        });
 
         return filteredIssues;
     }
