@@ -80,6 +80,12 @@ dependencies {
     //lombok
     compileOnly('org.projectlombok:lombok')
     
+    //github
+    compile ('org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5')
+    
+    //asana
+    compile ('com.asana:asana:0.8.1')
+    
     //test
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation('org.springframework.security:spring-security-test')

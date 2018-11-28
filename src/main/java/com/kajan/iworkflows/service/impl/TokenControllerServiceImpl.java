@@ -147,7 +147,7 @@ public class TokenControllerServiceImpl implements TokenControllerService {
             HTTPResponse response = request.send();
 
             if (registrationId != TokenProvider.GITHUB) {
-                tokenResponse = TokenResponse.parse(request.send());
+                tokenResponse = TokenResponse.parse(response);
                 if (tokenResponse != null && !tokenResponse.indicatesSuccess()) {
                     // We got an error response...
                     TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();

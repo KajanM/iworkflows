@@ -4,6 +4,7 @@ import com.kajan.iworkflows.exception.IworkflowsPreConditionRequiredException;
 import com.kajan.iworkflows.exception.IworkflowsWebDavException;
 import com.kajan.iworkflows.service.NextcloudService;
 import lombok.extern.slf4j.Slf4j;
+import org.camunda.bpm.engine.RuntimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ import java.security.Principal;
 public class TestController {
 
     private NextcloudService nextcloudService;
+
+    @Autowired
+    RuntimeService runtimeService;
 
     @Value("${iworkflows.credentials.nextcloud.username}")
     private String IWORKFLOWS_USERNAME;
@@ -80,6 +84,12 @@ public class TestController {
     @GetMapping("/share")
     public ResponseEntity<?> share(@RequestParam("path") String resourcePath, Principal principal) {
         nextcloudService.share(principal.getName(), resourcePath);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/github-to-asana")
+    public ResponseEntity<?> githubToAsana() {
+        runtimeService.startProcessInstanceByKey("github-asana");
         return ResponseEntity.ok().build();
     }
 
