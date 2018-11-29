@@ -18,6 +18,8 @@ public class RequestStoreServiceImpl {
     public Iterable<RequestStore> findByPrincipalAndStatusIn(String principal, List status) {
         return repository.findByPrincipalAndStatusIn(principal, status);
     }
-
+    public Iterable<RequestStore> findByPrincipalAndLeaveType(String principal, String leaveType) {
+        return repository.findByPrincipalAndLeaveType(principal, leaveType);
+    }
 
 }

@@ -10,5 +10,6 @@ import java.util.List;
 public interface RequestStoreRepository extends CrudRepository<RequestStore, Long> {
     Iterable<RequestStore> findByPrincipalAndStatus(String principal, String status);
     Iterable<RequestStore> findByPrincipalAndStatusIn(String principal, List status);
+    Iterable<RequestStore> findByPrincipalAndLeaveType(String principal, String leaveType);
 
 }
