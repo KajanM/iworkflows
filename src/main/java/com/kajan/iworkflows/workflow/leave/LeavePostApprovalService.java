@@ -17,9 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import static com.kajan.iworkflows.util.Constants.EMPLOYEEID_KEY;
 import static com.kajan.iworkflows.util.Constants.LEAVE_APPLIED_KEY;
-import static com.kajan.iworkflows.util.WorkflowConstants.APPROVED_KEY;
-import static com.kajan.iworkflows.util.WorkflowConstants.LEAVE_TYPE_KEY;
-import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
+import static com.kajan.iworkflows.util.WorkflowConstants.*;
 
 @Service("leavePostApprovalService")
 @Slf4j

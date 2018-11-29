@@ -8,9 +8,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.kajan.iworkflows.util.WorkflowConstants.LEAVE_TYPE_KEY;
-import static com.kajan.iworkflows.util.WorkflowConstants.OWNER_KEY;
-import static com.kajan.iworkflows.util.WorkflowConstants.REJECTED_KEY;
+import static com.kajan.iworkflows.util.WorkflowConstants.*;
 
 @Service("leavePostRejectService")
 @Slf4j
@@ -18,7 +16,7 @@ public class LeavePostRejectService implements JavaDelegate {
     private final RequestStoreServiceImpl requestStoreService;
 
     @Autowired
-    public LeavePostRejectService (RequestStoreServiceImpl requestStoreService){
+    public LeavePostRejectService(RequestStoreServiceImpl requestStoreService) {
         this.requestStoreService = requestStoreService;
     }
 
