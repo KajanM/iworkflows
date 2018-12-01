@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static com.kajan.iworkflows.util.WorkflowConstants.*;
 
@@ -64,13 +67,19 @@ public class CamundaTaskController {
     @GetMapping("my-tasks")
     public List<MyTaskBasicDetails> getTasks(Principal principal) {
         List<MyTaskBasicDetails> result = new ArrayList<>();
-
+        SimpleDateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
         taskService
                 .createTaskQuery().list().stream()
                 .filter(task -> task.getAssignee() != null && task.getAssignee().equalsIgnoreCase(principal.getName()))
                 .forEach(task -> {
                     MyTaskBasicDetails myTaskBasicDetails = MyTaskBasicDetails.fromTask(task);
                     myTaskBasicDetails.setRecommendation((String) runtimeService.getVariable(task.getProcessInstanceId(), RECOMMENDATION_KEY));
+                    try {
+                        myTaskBasicDetails.setDueDate(formatter.parse(runtimeService.getVariable(task.getProcessInstanceId(), DUE_DATE_KEY).toString()));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    myTaskBasicDetails.setOwner(runtimeService.getVariable(task.getProcessInstanceId(), OWNER_KEY).toString());
                     result.add(myTaskBasicDetails);
                 });
         return result;
@@ -92,6 +101,7 @@ public class CamundaTaskController {
                 .forEach(task -> {
                     SubmittedRequestBasicDetails request = SubmittedRequestBasicDetails.fromTask(task);
                     request.setStatus(getTaskStatus(task.getProcessInstanceId()));
+
                     result.add(request);
                 });
 

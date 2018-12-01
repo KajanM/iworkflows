@@ -22,7 +22,7 @@ public class SetDueDate implements JavaDelegate {
         SubmittedLeaveFormDetails details = (SubmittedLeaveFormDetails) execution.getVariable(LEAVE_DETAILS_KEY);
 
         String startDate = details.getStartDate();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
         Date date = null;
         try {
             date = formatter.parse(startDate);

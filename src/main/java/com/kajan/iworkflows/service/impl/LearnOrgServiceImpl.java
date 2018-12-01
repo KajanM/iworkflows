@@ -24,7 +24,7 @@ import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
-import static com.kajan.iworkflows.util.Constants.PLACEHOLDER_LEARNORG_WSFUNCTION;
+import static com.kajan.iworkflows.util.Constants.*;
 import static com.kajan.iworkflows.util.Constants.TokenProvider.LEARNORG;
 
 @Service
@@ -62,11 +62,12 @@ public class LearnOrgServiceImpl implements LearnOrgService {
             String accesstoken = tokenDTO.getAccessToken().getValue();
 
             MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-            map.add("access_token", accesstoken);
+            map.add(ACCESS_TOKEN, accesstoken);
+            map.add(USERNAME_KEY, principal.getName());
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, getLearnOrgHeaders());
-            log.debug("uri : " + userInfoUri);
+            log.debug("fetching data from learnorg user info uri {} : " + userInfoUri);
             ResponseEntity<UserStore> response = this.restTemplate.postForEntity(userInfoUri, request, UserStore.class);
-            log.debug("Response ---------" + response.getBody());
+            log.debug("Response from Learnorg---------" + response.getBody());
 
             return response.getBody();
         } catch (IworkflowsPreConditionRequiredException e) {

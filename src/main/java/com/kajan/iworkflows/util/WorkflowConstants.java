@@ -12,8 +12,10 @@ public class WorkflowConstants {
     public static final String CLERK_APPROVED_KEY = "clerkApproved";
     public static final String HEAD_APPROVER_KEY = "head";
     public static final String CLERK_APPROVER_KEY = "clerk";
-    public static final String LEAVE_TYPE_KEY = "leave_type";
+    public static final String LEAVE_TYPE_KEY = "leaveType";
     public static final String APPROVER_KEY = "approver";
+    public static final String APPROVED_KEY = "Approved";
+    public static final String REJECTED_KEY = "Rejected";
 
     public static final String IS_NEW_ISSUE_KEY = "new_issue";
     public static final String NEW_ISSUES_KEY = "filtered_issues";

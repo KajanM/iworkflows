@@ -14,6 +14,10 @@ public class Constants {
     public static final String ERROR_KEY = "error";
     public static final String USERNAME_KEY = "username";
     public static final String PASSWORD_KEY = "password";
+    public static final String EMPLOYEEID_KEY = "employeeId";
+    public static final String LEAVE_TYPE_KEY = "leaveType";
+    public static final String LEAVE_APPLIED_KEY = "leaveAppliedFor";
+    public static final String ACCESS_TOKEN = "access_token";
 
     public static final String LEAVE_ATTACHMENTS_DIR_NAME = "leave-attachments";
 

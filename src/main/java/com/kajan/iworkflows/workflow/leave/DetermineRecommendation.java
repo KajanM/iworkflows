@@ -5,6 +5,7 @@ import com.kajan.iworkflows.workflow.dto.SubmittedLeaveFormDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -18,6 +19,7 @@ public class DetermineRecommendation implements JavaDelegate {
 
     private final LearnOrgServiceImpl learnOrgService;
 
+    @Autowired
     public DetermineRecommendation(LearnOrgServiceImpl learnOrgService) {
         this.learnOrgService = learnOrgService;
     }
@@ -28,13 +30,13 @@ public class DetermineRecommendation implements JavaDelegate {
         String leaveType = submittedLeaveFormDetails.getLeaveType();
         int leaveAppliedFor = learnOrgService.getWorkingDaysBetweenTwoDates(submittedLeaveFormDetails.getStartDate(), submittedLeaveFormDetails.getEndDate());
         String employeeId = submittedLeaveFormDetails.getEmployeeId();
-        execution.setVariable("employeeId",employeeId);
-        execution.setVariable("leaveType",leaveType);
+        execution.setVariable("employeeId", employeeId);
+        execution.setVariable("leaveType", leaveType);
         execution.setVariable("leaveAppliedFor", leaveAppliedFor);
         log.debug("no leave applied for {} ", leaveAppliedFor);
         int remainingLeave = submittedLeaveFormDetails.getRemainingLeavesByLeaveType(leaveType);
-        log.debug("remaining leaves {} ", remainingLeave);
-
+        log.debug("remaining {}, leaves {} ", leaveType, remainingLeave);
+        log.debug("submitted leave details {} ", submittedLeaveFormDetails);
         if (remainingLeave < leaveAppliedFor) {
             execution.setVariable(RECOMMENDATION_KEY, "not_recommended");
         } else {
