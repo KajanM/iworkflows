@@ -1,6 +1,8 @@
 package com.kajan.iworkflows.workflow.leave;
 
+import com.kajan.iworkflows.model.LogStore;
 import com.kajan.iworkflows.model.RequestStore;
+import com.kajan.iworkflows.repository.LogStoreRepository;
 import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
 import com.kajan.iworkflows.service.impl.RequestStoreServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.Timestamp;
+
 import static com.kajan.iworkflows.util.Constants.EMPLOYEEID_KEY;
 import static com.kajan.iworkflows.util.Constants.LEAVE_APPLIED_KEY;
 import static com.kajan.iworkflows.util.WorkflowConstants.*;
@@ -28,22 +32,26 @@ public class LeavePostApprovalService implements JavaDelegate {
     private final String webserviceUri;
     private final String wsfunction;
     private final RequestStoreServiceImpl requestStoreService;
+    private final LogStoreRepository logStoreRepository;
 
     @Autowired
     public LeavePostApprovalService(RestTemplate restTemplate, LearnOrgServiceImpl learnOrgService,
                                     @Value("${learnorg.uri.system}") String webserviceUri,
                                     @Value("${learnorg.wsfunction.set-approved-leave}") String wsfunction,
-                                    RequestStoreServiceImpl requestStoreService) {
+                                    RequestStoreServiceImpl requestStoreService, LogStoreRepository logStoreRepository) {
         this.learnOrgService = learnOrgService;
         this.restTemplate = restTemplate;
         this.webserviceUri = webserviceUri;
         this.wsfunction = wsfunction;
         this.requestStoreService = requestStoreService;
+        this.logStoreRepository = logStoreRepository;
     }
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         log.debug("Leave request approved");
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        logStoreRepository.save(new LogStore(execution.getVariable(OWNER_KEY).toString(), timestamp, "Leave request approved"));
         RequestStore requestStore = requestStoreService.findByPrincipalAndLeaveType(
                 execution.getVariable(OWNER_KEY).toString(),
                 execution.getVariable(LEAVE_TYPE_KEY).toString()).iterator().next();

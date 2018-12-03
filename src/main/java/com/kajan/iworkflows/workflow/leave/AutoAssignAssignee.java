@@ -2,6 +2,8 @@ package com.kajan.iworkflows.workflow.leave;
 
 import com.kajan.iworkflows.model.Approver;
 import com.kajan.iworkflows.model.GroupMapper;
+import com.kajan.iworkflows.model.LogStore;
+import com.kajan.iworkflows.repository.LogStoreRepository;
 import com.kajan.iworkflows.service.impl.GroupMapperServiceImpl;
 import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import javax.net.ssl.*;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,6 +41,8 @@ public class AutoAssignAssignee implements JavaDelegate {
     private final LearnOrgServiceImpl learnOrgService;
     private final String webserviceUri;
     private final String wsfunction;
+    private final LogStoreRepository logStoreRepository;
+    private Timestamp timestamp;
 
     @Value("${testing}")
     private Boolean testing;
@@ -46,12 +51,14 @@ public class AutoAssignAssignee implements JavaDelegate {
     public AutoAssignAssignee(GroupMapperServiceImpl mapService, RestTemplate restTemplate,
                               LearnOrgServiceImpl learnOrgService,
                               @Value("${learnorg.uri.system}") String webserviceUri,
-                              @Value("${learnorg.wsfunction.get-department-head}") String wsfunction) {
+                              @Value("${learnorg.wsfunction.get-department-head}") String wsfunction,
+                              LogStoreRepository logStoreRepository) {
         this.mapService = mapService;
         this.restTemplate = restTemplate;
         this.webserviceUri = webserviceUri;
         this.learnOrgService = learnOrgService;
         this.wsfunction = wsfunction;
+        this.logStoreRepository = logStoreRepository;
     }
 
     static {
@@ -100,6 +107,8 @@ public class AutoAssignAssignee implements JavaDelegate {
         // owner is the one who submitted the leave request
         String owner = (String) execution.getVariable(OWNER_KEY);
         log.debug("Owner of the tasks is {}", owner);
+        timestamp = new Timestamp(System.currentTimeMillis());
+        logStoreRepository.save(new LogStore(owner, timestamp, "Owner of the tasks is " + owner));
 
         String head = null;
         String clerk = null;
@@ -111,6 +120,8 @@ public class AutoAssignAssignee implements JavaDelegate {
         } else {
             Collection<? extends GrantedAuthority> groups = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
             log.debug("task owner's groups {}", groups);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(owner, timestamp, "task owner's groups " + groups));
 
             List<GroupMapper> userStoreList = new ArrayList<>();
             GroupMapper userStore;
@@ -122,7 +133,9 @@ public class AutoAssignAssignee implements JavaDelegate {
                 mapService.findByIworkflowsRole(group.toString()).forEach(userStoreList::add);
                 userStore = userStoreList.get(0);
                 role = userStore.getLearnorgRole();
-                log.debug("Corresponding requestor's learnorg department : {}", role);
+                log.debug("Requestor {} belongs to {} department in learnorg", owner, role);
+                timestamp = new Timestamp(System.currentTimeMillis());
+                logStoreRepository.save(new LogStore(owner, timestamp, "Requestor " + owner + " belongs to " + groups + " department in learnorg"));
 
                 String url = learnOrgService.buildUrl(webserviceUri, wsfunction);
                 log.debug("url : {} ", url);
@@ -132,17 +145,26 @@ public class AutoAssignAssignee implements JavaDelegate {
 
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, learnOrgService.getLearnOrgHeadersAsIworkflows());
                 ResponseEntity<Approver> response = restTemplate.postForEntity(url, request, Approver.class);
-                log.debug("Response ---------" + response.getBody());
+                log.debug("Response from LearnOrg ---------" + response.getBody());
+                timestamp = new Timestamp(System.currentTimeMillis());
+                logStoreRepository.save(new LogStore(owner, timestamp, "Response from LearnOrg --------- " + response.getBody()));
 
                 clerk = response.getBody().getClerk();
                 head = response.getBody().getHead();
+
+                log.debug("Leave request of {} is assigned to {} hod : {} and clerk {}", owner, role, head, clerk);
+                timestamp = new Timestamp(System.currentTimeMillis());
+                logStoreRepository.save(new LogStore(owner, timestamp, "Leave request of " + owner + " is assigned to " + " hod :  " + head + " and clerk :" + clerk));
                 break;
             }
         }
-        log.debug("Auto assigning the task to HOD of {} : {}", role, head);
-        log.debug("Auto assigning the task to Clerk of {} : {}", role, clerk);
+        log.debug("Leave request of {} is assigned to {} hod : {} and clerk {}", owner, role, head, clerk);
+        timestamp = new Timestamp(System.currentTimeMillis());
+        logStoreRepository.save(new LogStore(owner, timestamp, "Leave request of " + owner + " is assigned to " + " hod :  " + head + " and clerk :" + clerk));
         execution.setVariable(HEAD_APPROVER_KEY, head);
         execution.setVariable(CLERK_APPROVER_KEY, clerk);
+        logStoreRepository.save(new LogStore(head, timestamp, "Leave request of " + owner + " is assigned to " + " hod :  " + head));
+        logStoreRepository.save(new LogStore(clerk, timestamp, "Leave request of " + owner + " is assigned to " + " clerk :  " + clerk));
 
 
     }

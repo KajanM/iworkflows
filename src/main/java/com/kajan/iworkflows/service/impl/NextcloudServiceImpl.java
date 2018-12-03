@@ -6,6 +6,8 @@ import com.github.sardine.SardineFactory;
 import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.exception.IworkflowsPreConditionRequiredException;
 import com.kajan.iworkflows.exception.IworkflowsWebDavException;
+import com.kajan.iworkflows.model.LogStore;
+import com.kajan.iworkflows.repository.LogStoreRepository;
 import com.kajan.iworkflows.service.NextcloudService;
 import com.kajan.iworkflows.service.OauthTokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,18 +63,29 @@ public class NextcloudServiceImpl implements NextcloudService {
     private OauthTokenService oauthTokenService;
     private Sardine webDavClient;
     private RestTemplate restTemplate;
+    private LogStoreRepository logStoreRepository;
+    private Timestamp timestamp;
 
     @Override
     public InputStream getFile(String principal, String filePath) {
         String uri = getResourceUri(principal, filePath);
 
         log.info("Making request to {} to download the file", uri);
+        timestamp = new Timestamp(System.currentTimeMillis());
+        logStoreRepository.save(new LogStore(principal, timestamp, "Making request to {} to download the file " + uri));
+
         try {
             InputStream downloadedContent = webDavClient.get(uri, getAuthorizationHeader(principal));
             log.info("Successfully downloaded content from {}", uri);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Successfully downloaded content from " + uri));
+
             return downloadedContent;
         } catch (IOException e) {
             log.error("Unable to get file from NextCloud", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Unable to get file from NextCloud " + e));
+
             throw new IworkflowsWebDavException("Unable to get file from NextCloud");
         }
     }
@@ -80,12 +94,17 @@ public class NextcloudServiceImpl implements NextcloudService {
     public ResponseEntity<String> uploadFile(String principal, String filePath, InputStream fileContent) {
         String uri = getResourceUri(principal, filePath);
         log.info("Attempting to upload file to {}", uri);
-
+        timestamp = new Timestamp(System.currentTimeMillis());
+        logStoreRepository.save(new LogStore(principal, timestamp, "Attempting to upload file to " + uri));
         try {
             webDavClient.put(uri, fileContent, getAuthorizationHeader(principal));
             log.info("Successfully uploaded file to {}", uri);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Successfully uploaded file to " + uri));
         } catch (IOException e) {
             log.error("Unable to upload the file to NextCloud", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Unable to upload the file to NextCloud " + e));
             throw new IworkflowsWebDavException("Unable to upload the file to NextCloud");
         }
         return ResponseEntity.ok().build();
@@ -103,12 +122,16 @@ public class NextcloudServiceImpl implements NextcloudService {
             resources = sardine.list(getResourceUri(principal, filePath));
         } catch (IOException e) {
             log.error("Unable to retrieve directory list from NextCloud", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Unable to retrieve directory list from NextCloud " + e));
             throw new IworkflowsWebDavException("Unable to retrieve directory list from NextCloud");
         }
         if (resources == null) return null;
 
         for (DavResource res : resources) {
             log.debug("Found file from server: {}", res);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Found file from server: " + res));
         }
         return resources;
 
@@ -123,10 +146,16 @@ public class NextcloudServiceImpl implements NextcloudService {
         String uri = getResourceUri(principal, directoryPath);
         try {
             log.info("Attempting to create directory in {}", uri);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Attempting to create directory in " + uri));
             sardine.createDirectory(uri);
             log.info("Succesfully created directory at {}", uri);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Succesfully created directory at " + uri));
         } catch (IOException e) {
             log.error("Unable to create specified directory in NextCloud", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Unable to create specified directory in NextCloud" + e));
             throw new IworkflowsWebDavException("Unable to create specified directory in NextCloud");
         }
     }
@@ -140,11 +169,17 @@ public class NextcloudServiceImpl implements NextcloudService {
         String uri = getResourceUri(principal, resourcePath);
         try {
             log.info("Checking if directory or file exists {}", uri);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Checking if directory or file exists " + uri));
             boolean exists = sardine.exists(uri);
             log.info("Directory already exists in uri {} {}", uri, exists);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Directory already exists in uri " + uri + " " + exists));
             return exists;
         } catch (IOException e) {
             log.error("Unable to check if the resource exist in NextCloud", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Unable to check if the resource exist in NextCloud " + e));
             throw new IworkflowsWebDavException("Unable to check if the resource exist in NextCloud");
         }
     }
@@ -176,6 +211,8 @@ public class NextcloudServiceImpl implements NextcloudService {
             //String uri = builder.toUriString();
             String uri = joiner.toString();
             log.debug("Attempting to share {} to {}", uri, principal);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Attempting to share " + uri + " to " + principal));
 
             HttpEntity entity = new HttpEntity("", headers);
             ResponseEntity<String> response = restTemplate.exchange(
@@ -184,6 +221,8 @@ public class NextcloudServiceImpl implements NextcloudService {
                     entity,
                     String.class);
             log.debug("Successfully shared {} with {}", uri, principal);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal, timestamp, "Successfully shared " + uri + " with " + principal));
             return response;
         } catch (HttpClientErrorException e) {
             // already shared, ignore
@@ -240,5 +279,10 @@ public class NextcloudServiceImpl implements NextcloudService {
     @Autowired
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    @Autowired
+    public void setLogStoreRepository(LogStoreRepository logStoreRepository) {
+        this.logStoreRepository = logStoreRepository;
     }
 }

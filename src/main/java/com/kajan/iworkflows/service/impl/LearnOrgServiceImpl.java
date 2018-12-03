@@ -2,7 +2,9 @@ package com.kajan.iworkflows.service.impl;
 
 import com.kajan.iworkflows.dto.TokenDTO;
 import com.kajan.iworkflows.exception.IworkflowsPreConditionRequiredException;
+import com.kajan.iworkflows.model.LogStore;
 import com.kajan.iworkflows.model.UserStore;
+import com.kajan.iworkflows.repository.LogStoreRepository;
 import com.kajan.iworkflows.service.LearnOrgService;
 import com.kajan.iworkflows.service.OauthTokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.Principal;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -36,27 +39,32 @@ public class LearnOrgServiceImpl implements LearnOrgService {
     private final String username;
     private final String password;
     private final String HEADER_VALUE_BASIC = "Basic ";
+    private final LogStoreRepository logStoreRepository;
+    private Timestamp timestamp;
 
     @Autowired
     public LearnOrgServiceImpl(@Value("${learnorg.uri.userinfo}") String userInforUri,
                                OauthTokenService oauthTokenService, RestTemplate restTemplate,
                                @Value("${iworkflows.credentials.learnorg.username}") String username,
-                               @Value("${iworkflows.credentials.learnorg.password}") String password) {
+                               @Value("${iworkflows.credentials.learnorg.password}") String password,
+                               LogStoreRepository logStoreRepository) {
         this.oauthTokenService = oauthTokenService;
         this.restTemplate = restTemplate;
         this.userInfoUri = userInforUri;
         this.username = username;
         this.password = password;
+        this.logStoreRepository = logStoreRepository;
     }
 
     @Override
     public UserStore getLearnOrgUserInfo(Principal principal) {
-
         try {
             TokenDTO tokenDTO = this.oauthTokenService.getToken(principal.getName(), LEARNORG);
 
             if (tokenDTO == null) {
                 log.warn("No LearnOrg access token found for {}", principal.getName());
+                timestamp = new Timestamp(System.currentTimeMillis());
+                logStoreRepository.save(new LogStore(principal.getName(), timestamp, "No LearnOrg access token found for " + principal.getName()));
                 throw new IworkflowsPreConditionRequiredException("No LearnOrg access token found for " + principal.getName());
             }
             String accesstoken = tokenDTO.getAccessToken().getValue();
@@ -66,14 +74,19 @@ public class LearnOrgServiceImpl implements LearnOrgService {
             map.add(USERNAME_KEY, principal.getName());
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, getLearnOrgHeaders());
             log.debug("fetching data from learnorg user info uri {} : " + userInfoUri);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "fetching data from learnorg user info uri  " + userInfoUri));
             ResponseEntity<UserStore> response = this.restTemplate.postForEntity(userInfoUri, request, UserStore.class);
             log.debug("Response from Learnorg---------" + response.getBody());
-
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Response from Learnorg--------- " + response.getBody()));
             return response.getBody();
         } catch (IworkflowsPreConditionRequiredException e) {
             throw e;
         } catch (Exception e) {
             log.error("Unable to get user info from LearnOrg", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Unable to get user info from LearnOrg" + e));
             throw new IworkflowsPreConditionRequiredException("Unable to get user info from LearnOrg");
         }
     }
