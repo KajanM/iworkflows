@@ -1,7 +1,5 @@
 package com.kajan.iworkflows.service.impl;
 
-import com.kajan.iworkflows.model.LogStore;
-import com.kajan.iworkflows.repository.LogStoreRepository;
 import com.kajan.iworkflows.service.MoodleService;
 import com.kajan.iworkflows.service.OauthTokenService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +9,6 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.security.Principal;
-import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,21 +24,18 @@ public class MoodleServiceImpl implements MoodleService {
     private final RestTemplate restTemplate;
 
     private final String webserviceUri;
-    private Timestamp timestamp;
-    private final LogStoreRepository logStoreRepository;
 
     @Autowired
     public MoodleServiceImpl(@Value("${moodle.uri.webservice}") String webserviceUri,
                              OauthTokenService oauthTokenService,
-                             RestTemplate restTemplate, LogStoreRepository logStoreRepository) {
+                             RestTemplate restTemplate) {
         this.webserviceUri = webserviceUri;
         this.oauthTokenService = oauthTokenService;
         this.restTemplate = restTemplate;
-        this.logStoreRepository = logStoreRepository;
     }
 
-    private String buildUrl(Principal principal, String wsfunction) {
-        String wstoken = oauthTokenService.getToken(principal.getName(), MOODLE).getAccessToken().getValue();
+    private String buildUrl(String principal, String wsfunction) {
+        String wstoken = oauthTokenService.getToken(principal, MOODLE).getAccessToken().getValue();
         String uri = webserviceUri.replace(PLACEHOLDER_MOODLE_WSTOKEN, wstoken)
                 .replace(PLACEHOLDER_MOODLE_WSFUNCTION, wsfunction);
         log.debug("BuiltURL: {}", uri);
@@ -50,7 +43,7 @@ public class MoodleServiceImpl implements MoodleService {
     }
 
     @Override
-    public <T> ResponseEntity<T> executeWsFunction(String wsFunctionName, HttpMethod httpMethod, Class<T> responseClass, Principal principal) {
+    public <T> ResponseEntity<T> executeWsFunction(String wsFunctionName, HttpMethod httpMethod, Class<T> responseClass, String principal) {
         String url = this.buildUrl(principal, wsFunctionName);
 
         HttpHeaders headers = new HttpHeaders();
@@ -72,8 +65,7 @@ public class MoodleServiceImpl implements MoodleService {
                 throw new UnsupportedOperationException("sending request using " + httpMethod + " is not supported yet");
         }
         log.debug("Response: {}", responseEntity);
-        timestamp = new Timestamp(System.currentTimeMillis());
-        logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Response: " + responseEntity));
         return responseEntity;
     }
+
 }
