@@ -1,5 +1,7 @@
 package com.kajan.iworkflows.workflow;
 
+import com.kajan.iworkflows.model.CompletedTaskStore;
+import com.kajan.iworkflows.service.impl.CompletedTaskStoreService;
 import com.kajan.iworkflows.workflow.dto.MyTaskBasicDetails;
 import com.kajan.iworkflows.workflow.dto.SubmittedRequestBasicDetails;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +33,15 @@ public class CamundaTaskController {
     private final TaskService taskService;
     private final RuntimeService runtimeService;
     private final HistoryService historyService;
+    private final CompletedTaskStoreService completedTaskStoreService;
 
     @Autowired
-    public CamundaTaskController(TaskService taskService, RuntimeService runtimeService, HistoryService historyService) {
+    public CamundaTaskController(TaskService taskService, RuntimeService runtimeService, HistoryService historyService,
+                                 CompletedTaskStoreService completedTaskStoreService) {
         this.taskService = taskService;
         this.runtimeService = runtimeService;
         this.historyService = historyService;
+        this.completedTaskStoreService = completedTaskStoreService;
     }
 
     /**
@@ -127,14 +132,22 @@ public class CamundaTaskController {
                 .processInstanceId(processInstanceId)
                 .variableName(CLERK_APPROVED_KEY).list();
 
-        if(headApprovedList.isEmpty()) return "in_progress";
+        if (headApprovedList.isEmpty()) return "in_progress";
 
-        if(!(Boolean) headApprovedList.get(0).getValue()) return "rejected";
+        if (!(Boolean) headApprovedList.get(0).getValue()) return "rejected";
 
         if (clerkApprovedList.isEmpty()) return "head_recommended";
 
-        if(!(Boolean) clerkApprovedList.get(0).getValue()) return "rejected";
+        if (!(Boolean) clerkApprovedList.get(0).getValue()) return "rejected";
 
         return "approved";
+    }
+
+    @GetMapping("completed-tasks")
+    public List<CompletedTaskStore> getCompletedRequests(Principal principal) {
+        List<CompletedTaskStore> completedTaskStoreList = new ArrayList<>();
+        completedTaskStoreService.findByPrincipal(principal.getName()).forEach(completedTaskStoreList::add);
+
+        return completedTaskStoreList;
     }
 }

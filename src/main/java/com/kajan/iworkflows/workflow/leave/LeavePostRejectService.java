@@ -3,7 +3,6 @@ package com.kajan.iworkflows.workflow.leave;
 import com.kajan.iworkflows.model.LogStore;
 import com.kajan.iworkflows.model.RequestStore;
 import com.kajan.iworkflows.repository.LogStoreRepository;
-import com.kajan.iworkflows.service.impl.LogStoreServiceImpl;
 import com.kajan.iworkflows.service.impl.RequestStoreServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -31,11 +30,12 @@ public class LeavePostRejectService implements JavaDelegate {
     public void execute(DelegateExecution execution) {
         log.debug("Leave request rejected");
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        logStoreRepository.save(new LogStore(execution.getVariable(OWNER_KEY).toString(), timestamp, "Leave request approved"));
+        logStoreRepository.save(new LogStore(execution.getVariable(OWNER_KEY).toString(), timestamp, "Leave request rejected"));
         RequestStore requestStore = requestStoreService.findByPrincipalAndLeaveType(
                 execution.getVariable(OWNER_KEY).toString(),
                 execution.getVariable(LEAVE_TYPE_KEY).toString()).iterator().next();
         requestStore.setStatus(REJECTED_KEY);
+        requestStore.setRejectedComment(execution.getVariable(REJECTED_COMMENT_KEY).toString());
 
     }
 }

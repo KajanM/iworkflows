@@ -2,10 +2,8 @@ package com.kajan.iworkflows.model;
 
 import com.kajan.iworkflows.workflow.dto.SubmittedLeaveFormDetails;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.security.Principal;
 import java.util.List;
 
 @Entity
@@ -39,8 +37,9 @@ public class RequestStore {
     private int remainingMedical;
     private int remainingVacation;
     private String status;
+    private String rejectedComment;
 
-    public RequestStore (SubmittedLeaveFormDetails submittedLeaveFormDetails, String principal, String status) {
+    public RequestStore(SubmittedLeaveFormDetails submittedLeaveFormDetails, String principal, String status) {
 
 //        data.setId(userStore.getId());
         this.principal = principal;
@@ -66,6 +65,7 @@ public class RequestStore {
         this.setDocuments(submittedLeaveFormDetails.getDocuments());
         this.setComments(submittedLeaveFormDetails.getComments());
         this.setStatus(status);
+        this.setRejectedComment(submittedLeaveFormDetails.getRejectedComment());
 
     }
 }
