@@ -1,16 +1,20 @@
 package com.kajan.iworkflows.service;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
-//@Ignore
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Ignore
 public class MoodleCalendarServiceTest {
 
     @Autowired MoodleCalendarService moodleCalendarService;
