@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("test")
+@RequestMapping("api/test")
 @Slf4j
 public class TestController {
 
