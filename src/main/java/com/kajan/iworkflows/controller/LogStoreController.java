@@ -21,7 +21,6 @@ public class LogStoreController {
     @GetMapping("logs")
     public List<LogStore> user(Principal user) {
         List<LogStore> logStoreList = new ArrayList<>();
-        LogStore logStore;
         logStoreService.findByPrincipal(user.getName()).forEach(logStoreList::add);
         return logStoreList;
     }
