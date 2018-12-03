@@ -18,7 +18,7 @@ camunda.bpm:
 
 spring:
   profiles:
-    active: h2, nginx-local-s, testing
+    active: h2, angular-local, testing
 
   security:
     oauth2:
@@ -129,6 +129,10 @@ spring:
             authorization-grant-type: authorization_code
             client-name: NextCloud
             scope: read, write
+          google:
+            client-id: 159601454808-g501mviaj7cr78j4jlag6i6b1aebbf12.apps.googleusercontent.com
+            client-secret: h_qkUTyPLjCCfmRJr6VR-vaM
+            redirect-uri-template: http://localhost:4200/connect/google
           learnorg:
             client-id: iworkflows
             client-secret: 12ba3150f57cafbc63943bed9605b9395d158b47038b1931
