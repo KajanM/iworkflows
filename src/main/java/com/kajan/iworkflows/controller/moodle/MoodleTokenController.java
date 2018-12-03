@@ -3,6 +3,7 @@ package com.kajan.iworkflows.controller.moodle;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kajan.iworkflows.dto.TokenDTO;
+import com.kajan.iworkflows.model.MoodleCredentials;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.nimbusds.oauth2.sdk.token.TypelessAccessToken;
 import org.slf4j.Logger;
@@ -10,15 +11,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.security.Principal;
 
-import static com.kajan.iworkflows.util.Constants.*;
+import static com.kajan.iworkflows.util.Constants.ERROR_KEY;
+import static com.kajan.iworkflows.util.Constants.TOKEN_KEY;
 import static com.kajan.iworkflows.util.Constants.TokenProvider.MOODLE;
 
 @RestController
@@ -45,9 +49,9 @@ public class MoodleTokenController {
         this.oauthTokenService = oauthTokenService;
     }
 
-    @PostMapping(value = "token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<?> getMoodleWebServiceToken(@RequestParam(USERNAME_KEY) String username, @RequestParam(PASSWORD_KEY) String password, Principal principal) {
-        ResponseEntity<String> response = restTemplate.getForEntity(TOKEN_URI_TEMPLATE, String.class, username, password, WS_SHORT_NAME);
+    @PostMapping(value = "token")
+    public ResponseEntity<?> getMoodleWebServiceToken(@RequestBody MoodleCredentials credentials, Principal principal) {
+        ResponseEntity<String> response = restTemplate.getForEntity(TOKEN_URI_TEMPLATE, String.class, credentials.getUsername(), credentials.getPassword(), WS_SHORT_NAME);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root;
         try {
