@@ -1,6 +1,8 @@
 package com.kajan.iworkflows.service.impl;
 
 import com.kajan.iworkflows.dto.TokenDTO;
+import com.kajan.iworkflows.model.LogStore;
+import com.kajan.iworkflows.repository.LogStoreRepository;
 import com.kajan.iworkflows.service.OauthTokenService;
 import com.kajan.iworkflows.service.TokenControllerService;
 import com.kajan.iworkflows.util.Constants;
@@ -27,6 +29,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.sql.Timestamp;
 
 @Service
 public class TokenControllerServiceImpl implements TokenControllerService {
@@ -36,6 +39,10 @@ public class TokenControllerServiceImpl implements TokenControllerService {
     private OauthTokenService oauthTokenService;
 
     private ClientRegistrationRepository clientRegistrationRepository;
+
+    private LogStoreRepository logStoreRepository;
+
+    private Timestamp timestamp;
 
     @Override
     public URI getAuthorizationCodeRequestUri(TokenProvider tokenProvider) {
@@ -90,8 +97,12 @@ public class TokenControllerServiceImpl implements TokenControllerService {
             authorizationResponse = AuthorizationResponse.parse(new URI(buildRedirectUri(registrationId) + queryParams));
         } catch (ParseException e) {
             logger.error("Unable to parse authorization code response from server", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Unable to parse authorization code response from server " + e));
         } catch (URISyntaxException e) {
             logger.error("URI syntax of the authorization code response is not valid", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "URI syntax of the authorization code response is not valid" + e));
         }
 
         if (authorizationResponse != null && !authorizationResponse.indicatesSuccess()) {
@@ -117,6 +128,8 @@ public class TokenControllerServiceImpl implements TokenControllerService {
             callback = new URI(buildRedirectUri(registrationId));
         } catch (URISyntaxException e) {
             logger.error("Invalid callback URI", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Invalid callback URI " + e));
         }
         AuthorizationGrant codeGrant = new AuthorizationCodeGrant(code, callback);
 
@@ -131,6 +144,8 @@ public class TokenControllerServiceImpl implements TokenControllerService {
             tokenEndpoint = new URI(clientRegistration.getProviderDetails().getTokenUri());
         } catch (URISyntaxException e) {
             logger.error("Invalid token end point URI", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Invalid token end point URI " + e));
         }
 
         // Make the token request
@@ -170,8 +185,12 @@ public class TokenControllerServiceImpl implements TokenControllerService {
             }
         } catch (ParseException e) {
             logger.error("Unable to parse response from token endpoint", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Unable to parse response from token endpoint " + e));
         } catch (IOException e) {
             logger.error("Unable to reach token end point", e);
+            timestamp = new Timestamp(System.currentTimeMillis());
+            logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Unable to reach token end point " + e));
         }
 
 
@@ -188,6 +207,7 @@ public class TokenControllerServiceImpl implements TokenControllerService {
         //.replace("{baseUrl}", baseUri)
         //.replace("{registrationId}", tokenProvider.getProvider());
         logger.debug("Redirect URI: " + redirectUri);
+
         return redirectUri;
     }
 
@@ -209,5 +229,10 @@ public class TokenControllerServiceImpl implements TokenControllerService {
     @Autowired
     public void setClientRegistrationRepository(ClientRegistrationRepository clientRegistrationRepository) {
         this.clientRegistrationRepository = clientRegistrationRepository;
+    }
+
+    @Autowired
+    public void setLogStoreRepository(LogStoreRepository logStoreRepository) {
+        this.logStoreRepository = logStoreRepository;
     }
 }
