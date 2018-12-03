@@ -53,10 +53,10 @@ public class CheckGithubIssue implements JavaDelegate {
         // no new issue
         if (newIssues.isEmpty()) {
             execution.setVariable("new_issue", false);
-            return;
+        } else {
+            execution.setVariable(IS_NEW_ISSUE_KEY, true);
+            execution.setVariable(NEW_ISSUES_KEY, newIssues);
         }
 
-        execution.setVariable(IS_NEW_ISSUE_KEY, true);
-        execution.setVariable(NEW_ISSUES_KEY, newIssues);
     }
 }

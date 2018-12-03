@@ -14,12 +14,6 @@
       <bpmn:incoming>SequenceFlow_0yt7ppf</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0yt7ppf" sourceRef="create_new_task_in_asana" targetRef="EndEvent_0t07gi5" />
-    <bpmn:startEvent id="StartEvent_1">
-      <bpmn:outgoing>SequenceFlow_174uiz8</bpmn:outgoing>
-      <bpmn:timerEventDefinition>
-        <bpmn:timeCycle xsi:type="bpmn:tFormalExpression">R1000/PT5M</bpmn:timeCycle>
-      </bpmn:timerEventDefinition>
-    </bpmn:startEvent>
     <bpmn:exclusiveGateway id="ExclusiveGateway_1qgg8lq" name="new issue created?">
       <bpmn:incoming>SequenceFlow_0jm07o7</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_19vhzby</bpmn:outgoing>
@@ -35,10 +29,9 @@
     <bpmn:sequenceFlow id="SequenceFlow_1pibedb" name="no" sourceRef="ExclusiveGateway_1qgg8lq" targetRef="EndEvent_0jip2ih">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not new_issue}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:textAnnotation id="TextAnnotation_0mf9msg">
-      <bpmn:text>Every one minute</bpmn:text>
-    </bpmn:textAnnotation>
-    <bpmn:association id="Association_0fkan9u" sourceRef="StartEvent_1" targetRef="TextAnnotation_0mf9msg" />
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_174uiz8</bpmn:outgoing>
+    </bpmn:startEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="github-asana">
@@ -59,9 +52,6 @@
         <di:waypoint x="653" y="120" />
         <di:waypoint x="703" y="120" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="StartEvent_14u5kc9_di" bpmnElement="StartEvent_1">
-        <dc:Bounds x="173" y="102" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ExclusiveGateway_1qgg8lq_di" bpmnElement="ExclusiveGateway_1qgg8lq" isMarkerVisible="true">
         <dc:Bounds x="413" y="95" width="50" height="50" />
         <bpmndi:BPMNLabel>
@@ -90,13 +80,9 @@
           <dc:Bounds x="447" y="185" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="TextAnnotation_0mf9msg_di" bpmnElement="TextAnnotation_0mf9msg">
-        <dc:Bounds x="209" y="22" width="100" height="40" />
+      <bpmndi:BPMNShape id="StartEvent_1eoryea_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="173" y="102" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Association_0fkan9u_di" bpmnElement="Association_0fkan9u">
-        <di:waypoint x="203" y="107" />
-        <di:waypoint x="242" y="62" />
-      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.kajan.iworkflows.util.Constants.TokenProvider.ASANA;
 import static com.kajan.iworkflows.util.WorkflowConstants.NEW_ISSUES_KEY;
@@ -27,7 +25,7 @@ public class CreateNewTaskInAsana implements JavaDelegate {
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        log.debug("Attempting to create new task is Asana for user {}", "kajan");
+        log.debug("Attempting to create new task in Asana for user {}", "kajan");
         String accessToken = tokenService.getToken("kajan", ASANA).getAccessToken().getValue();
         if (accessToken == null) {
             throw new IworkflowsPreConditionRequiredException("No access token for kajan for asana");
@@ -40,9 +38,6 @@ public class CreateNewTaskInAsana implements JavaDelegate {
         asanaClient.workspaces.findAll().forEach(workspace -> {
             log.debug(workspace.id);
         });
-
-        Map<String, String> params = new HashMap<>();
-        //params.put("workspace", asanaClient.workspaces.findAll())
 
         newIssues.forEach(issue -> {
             try {
