@@ -105,7 +105,7 @@ public class CamundaLeaveProcessController {
 
             } else {
                 runtimeService.setVariable(processInstanceId, REJECTED_COMMENT_KEY, comment.getComment());
-                logStoreRepository.save(new LogStore(runtimeService.getVariable(processInstanceId, OWNER_KEY).toString(), timestamp, "Department Clerk rejected leave request " + taskId));
+                logStoreRepository.save(new LogStore((String)runtimeService.getVariable(processInstanceId, OWNER_KEY), timestamp, "Department Clerk rejected leave request " + taskId));
                 logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Rejected leave request " + taskId));
                 completedTaskStoreRepository.save(new CompletedTaskStore(taskId, principal.getName(), runtimeService.getVariable(processInstanceId, OWNER_KEY).toString(), runtimeService.getVariable(processInstanceId, SUBMITTED_DATE_KEY).toString(), "rejected"));
             }

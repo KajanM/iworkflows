@@ -1,5 +1,7 @@
 package com.kajan.iworkflows.workflow.leave;
 
+import com.kajan.iworkflows.model.LogStore;
+import com.kajan.iworkflows.repository.LogStoreRepository;
 import com.kajan.iworkflows.service.MoodleCalendarService;
 import com.kajan.iworkflows.service.impl.LearnOrgServiceImpl;
 import com.kajan.iworkflows.workflow.dto.SubmittedLeaveFormDetails;
@@ -9,6 +11,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,12 +25,15 @@ public class DetermineRecommendation implements JavaDelegate {
 
     private final LearnOrgServiceImpl learnOrgService;
     private final MoodleCalendarService moodleCalendarService;
+    private final LogStoreRepository logStoreRepository;
 
     @Autowired
     public DetermineRecommendation(LearnOrgServiceImpl learnOrgService,
-                                   MoodleCalendarService moodleCalendarService) {
+                                   MoodleCalendarService moodleCalendarService,
+                                   LogStoreRepository logStoreRepository) {
         this.learnOrgService = learnOrgService;
         this.moodleCalendarService = moodleCalendarService;
+        this.logStoreRepository = logStoreRepository;
     }
 
     @Override
@@ -51,6 +57,8 @@ public class DetermineRecommendation implements JavaDelegate {
                 principal);
 
         log.debug("number of events to cancel = {}", numberOfEventsToCancel);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        logStoreRepository.save(new LogStore(principal, timestamp, "Leave request approved"));
 
 
         if (remainingLeave < leaveAppliedFor) {
@@ -66,7 +74,7 @@ public class DetermineRecommendation implements JavaDelegate {
     private int getNumberOfEventsToCancel(String startDateStr, String endDateStr, String principal) {
         int numberOfEventsToBeCancelled = 0;
         DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH);
+                DateTimeFormatter.ofPattern("MM/d/yyyy", Locale.ENGLISH);
         LocalDate startDate = LocalDate.parse(startDateStr, formatter);
         LocalDate endDate = LocalDate.parse(endDateStr, formatter);
 
