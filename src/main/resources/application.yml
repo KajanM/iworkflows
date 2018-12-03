@@ -18,7 +18,7 @@ camunda.bpm:
 
 spring:
   profiles:
-    active: h2, nginx-local-s, testing
+    active: h2, testing
 
   security:
     oauth2:
