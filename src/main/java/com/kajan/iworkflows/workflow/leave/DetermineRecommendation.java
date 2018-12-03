@@ -63,8 +63,6 @@ public class DetermineRecommendation implements JavaDelegate {
 
         if (remainingLeave < leaveAppliedFor) {
             execution.setVariable(RECOMMENDATION_KEY, "not_recommended");
-        } else if(numberOfEventsToCancel > 2) {
-            execution.setVariable(RECOMMENDATION_KEY, "not_recommended");
         } else {
             execution.setVariable(RECOMMENDATION_KEY, "recommended");
         }
