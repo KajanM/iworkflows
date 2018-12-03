@@ -1,7 +1,10 @@
 package com.kajan.iworkflows.workflow.leave;
 
+import com.kajan.iworkflows.model.Comment;
+import com.kajan.iworkflows.model.CompletedTaskStore;
 import com.kajan.iworkflows.model.LogStore;
 import com.kajan.iworkflows.model.RequestStore;
+import com.kajan.iworkflows.repository.CompletedTaskStoreRepository;
 import com.kajan.iworkflows.repository.LogStoreRepository;
 import com.kajan.iworkflows.repository.RequestStoreRepository;
 import com.kajan.iworkflows.workflow.dto.MyTaskFullDetails;
@@ -35,16 +38,18 @@ public class CamundaLeaveProcessController {
     private final TaskService taskService;
     private final RequestStoreRepository requestStoreRepository;
     private final LogStoreRepository logStoreRepository;
+    private final CompletedTaskStoreRepository completedTaskStoreRepository;
     private Timestamp timestamp;
 
     @Autowired
     public CamundaLeaveProcessController(RuntimeService runtimeService, TaskService taskService,
                                          RequestStoreRepository requestStoreRepository,
-                                         LogStoreRepository logStoreRepository) {
+                                         LogStoreRepository logStoreRepository, CompletedTaskStoreRepository completedTaskStoreRepository) {
         this.runtimeService = runtimeService;
         this.taskService = taskService;
         this.requestStoreRepository = requestStoreRepository;
         this.logStoreRepository = logStoreRepository;
+        this.completedTaskStoreRepository = completedTaskStoreRepository;
     }
 
     @PostMapping("/start")
@@ -60,7 +65,8 @@ public class CamundaLeaveProcessController {
         ProcessInstance leaveProcess = runtimeService.startProcessInstanceByKey(LEAVE_PROCESS_DEFINITION_KEY,
                 Variables
                         .putValue(OWNER_KEY, principal.getName())
-                        .putValue(LEAVE_DETAILS_KEY, leaveDetails));
+                        .putValue(LEAVE_DETAILS_KEY, leaveDetails)
+                        .putValue(SUBMITTED_DATE_KEY, leaveDetails.getSubmittedDate()));
 
         List<Task> tasks = taskService.createTaskQuery().executionId(leaveProcess.getId()).list();
         tasks.forEach(task -> taskService.setOwner(task.getId(), principal.getName()));
@@ -71,7 +77,7 @@ public class CamundaLeaveProcessController {
     }
 
     @PostMapping("/complete/{taskId}/{approved}")
-    public ResponseEntity<?> completeTask(@PathVariable("taskId") String taskId, @PathVariable("approved") Boolean approved, Principal principal) {
+    public ResponseEntity<?> completeTask(@RequestBody Comment comment, @PathVariable("taskId") String taskId, @PathVariable("approved") Boolean approved, Principal principal) {
         String processInstanceId = taskService.createTaskQuery().taskId(taskId).list().get(0).getProcessInstanceId();
         Object headApproved = runtimeService.getVariable(processInstanceId, HEAD_APPROVED_KEY);
         timestamp = new Timestamp(System.currentTimeMillis());
@@ -80,11 +86,12 @@ public class CamundaLeaveProcessController {
             if (approved) {
                 logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Department Head approved leave request " + taskId));
                 logStoreRepository.save(new LogStore(runtimeService.getVariable(processInstanceId, HEAD_APPROVER_KEY).toString(), timestamp, "Approved leave request " + taskId));
-
+                completedTaskStoreRepository.save(new CompletedTaskStore(taskId, principal.getName(), runtimeService.getVariable(processInstanceId, OWNER_KEY).toString(), runtimeService.getVariable(processInstanceId, SUBMITTED_DATE_KEY).toString(), "approved"));
             } else {
+                runtimeService.setVariable(processInstanceId, REJECTED_COMMENT_KEY, comment.getComment());
                 logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Department Head rejected leave request " + taskId));
                 logStoreRepository.save(new LogStore(runtimeService.getVariable(processInstanceId, HEAD_APPROVER_KEY).toString(), timestamp, "Rejected leave request " + taskId));
-
+                completedTaskStoreRepository.save(new CompletedTaskStore(taskId, principal.getName(), runtimeService.getVariable(processInstanceId, OWNER_KEY).toString(), runtimeService.getVariable(processInstanceId, SUBMITTED_DATE_KEY).toString(), "rejected"));
             }
 
         } else {
@@ -93,11 +100,14 @@ public class CamundaLeaveProcessController {
             if (approved) {
                 logStoreRepository.save(new LogStore(runtimeService.getVariable(processInstanceId, OWNER_KEY).toString(), timestamp, "Department Clerk approved leave request " + taskId));
                 logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Approved leave request " + taskId));
+                completedTaskStoreRepository.save(new CompletedTaskStore(taskId, principal.getName(), runtimeService.getVariable(processInstanceId, OWNER_KEY).toString(), runtimeService.getVariable(processInstanceId, SUBMITTED_DATE_KEY).toString(), "approved"));
+
 
             } else {
+                runtimeService.setVariable(processInstanceId, REJECTED_COMMENT_KEY, comment.getComment());
                 logStoreRepository.save(new LogStore(runtimeService.getVariable(processInstanceId, OWNER_KEY).toString(), timestamp, "Department Clerk rejected leave request " + taskId));
                 logStoreRepository.save(new LogStore(principal.getName(), timestamp, "Rejected leave request " + taskId));
-
+                completedTaskStoreRepository.save(new CompletedTaskStore(taskId, principal.getName(), runtimeService.getVariable(processInstanceId, OWNER_KEY).toString(), runtimeService.getVariable(processInstanceId, SUBMITTED_DATE_KEY).toString(), "rejected"));
             }
         }
         taskService.complete(taskId);

@@ -22,6 +22,7 @@ public class SubmittedLeaveFormDetails implements Serializable {
     private String startDate;
     private String endDate;
     private String comments;
+    private String rejectedComment;
     /**
      * taken casual leaves
      */

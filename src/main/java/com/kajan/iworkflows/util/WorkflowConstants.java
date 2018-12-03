@@ -16,6 +16,8 @@ public class WorkflowConstants {
     public static final String APPROVER_KEY = "approver";
     public static final String APPROVED_KEY = "Approved";
     public static final String REJECTED_KEY = "Rejected";
+    public static final String REJECTED_COMMENT_KEY = "comment";
+    public static final String SUBMITTED_DATE_KEY = "submittedDate";
 
     public static final String IS_NEW_ISSUE_KEY = "new_issue";
     public static final String NEW_ISSUES_KEY = "filtered_issues";
