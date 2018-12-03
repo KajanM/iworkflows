@@ -51,7 +51,7 @@ public class LeavePostApprovalService implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         log.debug("Leave request approved");
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        logStoreRepository.save(new LogStore(execution.getVariable(OWNER_KEY).toString(), timestamp, "Leave request approved"));
+        logStoreRepository.save(new LogStore((String)execution.getVariable(OWNER_KEY), timestamp, "Leave request approved"));
         RequestStore requestStore = requestStoreService.findByPrincipalAndLeaveType(
                 execution.getVariable(OWNER_KEY).toString(),
                 execution.getVariable(LEAVE_TYPE_KEY).toString()).iterator().next();

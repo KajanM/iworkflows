@@ -61,6 +61,7 @@ moodle:
   wsfunction:
     get-courses-by-field: core_course_get_courses_by_field
     get-assignments: mod_assign_get_assignments
+    get-calendar-events-for-day: core_calendar_get_calendar_day_view
 
 nextcloud:
   uri:

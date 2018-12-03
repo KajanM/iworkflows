@@ -32,11 +32,11 @@ public class MoodleAssignmentController {
 
     @GetMapping("/courses")
     public ResponseEntity getCourseDetails(Principal principal) {
-        return moodleService.executeWsFunction(FUNCTION_GET_COURSES_BY_FIELD, HttpMethod.POST, String.class, principal);
+        return moodleService.executeWsFunction(FUNCTION_GET_COURSES_BY_FIELD, HttpMethod.POST, String.class, principal.getName());
     }
 
     @GetMapping("/assignments")
     public ResponseEntity getAssignementDetails(Principal principal) {
-        return moodleService.executeWsFunction(FUNCTION_GET_ASSIGNMENTS, HttpMethod.GET, String.class, principal);
+        return moodleService.executeWsFunction(FUNCTION_GET_ASSIGNMENTS, HttpMethod.GET, String.class, principal.getName());
     }
 }

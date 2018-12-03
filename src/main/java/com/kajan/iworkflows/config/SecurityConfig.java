@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                         .and().csrf().disable()
                         .logout().logoutUrl("/api/logout");
+                http.headers().frameOptions().disable();
                 //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                 // TODO: Kajan, turn CSRF protection on
             }
@@ -101,7 +102,8 @@ public class SecurityConfig {
                         .antMatchers(HttpMethod.OPTIONS, "/login", "/register").permitAll()
                         .anyRequest().authenticated()
                         .and().csrf().disable()
-                        .logout().logoutUrl("/api/logout");;
+                        .logout().logoutUrl("/api/logout");
+                http.headers().frameOptions().disable();
                 //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                 // TODO: Kajan, turn CSRF protection on
             }
@@ -122,8 +124,6 @@ public class SecurityConfig {
             }
         };
     }
-
-
 
 
     @Bean
