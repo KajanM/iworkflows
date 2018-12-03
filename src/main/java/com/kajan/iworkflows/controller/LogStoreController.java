@@ -22,7 +22,6 @@ public class LogStoreController {
     public List<LogStore> user(Principal user) {
         List<LogStore> logStoreList = new ArrayList<>();
         LogStore logStore;
-        log.debug(logStoreService.findByPrincipal(user.getName()).toString());
         logStoreService.findByPrincipal(user.getName()).forEach(logStoreList::add);
         return logStoreList;
     }
