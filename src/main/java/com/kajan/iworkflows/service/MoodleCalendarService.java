@@ -1,5 +1,7 @@
 package com.kajan.iworkflows.service;
 
+import com.kajan.iworkflows.dto.TokenDTO;
+import com.kajan.iworkflows.exception.IworkflowsPreConditionRequiredException;
 import com.kajan.iworkflows.model.moodle.Events;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +48,11 @@ public class MoodleCalendarService {
 
     private String buildUrl(String principal, int day, int month, int year) {
         String template = "http://iworkflows.projects.mrt.ac.lk/moodle/webservice/rest/server.php?wstoken={wstoken}&wsfunction=core_calendar_get_calendar_day_view&moodlewsrestformat=json&year={year}&month={month}&day={day}";
-        String wstoken = oauthTokenService.getToken(principal, MOODLE).getAccessToken().getValue();
-        String uri = template.replace("{wstoken}", wstoken)
+        TokenDTO tokenDTO = oauthTokenService.getToken(principal, MOODLE);
+        if (tokenDTO == null || tokenDTO.getAccessToken() == null || tokenDTO.getAccessToken().getValue() == null) {
+            throw new IworkflowsPreConditionRequiredException("Please connect with Moodle");
+        }
+        String uri = template.replace("{wstoken}", tokenDTO.getAccessToken().getValue())
                 .replace("{year}", Integer.toString(year))
                 .replace("{month}", Integer.toString(month))
                 .replace("{day}", Integer.toString(day));
