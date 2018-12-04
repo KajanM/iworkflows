@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0y1u39q" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0y1u39q" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.2.1">
   <bpmn:collaboration id="Collaboration_1ujumzb">
     <bpmn:participant id="Participant_09ajcmc" name="IWORKFLOWS" processRef="leave_process" />
     <bpmn:participant id="Participant_1hly46i" name="Head of the department" processRef="Process_124crhm" />
@@ -36,8 +36,6 @@
         <bpmn:flowNodeRef>review_leave_clerk</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>leave_post_reject_service</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0s8sl70</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_0h8hz4m</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Task_0v326jv</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>EndEvent_0k8vitx</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
@@ -127,22 +125,12 @@
       <bpmn:outgoing>SequenceFlow_1lv11tp</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:endEvent id="EndEvent_0s8sl70">
-      <bpmn:incoming>SequenceFlow_0qthvja</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SequenceFlow_0qthvja" sourceRef="Task_0h8hz4m" targetRef="EndEvent_0s8sl70" />
-    <bpmn:sequenceFlow id="SequenceFlow_1lv11tp" sourceRef="leave_post_reject_service" targetRef="Task_0h8hz4m" />
-    <bpmn:sendTask id="Task_0h8hz4m" name="NotifyRejection" camunda:delegateExpression="#{notifyRejection}">
       <bpmn:incoming>SequenceFlow_1lv11tp</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0qthvja</bpmn:outgoing>
-    </bpmn:sendTask>
-    <bpmn:sequenceFlow id="SequenceFlow_1j3cqp7" sourceRef="leave_post_approval_service" targetRef="Task_0v326jv" />
-    <bpmn:sendTask id="Task_0v326jv" name="NotifyApproval" camunda:delegateExpression="#{notifyApproval}">
-      <bpmn:incoming>SequenceFlow_1j3cqp7</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0lnpcrq</bpmn:outgoing>
-    </bpmn:sendTask>
-    <bpmn:sequenceFlow id="SequenceFlow_0lnpcrq" sourceRef="Task_0v326jv" targetRef="EndEvent_0k8vitx" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1lv11tp" sourceRef="leave_post_reject_service" targetRef="EndEvent_0s8sl70" />
+    <bpmn:sequenceFlow id="SequenceFlow_1j3cqp7" sourceRef="leave_post_approval_service" targetRef="EndEvent_0k8vitx" />
     <bpmn:endEvent id="EndEvent_0k8vitx">
-      <bpmn:incoming>SequenceFlow_0lnpcrq</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1j3cqp7</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:textAnnotation id="TextAnnotation_0cdpfu1">
       <bpmn:text>role mappings</bpmn:text>
@@ -591,26 +579,12 @@
           <dc:Bounds x="1458" y="746" width="13" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SequenceFlow_0qthvja_di" bpmnElement="SequenceFlow_0qthvja">
-        <di:waypoint x="1708" y="844" />
-        <di:waypoint x="1806" y="844" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SequenceFlow_1lv11tp_di" bpmnElement="SequenceFlow_1lv11tp">
         <di:waypoint x="1538" y="844" />
-        <di:waypoint x="1608" y="844" />
+        <di:waypoint x="1806" y="844" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SendTask_0krxd5w_di" bpmnElement="Task_0h8hz4m">
-        <dc:Bounds x="1608" y="804" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_1j3cqp7_di" bpmnElement="SequenceFlow_1j3cqp7">
         <di:waypoint x="1762" y="662" />
-        <di:waypoint x="1842" y="662" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="SendTask_01vungg_di" bpmnElement="Task_0v326jv">
-        <dc:Bounds x="1842" y="622" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SequenceFlow_0lnpcrq_di" bpmnElement="SequenceFlow_0lnpcrq">
-        <di:waypoint x="1942" y="662" />
         <di:waypoint x="1996" y="662" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
