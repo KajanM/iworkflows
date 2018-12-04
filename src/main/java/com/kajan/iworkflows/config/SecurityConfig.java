@@ -36,6 +36,8 @@ public class SecurityConfig {
                 http
                         .httpBasic()
                         .and()
+                        .cors()
+                        .and()
                         .authorizeRequests()
                         .antMatchers("/login")
                         .permitAll()
