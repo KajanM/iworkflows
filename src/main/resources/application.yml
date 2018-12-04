@@ -333,6 +333,56 @@ spring:
           learnorg:
             authorization-uri: http://10.8.90.4/oauth/login.php
             token-uri: http://10.8.90.4/oauth/token.php
+---
+spring:
+  profiles: iworkflows-4200
+
+  security:
+    oauth2:
+      client:
+        registration:
+          asana:
+            client-id: 923555116588679
+            client-secret: 0ddf1489941f8b88125d607b79fef6fb
+            redirect-uri-template: https://localhost/connect/asana
+            authorization-grant-type: authorization_code
+            client-name: Asana
+            scope: default
+          github:
+            client-id: dad2aeed19ee40c70c92
+            client-secret: 29e9d576e72f7b86b8fe34e0e44160b1ddd27678
+            redirect-uri-template: https://localhost/connect/github
+            #            authorization-grant-type: authorization_code
+            client-name: GitHub
+          nextcloud:
+            client-id: 28ZLbXzqcdRwLAdWc0hW7QT6ZHT54kWtrHq7KViOi7wT9k6DggiwWp2CGumZHlkJ
+            client-secret: 4jCVVlYQT7bdsk150byltrABPFxOz4QGx86eveC4LNaVZFKkrevAx8W6xqecjfYK
+            redirect-uri-template: https://localhost/connect/nextcloud
+            authorization-grant-type: authorization_code
+            client-name: NextCloud
+            scope: read, write
+          learnorg:
+            client-id: iworkflows_server_test
+            client-secret: 688b10e0d1033410e214ebe6c27f0449609819e6b6593809
+            redirect-uri-template: http://iworkflows.projects.mrt.ac.lk:4200/connect/learnorg
+            authorization-grant-type: authorization_code
+            client-name: LearnOrg
+            scope: profile
+
+        provider:
+          asana:
+            authorization-uri: https://app.asana.com/-/oauth_authorize
+            token-uri: https://app.asana.com/-/oauth_token
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            scope: repo
+          nextcloud:
+            authorization-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/authorize
+            token-uri: http://iworkflows.projects.mrt.ac.lk/nextcloud/index.php/apps/oauth2/api/v1/token
+          learnorg:
+            authorization-uri: http://10.8.90.4/oauth/login.php
+            token-uri: http://10.8.90.4/oauth/token.php
 
 
 ---
